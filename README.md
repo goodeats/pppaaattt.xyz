@@ -1,4 +1,4 @@
-# PPPAAATTT.XYZ
+# [PPPAAATTT.XYZ](https://github.com/goodeats/pppaaattt.xyz)
 
 Drawing generative geometric shapes on a canvas
 
