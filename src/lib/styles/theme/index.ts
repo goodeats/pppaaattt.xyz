@@ -7,6 +7,9 @@ const colors = {
     800: '#153e75',
     700: '#2a69ac',
   },
+  canvas: {
+    empty: '#f5f5f5',
+  },
 };
 
 const styles = {

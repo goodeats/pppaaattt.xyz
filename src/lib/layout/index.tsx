@@ -6,6 +6,7 @@ import Meta from './Meta';
 import Main from './Main';
 import Column from './Column';
 import Footer from './Footer';
+import CanvasColumn from './columns/CanvasColumn';
 
 export type LayoutProps = {
   children: ReactNode;
@@ -26,13 +27,7 @@ const Layout = ({ children }: LayoutProps) => {
                 </Heading>
               </Box>
             </Column>
-            <Column>
-              <Box width="full" textAlign="center">
-                <Heading as="h2" color="brand.700">
-                  Output
-                </Heading>
-              </Box>
-            </Column>
+            <CanvasColumn />
           </Flex>
         </Main>
         <Footer>{children}</Footer>
