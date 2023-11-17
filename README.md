@@ -13,3 +13,9 @@ To get started with this project, follow these steps:
 3. Run `bun install` to install the necessary dependencies.
 4. Run `bun run setup`
 5. Start the development server by running `bun run dev`.
+
+##
+
+DB: [PostgreSQL](https://www.postgresql.org/)
+ORM: [Prisma](https://www.prisma.io/)
+UI: [Chakra UI](https://chakra-ui.com/)
