@@ -1,10 +1,15 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { ColorModeScript } from '@chakra-ui/react';
+import { theme } from './lib/styles/theme/index.ts';
+import App from './App.tsx';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+const root = ReactDOM.createRoot(
+  document.getElementById('root') as HTMLElement
+);
+root.render(
   <React.StrictMode>
+    <ColorModeScript initialColorMode={theme.config?.initialColorMode} />
     <App />
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);
