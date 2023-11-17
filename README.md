@@ -2,8 +2,6 @@
 
 Drawing generative geometric shapes on a canvas
 
-A [Vite](https://vitejs.dev/) app [built](https://bun.sh/guides/ecosystem/vite) with [Bun](https://bun.sh/) for simple, fast development
-
 ## GETTING STARTED
 
 To get started with this project, follow these steps:
@@ -14,8 +12,10 @@ To get started with this project, follow these steps:
 4. Run `bun run setup`
 5. Start the development server by running `bun run dev`.
 
-##
+## TECH STACK
 
+JS Runtime: [Bun](https://bun.sh/)
+Client: [Vite](https://vitejs.dev/)
 DB: [PostgreSQL](https://www.postgresql.org/)
 ORM: [Prisma](https://www.prisma.io/)
 UI: [Chakra UI](https://chakra-ui.com/)
