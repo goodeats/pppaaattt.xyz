@@ -1,5 +1,6 @@
-import { Box, Button, HStack, Heading, Stack } from '@chakra-ui/react';
+import { Box, Button, HStack, Stack } from '@chakra-ui/react';
 import Column from '../Column';
+import { ColumnHeading } from './_shared';
 
 const CanvasColumn = () => {
   function addLeadingZeroes(n: number): string {
@@ -50,9 +51,7 @@ const CanvasColumn = () => {
   return (
     <Column>
       <Box width="full" textAlign="center">
-        <Heading as="h2" color="brand.700">
-          Output
-        </Heading>
+        <ColumnHeading>Output</ColumnHeading>
         <Stack marginY={10} borderRadius={0} padding={1}>
           <Box
             as="canvas"
