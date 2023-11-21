@@ -7,12 +7,15 @@ import {
 } from '@chakra-ui/react';
 import LayerAccordion from '../accordions/LayerAccordion';
 import { AccordionPanelText } from '../accordions/_shared';
+import React from 'react';
 
 type LayerCardProps = {
   depth: number;
 };
 
 const LayerCard = ({ depth }: LayerCardProps) => {
+  const [childCount, setChildCount] = React.useState(0);
+
   const bg = useColorModeValue('white', 'gray.300');
   const textColor = useColorModeValue('black.900', 'gray.800');
 
@@ -49,7 +52,22 @@ const LayerCard = ({ depth }: LayerCardProps) => {
       </CardHeader>
       <CardBody>
         <LayerCardText />
-        <LayerAccordion currentDepth={depth} />
+        <LayerAccordion
+          currentDepth={depth}
+          childCount={childCount}
+          // kind of hacky to pass these functions back up the tree like this
+          // but it works for now as a proof of concept
+          // and strictly going by UI functionality
+          // will add data model later and refactor
+          addChild={() => {
+            setChildCount(childCount + 1);
+          }}
+          removeChild={() => {
+            if (childCount === 0) return;
+
+            setChildCount(childCount - 1);
+          }}
+        />
       </CardBody>
     </Card>
   );

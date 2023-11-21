@@ -1,14 +1,26 @@
-import { Box, Button, Stack, StackDivider, Text } from '@chakra-ui/react';
-import React from 'react';
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Stack,
+  StackDivider,
+  Text,
+} from '@chakra-ui/react';
 import LayerCard from '../cards/LayerCard';
 
 type LayerChildStackProps = {
   currentDepth: number;
+  childCount: number;
+  addChild: () => void;
+  removeChild?: () => void;
 };
 
-export const LayerChildStack = ({ currentDepth }: LayerChildStackProps) => {
-  const [count, setCount] = React.useState(0);
-
+export const LayerChildStack = ({
+  currentDepth,
+  childCount,
+  addChild,
+  removeChild,
+}: LayerChildStackProps) => {
   const NoChildren = () => {
     return (
       <Box>
@@ -18,14 +30,14 @@ export const LayerChildStack = ({ currentDepth }: LayerChildStackProps) => {
   };
 
   const StackBody = () => {
-    if (count === 0) {
+    if (childCount === 0) {
       return <NoChildren />;
     }
 
     return (
       <Box>
-        <Text>{count} Children</Text>
-        {[...Array(count)].map((_, n) => (
+        <Text>{childCount} Children</Text>
+        {[...Array(childCount)].map((_, n) => (
           <Box key={n} mt={4}>
             <LayerCard depth={currentDepth + 1} />
           </Box>
@@ -37,9 +49,16 @@ export const LayerChildStack = ({ currentDepth }: LayerChildStackProps) => {
   const StackFooter = () => {
     return (
       <Box>
-        <Button colorScheme="blue" onClick={() => setCount(count + 1)}>
-          Create Layer
-        </Button>
+        <ButtonGroup spacing="2">
+          <Button colorScheme="blue" onClick={addChild}>
+            Create Layer
+          </Button>
+          {childCount > 0 && (
+            <Button colorScheme="red" ml={2} onClick={removeChild}>
+              Delete Layer
+            </Button>
+          )}
+        </ButtonGroup>
       </Box>
     );
   };

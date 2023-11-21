@@ -14,9 +14,17 @@ import { LayerChildStack } from '../stacks/LayerChildStack';
 
 type LayerAccordionProps = {
   currentDepth: number;
+  childCount: number;
+  addChild: () => void;
+  removeChild: () => void;
 };
 
-const LayerAccordion = ({ currentDepth }: LayerAccordionProps) => {
+const LayerAccordion = ({
+  currentDepth,
+  childCount,
+  addChild,
+  removeChild,
+}: LayerAccordionProps) => {
   const LayerAccordionItem = ({
     buttonText,
     panelText,
@@ -44,12 +52,14 @@ const LayerAccordion = ({ currentDepth }: LayerAccordionProps) => {
       <LayerAccordionItem
         buttonText="Child Layers"
         panelText="Layers that inherit from this layer"
-        children={<LayerChildStack currentDepth={currentDepth} />}
-      />
-      {/* TODO: move this to footer with buttons */}
-      <LayerAccordionItem
-        buttonText="Actions"
-        panelText="Delete, duplicate, or rename this layer"
+        children={
+          <LayerChildStack
+            currentDepth={currentDepth}
+            childCount={childCount}
+            addChild={addChild}
+            removeChild={removeChild}
+          />
+        }
       />
     </Accordion>
   );
