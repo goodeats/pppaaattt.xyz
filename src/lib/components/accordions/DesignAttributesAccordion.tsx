@@ -28,7 +28,7 @@ const DesignAttributesAccordion = () => {
       <AccordionItem>
         <SharedAccordionButton buttonText={buttonText} />
         <AccordionPanel pb={4} bg={panelColor}>
-          <Stack divider={<StackDivider borderColor="gray.200" />}>
+          <Stack divider={<StackDivider borderColor="gray.300" />}>
             <Box>
               <AccordionPanelText color={textColor}>Not set</AccordionPanelText>
             </Box>

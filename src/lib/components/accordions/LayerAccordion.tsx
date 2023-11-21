@@ -10,6 +10,7 @@ import {
   SharedAccordionItemProps,
   SharedAccordionButton,
 } from './_shared';
+import { LayerChildStack } from '../stacks/LayerChildStack';
 
 const LayerAccordion = () => {
   const LayerAccordionItem = ({
@@ -39,6 +40,7 @@ const LayerAccordion = () => {
       <LayerAccordionItem
         buttonText="Child Layers"
         panelText="Layers that inherit from this layer"
+        children={<LayerChildStack />}
       />
       {/* TODO: move this to footer with buttons */}
       <LayerAccordionItem
