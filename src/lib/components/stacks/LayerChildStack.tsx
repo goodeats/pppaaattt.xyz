@@ -2,7 +2,11 @@ import { Box, Button, Stack, StackDivider, Text } from '@chakra-ui/react';
 import React from 'react';
 import LayerCard from '../cards/LayerCard';
 
-export const LayerChildStack = () => {
+type LayerChildStackProps = {
+  currentDepth: number;
+};
+
+export const LayerChildStack = ({ currentDepth }: LayerChildStackProps) => {
   const [count, setCount] = React.useState(0);
 
   const NoChildren = () => {
@@ -23,7 +27,7 @@ export const LayerChildStack = () => {
         <Text>{count} Children</Text>
         {[...Array(count)].map((_, n) => (
           <Box key={n} mt={4}>
-            <LayerCard />
+            <LayerCard depth={currentDepth + 1} />
           </Box>
         ))}
       </Box>

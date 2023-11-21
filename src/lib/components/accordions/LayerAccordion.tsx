@@ -12,7 +12,11 @@ import {
 } from './_shared';
 import { LayerChildStack } from '../stacks/LayerChildStack';
 
-const LayerAccordion = () => {
+type LayerAccordionProps = {
+  currentDepth: number;
+};
+
+const LayerAccordion = ({ currentDepth }: LayerAccordionProps) => {
   const LayerAccordionItem = ({
     buttonText,
     panelText,
@@ -40,7 +44,7 @@ const LayerAccordion = () => {
       <LayerAccordionItem
         buttonText="Child Layers"
         panelText="Layers that inherit from this layer"
-        children={<LayerChildStack />}
+        children={<LayerChildStack currentDepth={currentDepth} />}
       />
       {/* TODO: move this to footer with buttons */}
       <LayerAccordionItem
