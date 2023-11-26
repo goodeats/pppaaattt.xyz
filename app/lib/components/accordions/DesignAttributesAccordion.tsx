@@ -2,21 +2,18 @@ import {
   Accordion,
   AccordionItem,
   AccordionPanel,
-  Box,
-  Stack,
-  StackDivider,
   useColorModeValue,
 } from '@chakra-ui/react';
-import {
-  AccordionPanelText,
-  SharedAccordionButton,
-  SharedAccordionItemProps,
-} from './_shared';
-import { PaletteModal } from '../modals/PaletteModal';
-import { ContainerModal } from '../modals/ContainerModal';
-import { BackgroundModal } from '../modals/BackgroundModal';
+import { SharedAccordionButton, SharedAccordionItemProps } from './_shared';
+import { ContainerStack } from '../stacks/design-attributes/ContainerStack';
 
-const DesignAttributesAccordion = () => {
+type DesignAttributesAccordionProps = {
+  currentDepth: number;
+};
+
+const DesignAttributesAccordion = ({
+  currentDepth,
+}: DesignAttributesAccordionProps) => {
   const DesignAttributeAccordionItem = ({
     buttonText,
     children,
@@ -28,12 +25,13 @@ const DesignAttributesAccordion = () => {
       <AccordionItem>
         <SharedAccordionButton buttonText={buttonText} />
         <AccordionPanel pb={4} bg={panelColor}>
-          <Stack divider={<StackDivider borderColor="gray.300" />}>
+          {children}
+          {/* <Stack divider={<StackDivider borderColor="gray.300" />}>
             <Box>
               <AccordionPanelText color={textColor}>Not set</AccordionPanelText>
             </Box>
             <Box textAlign="left">{children}</Box>
-          </Stack>
+          </Stack> */}
         </AccordionPanel>
       </AccordionItem>
     );
@@ -43,10 +41,15 @@ const DesignAttributesAccordion = () => {
     <Accordion bg="gray.300" allowToggle>
       <DesignAttributeAccordionItem
         buttonText="Container"
+        // toolTip="Set container options for this layer: width, height, padding, margin, etc."
+        children={<ContainerStack currentDepth={currentDepth} />}
+      />
+      {/* <DesignAttributeAccordionItem
+        buttonText="Container"
         toolTip="Set container options for this layer: width, height, padding, margin, etc."
         children={<ContainerModal />}
-      />
-      <DesignAttributeAccordionItem
+      /> */}
+      {/* <DesignAttributeAccordionItem
         buttonText="Background"
         toolTip="Set background for this layer"
         children={<BackgroundModal />}
@@ -55,7 +58,7 @@ const DesignAttributesAccordion = () => {
         buttonText="Palette"
         toolTip="Set palette for this layer"
         children={<PaletteModal />}
-      />
+      /> */}
     </Accordion>
   );
 };

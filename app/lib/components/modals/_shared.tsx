@@ -23,6 +23,11 @@ export const SharedModal = ({
 }: SharedModalProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const handleSubmit = () => {
+    console.log('submit');
+    onClose();
+  };
+
   return (
     <>
       <Button colorScheme="blue" onClick={onOpen}>
@@ -37,7 +42,7 @@ export const SharedModal = ({
           <ModalBody>{children}</ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3}>
+            <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
               Save
             </Button>
             <Button onClick={onClose}>Cancel</Button>

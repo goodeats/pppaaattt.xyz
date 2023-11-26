@@ -1,25 +1,13 @@
-import {
-  Input,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-} from '@chakra-ui/react';
+import { Stack, StackDivider } from '@chakra-ui/react';
 import { SharedModal } from './_shared';
+import { ContainerExplicitForm } from '../forms/design-attributes/ContainerExplicitForm';
 
 export const ContainerModal = () => {
-  const ContainerForm = () => {
-    return (
-      <FormControl py={4}>
-        <FormLabel>Container Width</FormLabel>
-        <Input type="number" />
-        <FormHelperText>Will be canvas width for first layer</FormHelperText>
-      </FormControl>
-    );
-  };
-
   return (
-    <SharedModal buttonText="Create Container" headerText="Container">
-      <ContainerForm />
+    <SharedModal buttonText="Update Container" headerText="Container">
+      <Stack spacing={4} divider={<StackDivider borderColor="gray.200" />}>
+        <ContainerExplicitForm />
+      </Stack>
     </SharedModal>
   );
 };
