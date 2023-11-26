@@ -47,7 +47,7 @@ const LayerAccordion = ({
       <LayerAccordionItem
         buttonText="Design Attributes"
         panelText="Set design attributes for this layer"
-        children={<DesignAttributesAccordion />}
+        children={<DesignAttributesAccordion currentDepth={currentDepth} />}
       />
       <LayerAccordionItem
         buttonText="Child Layers"
