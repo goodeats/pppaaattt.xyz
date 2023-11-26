@@ -1,7 +1,13 @@
+import { ChakraProvider } from '@chakra-ui/react';
+import { theme } from '../lib/styles/theme/index.ts';
+import Layout from '~/lib/layout';
+
 export default function Index() {
   return (
-    <div style={{ fontFamily: 'system-ui, sans-serif', lineHeight: '1.8' }}>
-      <h1>Welcome to PPPAAATTT.XYZ</h1>
-    </div>
+    <ChakraProvider resetCSS theme={theme}>
+      <Layout>
+        <p>by goodeats</p>
+      </Layout>
+    </ChakraProvider>
   );
 }
