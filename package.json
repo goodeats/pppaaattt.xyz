@@ -10,7 +10,7 @@
     "start": "remix-serve ./build/index.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "setup": "prisma generate && prisma migrate dev --name init --preview-feature",
+    "setup": "cp .env.example .env && prisma generate && prisma migrate dev --name init --preview-feature",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
