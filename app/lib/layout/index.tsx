@@ -1,12 +1,10 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { type ReactNode } from 'react';
 
-import Header from './Header';
 import Meta from './Meta';
+import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
-import CanvasColumn from './columns/CanvasColumn';
-import FormColumn from './columns/FormColumn';
 
 export type LayoutProps = {
   children: ReactNode;
@@ -20,11 +18,10 @@ const Layout = ({ children }: LayoutProps) => {
         <Header />
         <Main>
           <Flex flex="1" width="full">
-            <FormColumn />
-            <CanvasColumn />
+            {children}
           </Flex>
         </Main>
-        <Footer>{children}</Footer>
+        <Footer />
       </Flex>
     </Box>
   );
