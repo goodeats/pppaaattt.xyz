@@ -20,6 +20,8 @@ datasource db {
 // Child layers with a design attribute will override the parent
 model Layer {
   id               String            @id @default(uuid())
+  title            String
+  description      String?
   parentId         String?
   parent           Layer?            @relation("LayerToLayer", fields: [parentId], references: [id])
   children         Layer[]           @relation("LayerToLayer")
