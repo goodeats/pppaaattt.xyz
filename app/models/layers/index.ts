@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Layer } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function findOrCreateFirstLayer() {
+export async function findOrCreateFirstLayer(): Promise<Layer> {
   let layer = await prisma.layer.findFirst();
   if (!layer) {
     layer = await createLayer();
@@ -10,7 +10,7 @@ export async function findOrCreateFirstLayer() {
   return layer;
 }
 
-export async function createLayer() {
+export async function createLayer(): Promise<Layer> {
   const newLayer = await prisma.layer.create({
     data: {
       title: 'New Layer',
@@ -19,7 +19,7 @@ export async function createLayer() {
   return newLayer;
 }
 
-export async function findLayerById(id: string) {
+export async function findLayerById(id: string): Promise<Layer | null> {
   const layer = await prisma.layer.findUnique({
     where: {
       id: id,
@@ -27,7 +27,27 @@ export async function findLayerById(id: string) {
     select: {
       id: true,
       title: true,
+      description: true,
+      parentId: true,
+      parent: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          parentId: true,
+        },
+      },
+      children: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          parentId: true,
+        },
+      },
+      designAttributes: true,
     },
   });
+
   return layer;
 }
