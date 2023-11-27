@@ -1,4 +1,4 @@
-import { Box, Button, HStack, Stack } from '@chakra-ui/react';
+import { Box, Button, HStack } from '@chakra-ui/react';
 import Column from '../Column';
 import { ColumnHeading } from './_shared';
 
@@ -50,22 +50,13 @@ const CanvasColumn = () => {
 
   return (
     <Column>
-      <Box width="full" textAlign="center">
-        <ColumnHeading>Output</ColumnHeading>
-        <Stack marginY={10} borderRadius={0} padding={1}>
-          <Box
-            as="canvas"
-            id="canvas"
-            ref={canvasPrefill}
-            borderRadius={0}
-          ></Box>
-        </Stack>
-        <HStack marginY={10}>
-          <Button colorScheme="blue" size="sm" onClick={downloadCanvasAsPNG}>
-            Download
-          </Button>
-        </HStack>
-      </Box>
+      <ColumnHeading>Output</ColumnHeading>
+      <Box as="canvas" id="canvas" ref={canvasPrefill} borderRadius={0}></Box>
+      <HStack marginY={10}>
+        <Button colorScheme="blue" size="sm" onClick={downloadCanvasAsPNG}>
+          Download
+        </Button>
+      </HStack>
     </Column>
   );
 };

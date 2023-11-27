@@ -2,7 +2,7 @@ import { Box, Link, Text } from '@chakra-ui/react';
 
 const Footer = () => {
   return (
-    <Box as="footer" width="full" textAlign="right">
+    <Box as="footer" width="full" textAlign="right" paddingX={8} paddingY={2}>
       <Link href="https://github.com/goodeats" isExternal>
         <Text fontSize="sm">by goodeats</Text>
       </Link>
