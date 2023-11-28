@@ -20,7 +20,7 @@ export default function BuilderPage() {
     const bgHover = useColorModeValue('gray.300', 'gray.600');
 
     return (
-      <Box as="nav" aria-label="Builder navigation">
+      <Box as="nav" aria-label="Builder navigation" marginBottom={3}>
         <ButtonGroup variant="outline">
           {navs.map((nav, i) => (
             <NavLink key={i} to={nav.id}>
