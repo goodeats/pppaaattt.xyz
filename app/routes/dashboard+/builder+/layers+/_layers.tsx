@@ -1,9 +1,6 @@
-import { Box, ChakraProvider, Flex, useColorModeValue } from '@chakra-ui/react';
-import Layout from '~/lib/layout';
+import { Box, Text, Flex, useColorModeValue } from '@chakra-ui/react';
 import { DataFunctionArgs, json } from '@remix-run/node';
-import Column from '~/lib/layout/Column.tsx';
 import { ColumnHeading } from '~/lib/layout/columns/_shared.tsx';
-import { theme } from '~/lib/styles/theme';
 import { findLayers } from '~/models/layers';
 import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 
@@ -19,10 +16,17 @@ export default function LayersPage() {
   const { layers } = data;
   console.log(layers);
 
-  const LayersSidebar = () => {
+  const LayersList = () => {
     const bg = useColorModeValue('gray.200', 'gray.600');
     return (
-      <Box width={200} as="aside" paddingY={22} bg={bg}>
+      <Box
+        width={200}
+        as="aside"
+        paddingY={22}
+        bg={bg}
+        border="1px"
+        borderColor="gray.300"
+      >
         <Box as="nav" aria-label="Main navigation">
           <Box as="ul" listStyleType="none" margin={0} padding={0}>
             {layers.map((layer, i) => (
@@ -47,13 +51,15 @@ export default function LayersPage() {
   };
 
   return (
-    <>
-      <ColumnHeading>Layers</ColumnHeading>
-      <Flex flex={1}>
-        <LayersSidebar />
-        <LayersContent />
+    <Flex flexDirection="column" minHeight="30vh">
+      <Text size="sm">Layer count: {layers.length}</Text>
+      <Text size="sm">Layer list:</Text>
+      <Flex flex={1} border="1px" borderColor="gray.300">
+        <Flex flex={1}>
+          <LayersList />
+          <LayersContent />
+        </Flex>
       </Flex>
-      {/* <LayerCard depth={0} /> */}
-    </>
+    </Flex>
   );
 }

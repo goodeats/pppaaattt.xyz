@@ -9,7 +9,7 @@ const Sidebar = () => {
   };
   const links: NavLink[] = [
     { name: 'Dashboard', to: '/dashboard' },
-    { name: 'Layers', to: '/dashboard/layers' },
+    { name: 'Builder', to: '/dashboard/builder' },
   ];
 
   return (
