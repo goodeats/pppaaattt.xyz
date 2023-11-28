@@ -27,6 +27,9 @@ model Layer {
   children         Layer[]           @relation("LayerToLayer")
   designAttributes DesignAttribute[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([parentId])
 }
 
@@ -42,6 +45,9 @@ model DesignAttribute {
   filterType    FilterType? // Defines the sub-type for filter attributes (if filter).
 
   inputParameters InputParameters? // Each design attribute is linked to input parameters that define its values.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([layerId]) // Index on layerId
   @@index([attributeType, filterType]) // Composite index on attributeType and filterType
@@ -78,6 +84,9 @@ model InputParameters {
   randomValues      Json? // Used for 'random' type, includes weights for values.
   minValue          Float? // Minimum value for 'range' type.
   maxValue          Float? // Maximum value for 'range' type.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([designAttributeId]) // Index on designAttributeId
 }
