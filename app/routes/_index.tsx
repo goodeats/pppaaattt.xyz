@@ -16,7 +16,7 @@ export default function Index() {
     <ChakraProvider resetCSS theme={theme}>
       <Layout>
         <Column>
-          <ColumnHeading>Home</ColumnHeading>
+          <ColumnHeading>Welcome!</ColumnHeading>
         </Column>
       </Layout>
     </ChakraProvider>

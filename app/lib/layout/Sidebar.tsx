@@ -8,8 +8,8 @@ const Sidebar = () => {
     to: string;
   };
   const links: NavLink[] = [
-    { name: 'Dashboard', to: '/' },
-    { name: 'Layers', to: '/layers' },
+    { name: 'Dashboard', to: '/dashboard' },
+    { name: 'Layers', to: '/dashboard/layers' },
   ];
 
   return (
