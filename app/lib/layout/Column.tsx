@@ -1,10 +1,12 @@
-import { Flex } from '@chakra-ui/react';
+import { Box, Flex, Stack } from '@chakra-ui/react';
 import { LayoutProps } from '.';
 
 const Column = ({ children }: LayoutProps) => {
   return (
     <Flex flex="1" flexDirection="column" paddingY={8} paddingX={5}>
-      {children}
+      <Box width="full" textAlign="center">
+        <Stack>{children}</Stack>
+      </Box>
     </Flex>
   );
 };

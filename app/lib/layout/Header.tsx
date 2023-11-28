@@ -2,6 +2,7 @@ import { Box, Flex } from '@chakra-ui/react';
 
 import Logo from './Logo';
 import ThemeToggle from './ThemeToggle';
+import { Link } from '@remix-run/react';
 
 const Header = () => {
   return (
@@ -12,9 +13,13 @@ const Header = () => {
       alignSelf="flex-start"
       justifyContent="center"
       gridGap={2}
+      paddingX={8}
+      paddingY={5}
     >
       <Box>
-        <Logo />
+        <Link to="/">
+          <Logo />
+        </Link>
       </Box>
       <Box marginLeft="auto">
         <ThemeToggle />

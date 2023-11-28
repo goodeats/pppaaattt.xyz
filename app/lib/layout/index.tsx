@@ -1,12 +1,13 @@
-import { Box, Flex } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import { type ReactNode } from 'react';
 
-import Header from './Header';
+import PageWrapper from './PageWrapper';
 import Meta from './Meta';
+import PageContainer from './PageContainer';
+import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
-import CanvasColumn from './columns/CanvasColumn';
-import FormColumn from './columns/FormColumn';
+import Sidebar from './Sidebar';
 
 export type LayoutProps = {
   children: ReactNode;
@@ -14,19 +15,22 @@ export type LayoutProps = {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <Box margin="0 auto" maxWidth={1200} transition="0.5s ease-out">
+    <PageWrapper>
       <Meta />
-      <Flex direction="column" margin="8" minHeight="90vh">
+      <PageContainer>
         <Header />
-        <Main>
-          <Flex flex="1" width="full">
-            <FormColumn />
-            <CanvasColumn />
-          </Flex>
-        </Main>
-        <Footer>{children}</Footer>
-      </Flex>
-    </Box>
+        <Flex flex={1}>
+          <Sidebar />
+          <Main>
+            <Flex flex="1" width="full">
+              {children}
+            </Flex>
+          </Main>
+        </Flex>
+
+        <Footer />
+      </PageContainer>
+    </PageWrapper>
   );
 };
 
