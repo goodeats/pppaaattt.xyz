@@ -32,6 +32,8 @@ export default function LayersPage() {
 
   const LayersList = () => {
     const bg = useColorModeValue('gray.200', 'gray.600');
+    const bgHover = useColorModeValue('gray.300', 'gray.700');
+
     return (
       <Box
         width={200}
@@ -50,7 +52,16 @@ export default function LayersPage() {
           <Box as="ul" listStyleType="none" margin={0} padding={0}>
             {layers.map((layer, i) => (
               <Box as="li" key={i}>
-                <NavLink to={layer.id}>📝 {layer.title}</NavLink>
+                <NavLink to={layer.id}>
+                  <Box
+                    paddingX={8}
+                    paddingY={2}
+                    _hover={{ bg: bgHover }}
+                    transition="background-color 0.2s ease-in-out"
+                  >
+                    {layer.title}
+                  </Box>
+                </NavLink>
               </Box>
             ))}
           </Box>
