@@ -1,6 +1,6 @@
-import { List, ListItem, Stack } from '@chakra-ui/react';
+import { Button, List, ListItem, Stack, StackDivider } from '@chakra-ui/react';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 
 export async function loader({ params }: DataFunctionArgs) {
@@ -35,13 +35,40 @@ export default function LayerDetailsPage() {
   const data = useLoaderData<typeof loader>();
   const { layer } = data;
   const { id, title, description } = layer;
+
+  const LayerContent = () => {
+    return (
+      <Stack>
+        <List>
+          <ListItem>Layer ID: {id}</ListItem>
+          <ListItem>Layer Title: {title}</ListItem>
+          <ListItem>Layer Description: {description}</ListItem>
+        </List>
+      </Stack>
+    );
+  };
+
+  const LayerActions = () => {
+    return (
+      <Stack>
+        <NavLink to="edit">
+          <Button variant="outline">Edit</Button>
+        </NavLink>
+      </Stack>
+    );
+  };
+
   return (
-    <Stack width="full" paddingX={8} paddingY={5} textAlign="left">
-      <List>
-        <ListItem>Layer ID: {id}</ListItem>
-        <ListItem>Layer Title: {title}</ListItem>
-        <ListItem>Layer Description: {description}</ListItem>
-      </List>
+    <Stack
+      divider={<StackDivider borderColor="gray.200" />}
+      spacing={8}
+      width="full"
+      paddingX={8}
+      paddingY={5}
+      textAlign="left"
+    >
+      <LayerContent />
+      <LayerActions />
     </Stack>
   );
 }

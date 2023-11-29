@@ -25,18 +25,36 @@ const titleMaxLength = 100;
 // const descriptionMaxLength = 10000;
 
 interface LayerEditorSchemaTypes {
+  id?: string;
   title: string;
 }
 
 const LayerEditorSchema: z.Schema<LayerEditorSchemaTypes> = z.object({
+  id: z.string().optional(),
   title: z.string().min(titleMinLength).max(titleMaxLength),
   // description: z.string().min(descriptionMinLength).max(descriptionMaxLength),
 });
 
 export async function action({ request }: DataFunctionArgs) {
-  console.log('action');
   const formData = await request.formData();
-  const submission = await parse(formData, { schema: LayerEditorSchema });
+  const submission = await parse(formData, {
+    schema: LayerEditorSchema.superRefine(async (data, ctx) => {
+      if (!data.id) return;
+
+      const layer = await prisma.layer.findUnique({
+        where: {
+          id: data.id,
+        },
+      });
+      if (!layer) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Layer not found',
+        });
+      }
+    }),
+    async: true,
+  });
 
   if (submission.intent !== 'submit') {
     return json({ status: 'idle', submission } as const);
@@ -46,10 +64,13 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  const { title } = submission.value;
-
-  const layer = await prisma.layer.create({
-    data: {
+  const { id: layerId, title } = submission.value;
+  const layer = await prisma.layer.upsert({
+    where: { id: layerId ?? '__new_layer__' },
+    create: {
+      title,
+    },
+    update: {
       title,
     },
   });
@@ -111,8 +132,10 @@ export function LayerEditor({
 
   return (
     <Stack width="full" paddingX={8} paddingY={5}>
-      <p>New Layer editor</p>
       <Form method="post" {...form.props}>
+        {/* if editing, include id in hidden field */}
+        {layer ? <input type="hidden" name="id" value={layer.id} /> : null}
+
         <Stack spacing={5}>
           <FormTitle />
           <FormSubmit />
