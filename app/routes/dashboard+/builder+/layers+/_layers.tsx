@@ -7,11 +7,19 @@ import {
   Stack,
 } from '@chakra-ui/react';
 import { DataFunctionArgs, json } from '@remix-run/node';
-import { findLayers } from '~/models/layers';
 import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
+import { prisma } from '~/utils/db.server';
 
 export async function loader({ request }: DataFunctionArgs) {
-  const layers = await findLayers();
+  const layers = await prisma.layer.findMany({
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
   return json({ layers });
 }
 
