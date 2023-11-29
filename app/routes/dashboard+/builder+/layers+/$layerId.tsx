@@ -50,7 +50,6 @@ export default function LayerDetailsPage() {
     return (
       <Stack>
         <List>
-          <ListItem>Layer ID: {id}</ListItem>
           <ListItem>Layer Title: {title}</ListItem>
           <ListItem>Layer Description: {description}</ListItem>
         </List>
