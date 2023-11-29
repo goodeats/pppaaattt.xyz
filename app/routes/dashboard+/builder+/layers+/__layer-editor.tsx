@@ -5,6 +5,7 @@ import {
   FormLabel,
   Input,
   Stack,
+  Textarea,
 } from '@chakra-ui/react';
 import { Form, useFetcher } from '@remix-run/react';
 import { useForm } from '@conform-to/react';
@@ -21,18 +22,23 @@ import { prisma } from '~/utils/db.server';
 
 const titleMinLength = 1;
 const titleMaxLength = 100;
-// const descriptionMinLength = 1;
-// const descriptionMaxLength = 10000;
+const descriptionMinLength = 1;
+const descriptionMaxLength = 10000;
 
 interface LayerEditorSchemaTypes {
   id?: string;
   title: string;
+  description?: string;
 }
 
 const LayerEditorSchema: z.Schema<LayerEditorSchemaTypes> = z.object({
   id: z.string().optional(),
   title: z.string().min(titleMinLength).max(titleMaxLength),
-  // description: z.string().min(descriptionMinLength).max(descriptionMaxLength),
+  description: z
+    .string()
+    .min(descriptionMinLength)
+    .max(descriptionMaxLength)
+    .optional(),
 });
 
 export async function action({ request }: DataFunctionArgs) {
@@ -64,14 +70,16 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  const { id: layerId, title } = submission.value;
+  const { id: layerId, title, description } = submission.value;
   const layer = await prisma.layer.upsert({
     where: { id: layerId ?? '__new_layer__' },
     create: {
       title,
+      description,
     },
     update: {
       title,
+      description,
     },
   });
 
@@ -114,7 +122,20 @@ export function LayerEditor({
           name={fields.title.name}
           defaultValue={fields.title.defaultValue}
         />
-        <FormErrorMessage>Error: {fields.title.error}</FormErrorMessage>
+        <FormErrorMessage>{fields.title.error}</FormErrorMessage>
+      </FormControl>
+    );
+  };
+
+  const FormDescription = () => {
+    return (
+      <FormControl isInvalid={!!fields.description.error}>
+        <FormLabel>Description</FormLabel>
+        <Textarea
+          name={fields.description.name}
+          defaultValue={fields.description.defaultValue}
+        />
+        <FormErrorMessage>{fields.description.error}</FormErrorMessage>
       </FormControl>
     );
   };
@@ -138,6 +159,7 @@ export function LayerEditor({
 
         <Stack spacing={5}>
           <FormTitle />
+          <FormDescription />
           <FormSubmit />
         </Stack>
       </Form>
