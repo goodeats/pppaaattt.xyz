@@ -26,6 +26,8 @@ export async function findLayers(): Promise<Layer[]> {
         },
       },
       designAttributes: true,
+      createdAt: true,
+      updatedAt: true,
     },
   });
 
