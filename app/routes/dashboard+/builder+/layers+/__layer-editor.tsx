@@ -1,5 +1,6 @@
 import {
   Button,
+  ButtonGroup,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -7,7 +8,7 @@ import {
   Stack,
   Textarea,
 } from '@chakra-ui/react';
-import { Form, useFetcher } from '@remix-run/react';
+import { Form, NavLink, useFetcher } from '@remix-run/react';
 import { useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import { z } from 'zod';
@@ -140,13 +141,25 @@ export function LayerEditor({
     );
   };
 
-  const FormSubmit = () => {
+  const FormActions = () => {
     return (
       <Stack>
-        <Button type="submit">
-          {/* <Button type="submit" disabled={isPending}> */}
-          Submit
-        </Button>
+        <ButtonGroup>
+          <Button type="submit">
+            {/* <Button type="submit" disabled={isPending}> */}
+            Submit
+          </Button>
+          {layer ? (
+            <Button form={form.id} variant="outline" type="reset">
+              Reset
+            </Button>
+          ) : null}
+          {layer ? (
+            <NavLink to={`/dashboard/builder/layers/${layer.id}`}>
+              <Button variant="ghost">Cancel</Button>
+            </NavLink>
+          ) : null}
+        </ButtonGroup>
       </Stack>
     );
   };
@@ -160,7 +173,7 @@ export function LayerEditor({
         <Stack spacing={5}>
           <FormTitle />
           <FormDescription />
-          <FormSubmit />
+          <FormActions />
         </Stack>
       </Form>
     </Stack>

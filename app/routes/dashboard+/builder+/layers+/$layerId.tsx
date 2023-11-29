@@ -1,4 +1,11 @@
-import { Button, List, ListItem, Stack, StackDivider } from '@chakra-ui/react';
+import {
+  Button,
+  ButtonGroup,
+  List,
+  ListItem,
+  Stack,
+  StackDivider,
+} from '@chakra-ui/react';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
@@ -52,7 +59,9 @@ export default function LayerDetailsPage() {
     return (
       <Stack>
         <NavLink to="edit">
-          <Button variant="outline">Edit</Button>
+          <ButtonGroup>
+            <Button variant="outline">Edit</Button>
+          </ButtonGroup>
         </NavLink>
       </Stack>
     );
