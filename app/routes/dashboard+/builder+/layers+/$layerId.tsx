@@ -9,6 +9,9 @@ import {
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
+import { DeleteLayer, action } from './__delete-layer';
+
+export { action };
 
 export async function loader({ params }: DataFunctionArgs) {
   const { layerId } = params;
@@ -58,11 +61,12 @@ export default function LayerDetailsPage() {
   const LayerActions = () => {
     return (
       <Stack>
-        <NavLink to="edit">
-          <ButtonGroup>
+        <ButtonGroup>
+          <NavLink to="edit">
             <Button variant="outline">Edit</Button>
-          </ButtonGroup>
-        </NavLink>
+          </NavLink>
+          <DeleteLayer id={layer.id} />
+        </ButtonGroup>
       </Stack>
     );
   };
