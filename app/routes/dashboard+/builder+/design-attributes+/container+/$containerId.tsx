@@ -9,19 +9,19 @@ import {
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-import { DeleteLayer, action } from './__delete-layer';
+import { DeleteContainer, action } from './__delete-container';
 
 export { action };
 
 export async function loader({ params }: DataFunctionArgs) {
-  const { layerId } = params;
-  if (!layerId) {
-    return redirect('/layers');
+  const { containerId } = params;
+  if (!containerId) {
+    return redirect('/dashboard/builder/design-attributes/container');
   }
 
-  const layer = await prisma.layer.findUnique({
+  const container = await prisma.designAttribute.findUnique({
     where: {
-      id: layerId,
+      id: containerId,
     },
     select: {
       id: true,
@@ -32,39 +32,41 @@ export async function loader({ params }: DataFunctionArgs) {
     },
   });
 
-  if (!layer) {
+  if (!container) {
     // TODO: redirect to 404 page
     // create toast notification
-    return redirect('/dashboard/builder/layers?notFound=true');
+    return redirect(
+      '/dashboard/builder/design-attributes/container?notFound=true'
+    );
   }
 
-  return json({ layer });
+  return json({ container });
 }
 
-export default function LayerDetailsPage() {
+export default function ContainerDetailsPage() {
   const data = useLoaderData<typeof loader>();
-  const { layer } = data;
-  const { title, description } = layer;
+  const { container } = data;
+  const { title, description } = container;
 
-  const LayerContent = () => {
+  const ContainerContent = () => {
     return (
       <Stack>
         <List>
-          <ListItem>Layer Title: {title}</ListItem>
-          <ListItem>Layer Description: {description}</ListItem>
+          <ListItem>Container Title: {title}</ListItem>
+          <ListItem>Container Description: {description}</ListItem>
         </List>
       </Stack>
     );
   };
 
-  const LayerActions = () => {
+  const ContainerActions = () => {
     return (
       <Stack>
         <ButtonGroup>
           <NavLink to="edit">
             <Button variant="outline">Edit</Button>
           </NavLink>
-          <DeleteLayer id={layer.id} />
+          <DeleteContainer id={container.id} />
         </ButtonGroup>
       </Stack>
     );
@@ -79,8 +81,8 @@ export default function LayerDetailsPage() {
       paddingY={5}
       textAlign="left"
     >
-      <LayerContent />
-      <LayerActions />
+      <ContainerContent />
+      <ContainerActions />
     </Stack>
   );
 }

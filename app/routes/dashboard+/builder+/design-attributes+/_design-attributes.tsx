@@ -1,20 +1,18 @@
 import {
   Box,
-  Button,
-  ButtonGroup,
   Flex,
-  Stack,
-  StackDivider,
   useColorModeValue,
+  Button,
+  Stack,
+  ButtonGroup,
+  StackDivider,
 } from '@chakra-ui/react';
-import { ColumnHeading } from '~/lib/layout/columns/_shared.tsx';
 import { NavLink, Outlet } from '@remix-run/react';
 
-export default function BuilderPage() {
+export default function DesignAttributesPage() {
   const navs = [
     { id: '', title: 'Overview' },
-    { id: 'layers', title: 'Layers' },
-    { id: 'design-attributes', title: 'Design Attributes' },
+    { id: 'container', title: 'Container' },
   ];
 
   const NavGroup = () => {
@@ -40,7 +38,6 @@ export default function BuilderPage() {
 
   return (
     <>
-      <ColumnHeading>Builder</ColumnHeading>
       <Flex flex={1} flexDirection="column">
         <Stack divider={<StackDivider borderColor="gray.300" />}>
           <NavGroup />
