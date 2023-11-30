@@ -46,7 +46,7 @@ model DesignAttribute {
   attributeType AttributeType // Defines the main type of the design attribute.
   filterType    FilterType? // Defines the sub-type for filter attributes (if filter).
 
-  inputParameters InputParameters? // Each design attribute is linked to input parameters that define its values.
+  inputParameters InputParameter[] // Links to input parameters. Now supports many-to-many relationship.
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -77,20 +77,19 @@ enum FilterType {
 // InputParameters define how values for design attributes are determined.
 // Supports different types like 'explicit', 'random', and 'range'.
 // This unified model simplifies queries and maintenance while providing flexibility.
-model InputParameters {
-  id                String          @id @default(uuid())
-  designAttributeId String          @unique
-  designAttribute   DesignAttribute @relation(fields: [designAttributeId], references: [id])
-  inputType         InputType // Type of input ('explicit', 'random', 'range').
-  explicitValue     Json? // Used for 'explicit' type.
-  randomValues      Json? // Used for 'random' type, includes weights for values.
-  minValue          Float? // Minimum value for 'range' type.
-  maxValue          Float? // Maximum value for 'range' type.
+// Now, each input parameter can be linked to multiple design attributes, forming a many-to-many relationship.
+model InputParameter {
+  id            String    @id @default(uuid())
+  inputType     InputType // Type of input ('explicit', 'random', 'range').
+  explicitValue Json? // Used for 'explicit' type.
+  randomValues  Json? // Used for 'random' type, includes weights for values.
+  minValue      Float? // Minimum value for 'range' type.
+  maxValue      Float? // Maximum value for 'range' type.
+
+  designAttributes DesignAttribute[] // Links to design attributes in a many-to-many relationship.
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([designAttributeId]) // Index on designAttributeId
 }
 
 // Enum for the types of input parameters.
