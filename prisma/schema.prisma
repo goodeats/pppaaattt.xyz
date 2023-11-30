@@ -37,9 +37,11 @@ model Layer {
 // Each attribute is of a specific type, defined by the AttributeType enum.
 // Filter attributes have an additional sub-type defined by the FilterType enum.
 model DesignAttribute {
-  id      String  @id @default(uuid())
-  layerId String?
-  layer   Layer?  @relation(fields: [layerId], references: [id])
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  layerId     String?
+  layer       Layer?  @relation(fields: [layerId], references: [id])
 
   attributeType AttributeType // Defines the main type of the design attribute.
   filterType    FilterType? // Defines the sub-type for filter attributes (if filter).
