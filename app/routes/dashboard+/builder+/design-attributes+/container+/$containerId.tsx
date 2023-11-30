@@ -29,6 +29,18 @@ export async function loader({ params }: DataFunctionArgs) {
       description: true,
       createdAt: true,
       updatedAt: true,
+      inputParameters: {
+        select: {
+          id: true,
+          inputType: true,
+          explicitValue: true,
+          randomValues: true,
+          minValue: true,
+          maxValue: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
     },
   });
 
@@ -46,7 +58,8 @@ export async function loader({ params }: DataFunctionArgs) {
 export default function ContainerDetailsPage() {
   const data = useLoaderData<typeof loader>();
   const { container } = data;
-  const { title, description } = container;
+  const { title, description, createdAt, updatedAt, inputParameters } =
+    container;
 
   const ContainerContent = () => {
     return (
@@ -54,7 +67,44 @@ export default function ContainerDetailsPage() {
         <List>
           <ListItem>Container Title: {title}</ListItem>
           <ListItem>Container Description: {description}</ListItem>
+          <ListItem>Created: {createdAt}</ListItem>
+          <ListItem>Updated: {updatedAt}</ListItem>
         </List>
+      </Stack>
+    );
+  };
+
+  const ContainerParameters = () => {
+    if (!inputParameters)
+      return (
+        <Stack>
+          <List>
+            <ListItem>No Container Parameters</ListItem>
+          </List>
+        </Stack>
+      );
+
+    // only one input parameter for design attributes right now
+    // later we will add heirarchy of input parameters
+    const inputParameter = inputParameters[0];
+    const { inputType } = inputParameter;
+    return (
+      <Stack>
+        <List>
+          <ListItem>Container Parameters:</ListItem>
+          <ListItem>Input Type: {inputType}</ListItem>
+          {/* <ContainerInputTypeEditor
+            id={container.id}
+            inputParameter={inputParameter}
+          /> */}
+        </List>
+        <Stack>
+          <ButtonGroup>
+            <NavLink to={'input-parameters'}>
+              <Button variant="outline">Edit</Button>
+            </NavLink>
+          </ButtonGroup>
+        </Stack>
       </Stack>
     );
   };
@@ -82,6 +132,7 @@ export default function ContainerDetailsPage() {
       textAlign="left"
     >
       <ContainerContent />
+      <ContainerParameters />
       <ContainerActions />
     </Stack>
   );

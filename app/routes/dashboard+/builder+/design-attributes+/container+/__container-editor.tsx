@@ -10,7 +10,6 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
-import { DesignAttribute } from '@prisma/client';
 import {
   DataFunctionArgs,
   SerializeFrom,
@@ -19,7 +18,7 @@ import {
 } from '@remix-run/node';
 import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
-import { prisma } from '~/utils/db.server';
+import { DesignAttribute, prisma } from '~/utils/db.server';
 
 const titleMinLength = 1;
 const titleMaxLength = 100;
@@ -79,6 +78,12 @@ export async function action({ request }: DataFunctionArgs) {
       title,
       description,
       attributeType: 'container', // quick and dirty, no editing attribute type
+      inputParameters: {
+        // initialize with default input parameters
+        create: {
+          inputType: 'explicit',
+        },
+      },
     },
     update: {
       title,
