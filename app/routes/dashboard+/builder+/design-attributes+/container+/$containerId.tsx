@@ -75,7 +75,7 @@ export default function ContainerDetailsPage() {
   };
 
   const ContainerParameters = () => {
-    if (!inputParameters)
+    if (!inputParameters || inputParameters.length === 0)
       return (
         <Stack>
           <List>
@@ -93,10 +93,6 @@ export default function ContainerDetailsPage() {
         <List>
           <ListItem>Container Parameters:</ListItem>
           <ListItem>Input Type: {inputType}</ListItem>
-          {/* <ContainerInputTypeEditor
-            id={container.id}
-            inputParameter={inputParameter}
-          /> */}
         </List>
         <Stack>
           <ButtonGroup>

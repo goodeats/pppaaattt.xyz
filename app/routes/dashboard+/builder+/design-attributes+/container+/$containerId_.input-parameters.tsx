@@ -1,8 +1,10 @@
-import { Stack, StackDivider, Text } from '@chakra-ui/react';
-import { useLoaderData } from '@remix-run/react';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-import { ContainerInputTypeEditor, action } from './__input-type-editor';
+import {
+  ContainerInputParameterEditorm,
+  action,
+} from './__input-parameter-editor';
 
 export { action };
 
@@ -49,15 +51,16 @@ export async function loader({ params }: DataFunctionArgs) {
   return json({ container });
 }
 
-export default function InputParameterPage() {
+export default function ContainerEditPage() {
   const data = useLoaderData<typeof loader>();
   const { container } = data;
-  const { id, inputParameters } = container;
+  const { inputParameters } = container;
   const inputParameter = inputParameters[0];
 
   return (
-    <Stack divider={<StackDivider borderColor="gray.300" />}>
-      <ContainerInputTypeEditor id={id} inputParameter={inputParameter} />
-    </Stack>
+    <ContainerInputParameterEditorm
+      id={container.id}
+      inputParameter={inputParameter}
+    />
   );
 }
