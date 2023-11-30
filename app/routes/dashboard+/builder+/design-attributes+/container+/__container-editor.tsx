@@ -25,6 +25,7 @@ const titleMinLength = 1;
 const titleMaxLength = 100;
 const descriptionMinLength = 1;
 const descriptionMaxLength = 10000;
+const urlResourcePath = '/dashboard/builder/design-attributes/container';
 
 interface ContainerEditorSchemaTypes {
   id?: string;
@@ -77,7 +78,7 @@ export async function action({ request }: DataFunctionArgs) {
     create: {
       title,
       description,
-      attributeType: 'container',
+      attributeType: 'container', // quick and dirty, no editing attribute type
     },
     update: {
       title,
@@ -89,9 +90,7 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  return redirect(
-    `/dashboard/builder/design-attributes/container/${designAttribute.id}`
-  );
+  return redirect(`${urlResourcePath}/${designAttribute.id}`);
 }
 
 type ContainerEditorProps = {
@@ -160,7 +159,7 @@ export function ContainerEditor({ container }: ContainerEditorProps) {
             </Button>
           ) : null}
           {container ? (
-            <NavLink to={`/dashboard/builder/layers/${container.id}`}>
+            <NavLink to={`${urlResourcePath}/${container.id}`}>
               <Button variant="ghost">Cancel</Button>
             </NavLink>
           ) : null}
