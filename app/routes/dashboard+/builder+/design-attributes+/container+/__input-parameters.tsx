@@ -113,7 +113,7 @@ export function ContainerInputParameters({
 
     return (
       <Stack>
-        <Text>Random Values (evenly distributed)</Text>
+        <Text>Random Values (evenly distributed probability)</Text>
         <List>
           <ListItem>Width: {numberArrayToString(width)}</ListItem>
           <ListItem>Height: {numberArrayToString(height)}</ListItem>
