@@ -25,10 +25,18 @@ enum InputTypeEnum {
 const InputTypeEnumNative = z.nativeEnum(InputTypeEnum);
 type InputTypeEnumType = z.infer<typeof InputTypeEnumNative>;
 
+enum UnitTypeEnum {
+  px = 'px',
+  percent = 'percent',
+}
+const UnitTypeEnumNative = z.nativeEnum(UnitTypeEnum);
+type UnitTypeEnumType = z.infer<typeof UnitTypeEnumNative>;
+
 interface ContainerInputParameterEditorSchemaTypes {
   containerId: string;
   id: string;
   inputType: InputTypeEnumType;
+  unitType: UnitTypeEnumType;
 }
 
 const ContainerInputParameterEditorSchema: z.Schema<ContainerInputParameterEditorSchemaTypes> =
@@ -36,6 +44,7 @@ const ContainerInputParameterEditorSchema: z.Schema<ContainerInputParameterEdito
     containerId: z.string(),
     id: z.string(),
     inputType: InputTypeEnumNative,
+    unitType: UnitTypeEnumNative,
   });
 
 export async function action({ request }: DataFunctionArgs) {
@@ -76,11 +85,17 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  const { id: inputParameterId, inputType, containerId } = submission.value;
+  const {
+    id: inputParameterId,
+    inputType,
+    unitType,
+    containerId,
+  } = submission.value;
   const inputParameter = await prisma.inputParameter.update({
     where: { id: inputParameterId },
     data: {
       inputType,
+      unitType,
     },
   });
   console.log('update!');
@@ -94,7 +109,7 @@ export async function action({ request }: DataFunctionArgs) {
 
 type ContainerInputParameterEditorProps = {
   id: string;
-  inputParameter: Pick<InputParameter, 'id' | 'inputType'>;
+  inputParameter: Pick<InputParameter, 'id' | 'inputType' | 'unitType'>;
 };
 
 export function ContainerInputParameterEditor({
@@ -116,13 +131,13 @@ export function ContainerInputParameterEditor({
     },
     defaultValue: {
       inputType: inputParameter.inputType ?? '',
+      unitType: inputParameter.unitType ?? '',
     },
   });
 
   const FormInputType = () => {
     const handleChange = () => {
-      // submit(form.ref.current);
-      console.log('change!');
+      console.log('change input type!');
     };
 
     const options: { value: string; label: string }[] = [
@@ -147,6 +162,37 @@ export function ContainerInputParameterEditor({
             ))}
           </RadioGroup>
           <FormErrorMessage>{fields.inputType.error}</FormErrorMessage>
+        </FormControl>
+      </Stack>
+    );
+  };
+
+  const FormUnitType = () => {
+    const handleChange = () => {
+      console.log('change unit type!');
+    };
+
+    const options: { value: string; label: string }[] = [
+      { value: 'px', label: 'Pixels' },
+      { value: 'percent', label: 'Percentage' },
+    ];
+
+    return (
+      <Stack textAlign="left">
+        <FormControl isInvalid={!!fields.unitType.error}>
+          <FormLabel>Unit Type</FormLabel>
+          <RadioGroup
+            name={fields.unitType.name}
+            defaultValue={fields.unitType.defaultValue}
+            onChange={handleChange}
+          >
+            {options.map((option) => (
+              <Radio key={option.value} value={option.value} marginRight={3}>
+                {option.label}
+              </Radio>
+            ))}
+          </RadioGroup>
+          <FormErrorMessage>{fields.unitType.error}</FormErrorMessage>
         </FormControl>
       </Stack>
     );
@@ -179,6 +225,7 @@ export function ContainerInputParameterEditor({
 
         <Stack spacing={5}>
           <FormInputType />
+          <FormUnitType />
           <FormActions />
         </Stack>
       </Form>
