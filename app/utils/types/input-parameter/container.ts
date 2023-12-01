@@ -5,6 +5,8 @@
 // - How to handle weights for the random values
 // - How to handle steps for the range values
 
+import { RangeValuesType } from './global';
+
 type ContainerExplicitValuesType = {
   width: number;
   height: number;
@@ -20,22 +22,10 @@ type ContainerRandomValuesType = {
 };
 
 type ContainerRangeValuesType = {
-  width: {
-    min: number;
-    max: number;
-  };
-  height: {
-    min: number;
-    max: number;
-  };
-  left: {
-    min: number;
-    max: number;
-  };
-  top: {
-    min: number;
-    max: number;
-  };
+  width: RangeValuesType;
+  height: RangeValuesType;
+  left: RangeValuesType;
+  top: RangeValuesType;
 };
 
 enum InputTypeEnum {
@@ -49,21 +39,27 @@ enum UnitTypeEnum {
   percent = 'percent',
 }
 
+export type InputParameterContainerExplicitValuesType = {
+  px: ContainerExplicitValuesType;
+  percent: ContainerExplicitValuesType;
+};
+
+export type InputParameterContainerRandomValuesType = {
+  px: ContainerRandomValuesType;
+  percent: ContainerRandomValuesType;
+};
+
+export type InputParameterContainerRangeValuesType = {
+  px: ContainerRangeValuesType;
+  percent: ContainerRangeValuesType;
+};
+
 export type InputParameterContainerDefaultType = {
   inputType: InputTypeEnum;
   unitType: UnitTypeEnum;
-  explicitValues: {
-    px: ContainerExplicitValuesType;
-    percent: ContainerExplicitValuesType;
-  };
-  randomValues: {
-    px: ContainerRandomValuesType;
-    percent: ContainerRandomValuesType;
-  };
-  rangeValues: {
-    px: ContainerRangeValuesType;
-    percent: ContainerRangeValuesType;
-  };
+  explicitValues: InputParameterContainerExplicitValuesType;
+  randomValues: InputParameterContainerRandomValuesType;
+  rangeValues: InputParameterContainerRangeValuesType;
 };
 
 export const InputParameterContainerDefault: InputParameterContainerDefaultType =

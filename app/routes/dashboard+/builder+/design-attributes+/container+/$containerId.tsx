@@ -10,6 +10,7 @@ import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 import { DeleteContainer, action } from './__delete-container';
+import { ContainerInputParameters } from './__input-parameters';
 
 export { action };
 
@@ -87,24 +88,8 @@ export default function ContainerDetailsPage() {
     // only one input parameter for design attributes right now
     // later we will add heirarchy of input parameters
     const inputParameter = inputParameters[0];
-    const { inputType, unitType } = inputParameter;
-    console.log('inputParameter', inputParameter);
-    return (
-      <Stack>
-        <List>
-          <ListItem>Container Parameters:</ListItem>
-          <ListItem>Input Type: {inputType}</ListItem>
-          <ListItem>Unit Type: {unitType}</ListItem>
-        </List>
-        <Stack>
-          <ButtonGroup>
-            <NavLink to={'input-parameters'}>
-              <Button variant="outline">Edit</Button>
-            </NavLink>
-          </ButtonGroup>
-        </Stack>
-      </Stack>
-    );
+
+    return <ContainerInputParameters inputParameter={inputParameter} />;
   };
 
   const ContainerActions = () => {

@@ -7,6 +7,7 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  StackDivider,
 } from '@chakra-ui/react';
 import { useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
@@ -136,10 +137,6 @@ export function ContainerInputParameterEditor({
   });
 
   const FormInputType = () => {
-    const handleChange = () => {
-      console.log('change input type!');
-    };
-
     const options: { value: string; label: string }[] = [
       { value: 'explicit', label: 'Explicit' },
       { value: 'random', label: 'Random' },
@@ -153,7 +150,6 @@ export function ContainerInputParameterEditor({
           <RadioGroup
             name={fields.inputType.name}
             defaultValue={fields.inputType.defaultValue}
-            onChange={handleChange}
           >
             {options.map((option) => (
               <Radio key={option.value} value={option.value} marginRight={3}>
@@ -168,11 +164,8 @@ export function ContainerInputParameterEditor({
   };
 
   const FormUnitType = () => {
-    const handleChange = () => {
-      console.log('change unit type!');
-    };
-
-    const options: { value: string; label: string }[] = [
+    type OptionsType = { value: string; label: string };
+    const options: OptionsType[] = [
       { value: 'px', label: 'Pixels' },
       { value: 'percent', label: 'Percentage' },
     ];
@@ -184,7 +177,6 @@ export function ContainerInputParameterEditor({
           <RadioGroup
             name={fields.unitType.name}
             defaultValue={fields.unitType.defaultValue}
-            onChange={handleChange}
           >
             {options.map((option) => (
               <Radio key={option.value} value={option.value} marginRight={3}>
@@ -223,7 +215,7 @@ export function ContainerInputParameterEditor({
         <input type="hidden" name="containerId" value={id} />
         <input type="hidden" name="id" value={inputParameter.id} />
 
-        <Stack spacing={5}>
+        <Stack divider={<StackDivider borderColor="gray.200" />} spacing={5}>
           <FormInputType />
           <FormUnitType />
           <FormActions />
