@@ -97,7 +97,7 @@ type ContainerInputParameterEditorProps = {
   inputParameter: Pick<InputParameter, 'id' | 'inputType'>;
 };
 
-export function ContainerInputParameterEditorm({
+export function ContainerInputParameterEditor({
   id,
   inputParameter,
 }: ContainerInputParameterEditorProps) {
