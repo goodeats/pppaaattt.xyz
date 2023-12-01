@@ -44,14 +44,27 @@ export function ContainerInputParameters({
   const unitTypeDisplay = UnitTypeDisplayEnum[unitType];
   const unitKey = unitType as keyof typeof UnitTypeEnum;
 
-  const InputParameterActions = () => {
+  const InputParameterTypes = () => {
+    const InputParameterActions = () => {
+      return (
+        <Stack>
+          <ButtonGroup>
+            <NavLink to={'edit-input-parameter-types'}>
+              <Button variant="outline">Edit</Button>
+            </NavLink>
+          </ButtonGroup>
+        </Stack>
+      );
+    };
+
     return (
       <Stack>
-        <ButtonGroup>
-          <NavLink to={'input-parameters'}>
-            <Button variant="outline">Edit</Button>
-          </NavLink>
-        </ButtonGroup>
+        <Text>Input Types</Text>
+        <List>
+          <ListItem>Input Type: {inputType}</ListItem>
+          <ListItem>Unit Type: {unitType}</ListItem>
+        </List>
+        <InputParameterActions />
       </Stack>
     );
   };
@@ -151,13 +164,11 @@ export function ContainerInputParameters({
 
   return (
     <Stack>
-      <Text>Container Parameters:</Text>
-      <List>
-        <ListItem>Input Type: {inputType}</ListItem>
-        <ListItem>Unit Type: {unitType}</ListItem>
-      </List>
-      <InputParameterValuesByType />
-      <InputParameterActions />
+      <Text fontSize="large">Container Parameters:</Text>
+      <Stack spacing={5}>
+        <InputParameterTypes />
+        <InputParameterValuesByType />
+      </Stack>
     </Stack>
   );
 }

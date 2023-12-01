@@ -2,9 +2,9 @@ import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 import {
-  ContainerInputParameterEditor,
+  ContainerInputParameterTypesEditor,
   action,
-} from './__input-parameter-editor';
+} from './__input-parameter-types-editor';
 
 export { action };
 
@@ -58,7 +58,7 @@ export default function ContainerEditPage() {
   const inputParameter = inputParameters[0];
 
   return (
-    <ContainerInputParameterEditor
+    <ContainerInputParameterTypesEditor
       id={container.id}
       inputParameter={inputParameter}
     />

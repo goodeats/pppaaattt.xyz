@@ -49,7 +49,6 @@ const ContainerInputParameterEditorSchema: z.Schema<ContainerInputParameterEdito
   });
 
 export async function action({ request }: DataFunctionArgs) {
-  console.log('action!');
   const formData = await request.formData();
   const submission = await parse(formData, {
     schema: ContainerInputParameterEditorSchema.superRefine(
@@ -76,7 +75,6 @@ export async function action({ request }: DataFunctionArgs) {
     ),
     async: true,
   });
-  console.log('submission!');
 
   if (submission.intent !== 'submit') {
     return json({ status: 'idle', submission } as const);
@@ -99,7 +97,6 @@ export async function action({ request }: DataFunctionArgs) {
       unitType,
     },
   });
-  console.log('update!');
 
   if (!inputParameter) {
     return json({ status: 'error', submission } as const, { status: 400 });
@@ -113,7 +110,7 @@ type ContainerInputParameterEditorProps = {
   inputParameter: Pick<InputParameter, 'id' | 'inputType' | 'unitType'>;
 };
 
-export function ContainerInputParameterEditor({
+export function ContainerInputParameterTypesEditor({
   id,
   inputParameter,
 }: ContainerInputParameterEditorProps) {
