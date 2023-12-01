@@ -50,7 +50,7 @@ export function ContainerInputParameters({
         <Stack>
           <ButtonGroup>
             <NavLink to={'edit-input-parameter-types'}>
-              <Button variant="outline">Edit</Button>
+              <Button variant="outline">Edit Types</Button>
             </NavLink>
           </ButtonGroup>
         </Stack>
@@ -74,6 +74,19 @@ export function ContainerInputParameters({
       inputParameter.explicitValues as InputParameterContainerExplicitValuesType;
     const currentValues = values[unitKey];
     const { width, height, top, left } = currentValues;
+
+    const InputParameterActions = () => {
+      return (
+        <Stack>
+          <ButtonGroup>
+            <NavLink to={'edit-input-parameter-values'}>
+              <Button variant="outline">Edit Values</Button>
+            </NavLink>
+          </ButtonGroup>
+        </Stack>
+      );
+    };
+
     return (
       <Stack>
         <Text>Explicit Values</Text>
@@ -95,6 +108,7 @@ export function ContainerInputParameters({
             {unitTypeDisplay}
           </ListItem>
         </List>
+        <InputParameterActions />
       </Stack>
     );
   };
