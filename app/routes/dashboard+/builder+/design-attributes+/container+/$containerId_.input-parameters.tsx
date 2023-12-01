@@ -28,10 +28,10 @@ export async function loader({ params }: DataFunctionArgs) {
         select: {
           id: true,
           inputType: true,
-          explicitValue: true,
+          unitType: true,
+          explicitValues: true,
           randomValues: true,
-          minValue: true,
-          maxValue: true,
+          rangeValues: true,
           createdAt: true,
           updatedAt: true,
         },

@@ -38,9 +38,21 @@ type ContainerRangeValuesType = {
   };
 };
 
+enum InputTypeEnum {
+  explicit = 'explicit',
+  random = 'random',
+  range = 'range',
+}
+
+enum UnitTypeEnum {
+  px = 'px',
+  percent = 'percent',
+}
+
 export type InputParameterContainerDefaultType = {
-  type: 'explicit';
-  explicitValue: {
+  inputType: InputTypeEnum;
+  unitType: UnitTypeEnum;
+  explicitValues: {
     px: ContainerExplicitValuesType;
     percent: ContainerExplicitValuesType;
   };
@@ -56,8 +68,9 @@ export type InputParameterContainerDefaultType = {
 
 export const InputParameterContainerDefault: InputParameterContainerDefaultType =
   {
-    type: 'explicit',
-    explicitValue: {
+    inputType: InputTypeEnum.explicit,
+    unitType: UnitTypeEnum.px,
+    explicitValues: {
       px: {
         width: 1000,
         height: 1000,

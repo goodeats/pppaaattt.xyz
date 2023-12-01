@@ -33,10 +33,10 @@ export async function loader({ params }: DataFunctionArgs) {
         select: {
           id: true,
           inputType: true,
-          explicitValue: true,
+          unitType: true,
+          explicitValues: true,
           randomValues: true,
-          minValue: true,
-          maxValue: true,
+          rangeValues: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -87,12 +87,14 @@ export default function ContainerDetailsPage() {
     // only one input parameter for design attributes right now
     // later we will add heirarchy of input parameters
     const inputParameter = inputParameters[0];
-    const { inputType } = inputParameter;
+    const { inputType, unitType } = inputParameter;
+    console.log('inputParameter', inputParameter);
     return (
       <Stack>
         <List>
           <ListItem>Container Parameters:</ListItem>
           <ListItem>Input Type: {inputType}</ListItem>
+          <ListItem>Unit Type: {unitType}</ListItem>
         </List>
         <Stack>
           <ButtonGroup>

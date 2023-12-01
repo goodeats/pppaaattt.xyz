@@ -19,6 +19,7 @@ import {
 import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { DesignAttribute, prisma } from '~/utils/db.server';
+import { InputParameterContainerDefault } from '~/utils/types/input-parameter/container';
 
 const titleMinLength = 1;
 const titleMaxLength = 100;
@@ -80,9 +81,7 @@ export async function action({ request }: DataFunctionArgs) {
       attributeType: 'container', // quick and dirty, no editing attribute type
       inputParameters: {
         // initialize with default input parameters
-        create: {
-          inputType: 'explicit',
-        },
+        create: InputParameterContainerDefault,
       },
     },
     update: {
