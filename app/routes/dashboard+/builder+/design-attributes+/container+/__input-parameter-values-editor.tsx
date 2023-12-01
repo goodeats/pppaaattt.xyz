@@ -4,10 +4,8 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Radio,
-  RadioGroup,
+  Input,
   Stack,
-  StackDivider,
 } from '@chakra-ui/react';
 import { useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
@@ -15,6 +13,7 @@ import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { InputParameter, prisma } from '~/utils/db.server';
+import { InputParameterContainerExplicitValuesType } from '~/utils/types/input-parameter/container';
 
 const urlResourcePath = '/dashboard/builder/design-attributes/container';
 
@@ -22,6 +21,10 @@ enum InputTypeEnum {
   explicit = 'explicit',
   random = 'random',
   range = 'range',
+}
+enum UnitTypeDisplayEnum {
+  px = 'px',
+  percent = '%',
 }
 const InputTypeEnumNative = z.nativeEnum(InputTypeEnum);
 type InputTypeEnumType = z.infer<typeof InputTypeEnumNative>;
@@ -33,26 +36,39 @@ enum UnitTypeEnum {
 const UnitTypeEnumNative = z.nativeEnum(UnitTypeEnum);
 type UnitTypeEnumType = z.infer<typeof UnitTypeEnumNative>;
 
-interface ContainerInputParameterEditorSchemaTypes {
+interface ContainerInputParameterExplicitValuesEditorSchemaTypes {
   containerId: string;
   id: string;
   inputType: InputTypeEnumType;
   unitType: UnitTypeEnumType;
+  width: number;
+  height: number;
+  left: number;
+  top: number;
 }
 
-const ContainerInputParameterEditorSchema: z.Schema<ContainerInputParameterEditorSchemaTypes> =
+const ExplicitInputTypeEnumNative = z.literal(InputTypeEnum.explicit);
+const ExplicitUnitTypeEnumNative = z.literal(UnitTypeEnum.px);
+
+const ContainerInputParameterExplicitValuesPxSchema: z.Schema<ContainerInputParameterExplicitValuesEditorSchemaTypes> =
   z.object({
     containerId: z.string(),
     id: z.string(),
-    inputType: InputTypeEnumNative,
-    unitType: UnitTypeEnumNative,
+    inputType: ExplicitInputTypeEnumNative,
+    unitType: ExplicitUnitTypeEnumNative,
+    width: z.number(),
+    height: z.number(),
+    left: z.number(),
+    top: z.number(),
   });
 
 export async function action({ request }: DataFunctionArgs) {
+  console.log('action!');
   const formData = await request.formData();
   const submission = await parse(formData, {
-    schema: ContainerInputParameterEditorSchema.superRefine(
+    schema: ContainerInputParameterExplicitValuesPxSchema.superRefine(
       async (data, ctx) => {
+        console.log('refine!');
         if (!data.id) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
@@ -84,17 +100,52 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
+  console.log('submission.value', submission.value);
   const {
     id: inputParameterId,
     inputType,
     unitType,
     containerId,
+    width,
+    height,
+    left,
+    top,
   } = submission.value;
+
+  const currentInputParameter = await prisma.inputParameter.findUnique({
+    where: {
+      id: inputParameterId,
+    },
+    select: {
+      explicitValues: true,
+    },
+  });
+  if (!currentInputParameter) {
+    return json({ status: 'error', submission } as const, { status: 400 });
+  }
+
+  // Ensure explicitValues is treated as an object
+  const currentValues = currentInputParameter.explicitValues || {};
+  if (typeof currentValues !== 'object' || Array.isArray(currentValues)) {
+    // Handle the case where explicitValues is not an object
+    return json({ status: 'error', submission } as const, { status: 400 });
+  }
+
+  const newData = {
+    [unitType]: {
+      width,
+      height,
+      left,
+      top,
+    },
+  };
+
+  const updatedExplicitValues = { ...currentValues, ...newData };
+
   const inputParameter = await prisma.inputParameter.update({
     where: { id: inputParameterId },
     data: {
-      inputType,
-      unitType,
+      explicitValues: updatedExplicitValues,
     },
   });
 
@@ -128,45 +179,80 @@ export function ContainerInputParameterValuesEditor({
   // const inputTypeFetcher = useFetcher<typeof action>();
   // const isPending = inputTypeFetcher.state !== 'idle';
 
-  const { inputType } = inputParameter;
+  const { inputType, unitType } = inputParameter;
+  const unitTypeDisplay = UnitTypeDisplayEnum[unitType];
+  const unitKey = unitType as keyof typeof UnitTypeEnum;
+  const values =
+    inputParameter.explicitValues as InputParameterContainerExplicitValuesType;
+  const currentValues = values[unitKey];
+  console.log('currentValues', currentValues);
 
-  const [form, fields] = useForm<ContainerInputParameterEditorSchemaTypes>({
-    id: 'container-input-type-editor',
-    constraint: getFieldsetConstraint(ContainerInputParameterEditorSchema),
-    // lastSubmission: inputTypeFetcher.data?.submission,
-    onValidate({ formData }) {
-      return parse(formData, { schema: ContainerInputParameterEditorSchema });
-    },
-    defaultValue: {
-      inputType: inputType ?? '',
-      unitType: inputParameter.unitType ?? '',
-    },
-  });
+  const [form, fields] =
+    useForm<ContainerInputParameterExplicitValuesEditorSchemaTypes>({
+      id: 'container-input-type-editor',
+      constraint: getFieldsetConstraint(
+        ContainerInputParameterExplicitValuesPxSchema
+      ),
+      // lastSubmission: inputTypeFetcher.data?.submission,
+      onValidate({ formData }) {
+        return parse(formData, {
+          schema: ContainerInputParameterExplicitValuesPxSchema,
+        });
+      },
+      defaultValue: {
+        width: currentValues?.width ?? 0,
+        height: currentValues?.height ?? 0,
+        left: currentValues?.left ?? 0,
+        top: currentValues?.top ?? 0,
+      },
+    });
 
-  const FormInputType = () => {
-    const options: { value: string; label: string }[] = [
-      { value: 'explicit', label: 'Explicit' },
-      { value: 'random', label: 'Random' },
-      { value: 'range', label: 'Range' },
-    ];
-
+  const FormWidth = () => {
     return (
-      <Stack textAlign="left">
-        <FormControl isInvalid={!!fields.inputType.error}>
-          <FormLabel>Input Parameter Type</FormLabel>
-          <RadioGroup
-            name={fields.inputType.name}
-            defaultValue={fields.inputType.defaultValue}
-          >
-            {options.map((option) => (
-              <Radio key={option.value} value={option.value} marginRight={3}>
-                {option.label}
-              </Radio>
-            ))}
-          </RadioGroup>
-          <FormErrorMessage>{fields.inputType.error}</FormErrorMessage>
-        </FormControl>
-      </Stack>
+      <FormControl isInvalid={!!fields.width.error}>
+        <FormLabel>Width ({unitTypeDisplay})</FormLabel>
+        <Input
+          name={fields.width.name}
+          defaultValue={fields.width.defaultValue}
+        />
+        <FormErrorMessage>{fields.width.error}</FormErrorMessage>
+      </FormControl>
+    );
+  };
+
+  const FormHeight = () => {
+    return (
+      <FormControl isInvalid={!!fields.height.error}>
+        <FormLabel>Height ({unitTypeDisplay})</FormLabel>
+        <Input
+          name={fields.height.name}
+          defaultValue={fields.height.defaultValue}
+        />
+        <FormErrorMessage>{fields.height.error}</FormErrorMessage>
+      </FormControl>
+    );
+  };
+
+  const FormLeft = () => {
+    return (
+      <FormControl isInvalid={!!fields.left.error}>
+        <FormLabel>Left ({unitTypeDisplay})</FormLabel>
+        <Input
+          name={fields.left.name}
+          defaultValue={fields.left.defaultValue}
+        />
+        <FormErrorMessage>{fields.left.error}</FormErrorMessage>
+      </FormControl>
+    );
+  };
+
+  const FormTop = () => {
+    return (
+      <FormControl isInvalid={!!fields.top.error}>
+        <FormLabel>Top ({unitTypeDisplay})</FormLabel>
+        <Input name={fields.top.name} defaultValue={fields.top.defaultValue} />
+        <FormErrorMessage>{fields.top.error}</FormErrorMessage>
+      </FormControl>
     );
   };
 
@@ -194,9 +280,19 @@ export function ContainerInputParameterValuesEditor({
       <Form method="post" {...form.props}>
         <input type="hidden" name="containerId" value={id} />
         <input type="hidden" name="id" value={inputParameter.id} />
+        <input
+          type="hidden"
+          name="inputType"
+          value={inputParameter.inputType}
+        />
+        <input type="hidden" name="unitType" value={inputParameter.unitType} />
 
-        <Stack divider={<StackDivider borderColor="gray.200" />} spacing={5}>
-          <FormInputType />
+        <Stack spacing={5}>
+          <FormWidth />
+          <FormHeight />
+          <FormLeft />
+          <FormTop />
+
           <FormActions />
         </Stack>
       </Form>
