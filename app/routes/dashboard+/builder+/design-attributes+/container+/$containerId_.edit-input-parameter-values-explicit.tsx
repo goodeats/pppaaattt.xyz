@@ -45,7 +45,7 @@ export async function loader({ params }: DataFunctionArgs) {
   return json({ container });
 }
 
-export default function ContainerInputParameterValuesEditPage() {
+export default function ContainerInputParameterExplicitValuesEditPage() {
   const data = useLoaderData<typeof loader>();
   const { container } = data;
   const { inputParameters } = container;

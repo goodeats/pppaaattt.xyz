@@ -79,8 +79,8 @@ export function ContainerInputParameters({
       return (
         <Stack>
           <ButtonGroup>
-            <NavLink to={'edit-input-parameter-values'}>
-              <Button variant="outline">Edit Values</Button>
+            <NavLink to={'edit-input-parameter-values-explicit'}>
+              <Button variant="outline">Edit Explicit Values</Button>
             </NavLink>
           </ButtonGroup>
         </Stack>

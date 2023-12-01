@@ -36,7 +36,7 @@ enum UnitTypeEnum {
 const UnitTypeEnumNative = z.nativeEnum(UnitTypeEnum);
 type UnitTypeEnumType = z.infer<typeof UnitTypeEnumNative>;
 
-interface ContainerInputParameterExplicitValuesEditorSchemaTypes {
+interface ExplicitValuesEditorSchemaTypes {
   containerId: string;
   id: string;
   inputType: InputTypeEnumType;
@@ -47,15 +47,12 @@ interface ContainerInputParameterExplicitValuesEditorSchemaTypes {
   top: number;
 }
 
-const ExplicitInputTypeEnumNative = z.literal(InputTypeEnum.explicit);
-const ExplicitUnitTypeEnumNative = z.literal(UnitTypeEnum.px);
-
-const ContainerInputParameterExplicitValuesPxSchema: z.Schema<ContainerInputParameterExplicitValuesEditorSchemaTypes> =
+const ExplicitValuesSchema: z.Schema<ExplicitValuesEditorSchemaTypes> =
   z.object({
     containerId: z.string(),
     id: z.string(),
-    inputType: ExplicitInputTypeEnumNative,
-    unitType: ExplicitUnitTypeEnumNative,
+    inputType: InputTypeEnumNative,
+    unitType: UnitTypeEnumNative,
     width: z.number(),
     height: z.number(),
     left: z.number(),
@@ -63,32 +60,28 @@ const ContainerInputParameterExplicitValuesPxSchema: z.Schema<ContainerInputPara
   });
 
 export async function action({ request }: DataFunctionArgs) {
-  console.log('action!');
   const formData = await request.formData();
   const submission = await parse(formData, {
-    schema: ContainerInputParameterExplicitValuesPxSchema.superRefine(
-      async (data, ctx) => {
-        console.log('refine!');
-        if (!data.id) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Input parameter not provided',
-          });
-        }
-
-        const inputParameter = await prisma.inputParameter.findUnique({
-          where: {
-            id: data.id,
-          },
+    schema: ExplicitValuesSchema.superRefine(async (data, ctx) => {
+      if (!data.id) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Input parameter not provided',
         });
-        if (!inputParameter) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Input parameter not found',
-          });
-        }
       }
-    ),
+
+      const inputParameter = await prisma.inputParameter.findUnique({
+        where: {
+          id: data.id,
+        },
+      });
+      if (!inputParameter) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Input parameter not found',
+        });
+      }
+    }),
     async: true,
   });
 
@@ -100,10 +93,8 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  console.log('submission.value', submission.value);
   const {
     id: inputParameterId,
-    inputType,
     unitType,
     containerId,
     width,
@@ -142,14 +133,14 @@ export async function action({ request }: DataFunctionArgs) {
 
   const updatedExplicitValues = { ...currentValues, ...newData };
 
-  const inputParameter = await prisma.inputParameter.update({
+  const updatedInputParameter = await prisma.inputParameter.update({
     where: { id: inputParameterId },
     data: {
       explicitValues: updatedExplicitValues,
     },
   });
 
-  if (!inputParameter) {
+  if (!updatedInputParameter) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
@@ -160,12 +151,7 @@ type ContainerInputParameterEditorProps = {
   id: string;
   inputParameter: Pick<
     InputParameter,
-    | 'id'
-    | 'inputType'
-    | 'unitType'
-    | 'explicitValues'
-    | 'randomValues'
-    | 'rangeValues'
+    'id' | 'inputType' | 'unitType' | 'explicitValues'
   >;
 };
 
@@ -179,33 +165,29 @@ export function ContainerInputParameterValuesEditor({
   // const inputTypeFetcher = useFetcher<typeof action>();
   // const isPending = inputTypeFetcher.state !== 'idle';
 
-  const { inputType, unitType } = inputParameter;
+  const { unitType } = inputParameter;
   const unitTypeDisplay = UnitTypeDisplayEnum[unitType];
   const unitKey = unitType as keyof typeof UnitTypeEnum;
   const values =
     inputParameter.explicitValues as InputParameterContainerExplicitValuesType;
   const currentValues = values[unitKey];
-  console.log('currentValues', currentValues);
 
-  const [form, fields] =
-    useForm<ContainerInputParameterExplicitValuesEditorSchemaTypes>({
-      id: 'container-input-type-editor',
-      constraint: getFieldsetConstraint(
-        ContainerInputParameterExplicitValuesPxSchema
-      ),
-      // lastSubmission: inputTypeFetcher.data?.submission,
-      onValidate({ formData }) {
-        return parse(formData, {
-          schema: ContainerInputParameterExplicitValuesPxSchema,
-        });
-      },
-      defaultValue: {
-        width: currentValues?.width ?? 0,
-        height: currentValues?.height ?? 0,
-        left: currentValues?.left ?? 0,
-        top: currentValues?.top ?? 0,
-      },
-    });
+  const [form, fields] = useForm<ExplicitValuesEditorSchemaTypes>({
+    id: 'container-input-parameter-values-explicit-editor',
+    constraint: getFieldsetConstraint(ExplicitValuesSchema),
+    // lastSubmission: inputTypeFetcher.data?.submission,
+    onValidate({ formData }) {
+      return parse(formData, {
+        schema: ExplicitValuesSchema,
+      });
+    },
+    defaultValue: {
+      width: currentValues?.width ?? 0,
+      height: currentValues?.height ?? 0,
+      left: currentValues?.left ?? 0,
+      top: currentValues?.top ?? 0,
+    },
+  });
 
   const FormWidth = () => {
     return (
