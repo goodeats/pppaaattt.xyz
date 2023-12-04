@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 65 65">
+  <style>
+    polygon {
+      fill: #FFF;
+    }
+  </style>
+  <!-- Top triangle (upside down) -->
+  <polygon points="32.5,20.33 22.5,2.66 42.5,2.66"/>
+  <!-- Bottom-left triangle -->
+  <polygon points="12.5,44.66 2.5,62.33 22.5,62.33"/>
+  <!-- Bottom-right triangle (upside down) -->
+  <polygon points="52.5,62.33 42.5,44.66 62.5,44.66"/>
+</svg>
