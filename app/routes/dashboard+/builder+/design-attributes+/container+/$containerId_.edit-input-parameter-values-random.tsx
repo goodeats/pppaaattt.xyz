@@ -2,9 +2,9 @@ import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 import {
-  ContainerInputParameterExplicitValuesEditor,
+  ContainerInputParameterRandomValuesEditor,
   action,
-} from './__input-parameter-values-explicit-editor';
+} from './__input-parameter-values-random-editor';
 
 export { action };
 
@@ -45,14 +45,14 @@ export async function loader({ params }: DataFunctionArgs) {
   return json({ container });
 }
 
-export default function ContainerInputParameterExplicitValuesEditPage() {
+export default function ContainerInputParameterRandomValuesEditPage() {
   const data = useLoaderData<typeof loader>();
   const { container } = data;
   const { inputParameters } = container;
   const inputParameter = inputParameters[0];
 
   return (
-    <ContainerInputParameterExplicitValuesEditor
+    <ContainerInputParameterRandomValuesEditor
       id={container.id}
       inputParameter={inputParameter}
     />

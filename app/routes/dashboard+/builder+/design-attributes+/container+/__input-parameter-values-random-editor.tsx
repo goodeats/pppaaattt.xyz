@@ -155,7 +155,7 @@ type ContainerInputParameterEditorProps = {
   >;
 };
 
-export function ContainerInputParameterValuesEditor({
+export function ContainerInputParameterRandomValuesEditor({
   id,
   inputParameter,
 }: ContainerInputParameterEditorProps) {

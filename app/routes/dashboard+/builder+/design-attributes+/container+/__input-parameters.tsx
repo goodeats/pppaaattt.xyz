@@ -125,6 +125,20 @@ export function ContainerInputParameters({
         .join(', ');
     };
 
+    const InputParameterActions = () => {
+      return (
+        <Stack>
+          <ButtonGroup>
+            <NavLink to={'edit-input-parameter-values-random'}>
+              <Button variant="outline" colorScheme="red">
+                Edit Random Values
+              </Button>
+            </NavLink>
+          </ButtonGroup>
+        </Stack>
+      );
+    };
+
     return (
       <Stack>
         <Text>Random Values (evenly distributed probability)</Text>
@@ -134,6 +148,7 @@ export function ContainerInputParameters({
           <ListItem>Top: {numberArrayToString(top)}</ListItem>
           <ListItem>Left: {numberArrayToString(left)}</ListItem>
         </List>
+        <InputParameterActions />
       </Stack>
     );
   };
