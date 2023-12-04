@@ -14,6 +14,10 @@ import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { InputParameter, prisma } from '~/utils/db.server';
 import { InputParameterContainerRandomValuesType } from '~/utils/types/input-parameter/container';
+import {
+  removeWhitespace,
+  validateCommaSeparatedNumbers,
+} from '~/utils/validations';
 
 const urlResourcePath = '/dashboard/builder/design-attributes/container';
 
@@ -36,34 +40,68 @@ enum UnitTypeEnum {
 const UnitTypeEnumNative = z.nativeEnum(UnitTypeEnum);
 type UnitTypeEnumType = z.infer<typeof UnitTypeEnumNative>;
 
-interface ExplicitValuesEditorSchemaTypes {
+// TODO: make dynamic number inputs for each value
+// there is a bit of work for that, but it will be a good project after MVP
+// for now just use a string or comma separated numbers
+// and validate from server side
+// https://conform.guide/complex-structures#array
+interface RandomValuesEditorSchemaTypes {
   containerId: string;
   id: string;
   inputType: InputTypeEnumType;
   unitType: UnitTypeEnumType;
-  width: number[];
-  height: number[];
-  left: number[];
-  top: number[];
+  // string | number[] is a workaround for
+  // string transforms to number[] in zod (see below)
+  width: string | number[];
+  height: string | number[];
+  left: string | number[];
+  top: string | number[];
 }
 
-const ExplicitValuesSchema: z.Schema<ExplicitValuesEditorSchemaTypes> =
-  z.object({
-    containerId: z.string(),
-    id: z.string(),
-    inputType: InputTypeEnumNative,
-    unitType: UnitTypeEnumNative,
-    width: z.array(z.number()),
-    height: z.array(z.number()),
-    left: z.array(z.number()),
-    top: z.array(z.number()),
-  });
+const RandomValuesSchema: z.Schema<RandomValuesEditorSchemaTypes> = z.object({
+  containerId: z.string(),
+  id: z.string(),
+  inputType: InputTypeEnumNative,
+  unitType: UnitTypeEnumNative,
+  // function to remove whitespace from string
+  // and then split on comma to validate numbers
+  // and then transform to number[]
+  // very cool programmer move, thanks zod 😎
+  // https://github.com/colinhacks/zod#schema-methods
+  width: z
+    .string()
+    .transform((val) => removeWhitespace(val))
+    .refine(validateCommaSeparatedNumbers, {
+      message: 'Width values must be comma separated numbers',
+    })
+    .transform((val) => val.split(',').map(Number)),
+  height: z
+    .string()
+    .transform((val) => removeWhitespace(val))
+    .refine(validateCommaSeparatedNumbers, {
+      message: 'Height values must be comma separated numbers',
+    })
+    .transform((val) => val.split(',').map(Number)),
+  left: z
+    .string()
+    .transform((val) => removeWhitespace(val))
+    .refine(validateCommaSeparatedNumbers, {
+      message: 'Left values must be comma separated numbers',
+    })
+    .transform((val) => val.split(',').map(Number)),
+  top: z
+    .string()
+    .transform((val) => removeWhitespace(val))
+    .refine(validateCommaSeparatedNumbers, {
+      message: 'Top values must be comma separated numbers',
+    })
+    .transform((val) => val.split(',').map(Number)),
+});
 
 export async function action({ request }: DataFunctionArgs) {
-  console.log('action');
   const formData = await request.formData();
   const submission = await parse(formData, {
-    schema: ExplicitValuesSchema.superRefine(async (data, ctx) => {
+    schema: RandomValuesSchema.superRefine(async (data, ctx) => {
       if (!data.id) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -134,8 +172,6 @@ export async function action({ request }: DataFunctionArgs) {
 
   const updatedExplicitValues = { ...currentValues, ...newData };
 
-  console.log({ updatedExplicitValues });
-  return json({ status: 'error', submission } as const, { status: 400 });
   const updatedInputParameter = await prisma.inputParameter.update({
     where: { id: inputParameterId },
     data: {
@@ -174,30 +210,25 @@ export function ContainerInputParameterRandomValuesEditor({
   const values =
     inputParameter.randomValues as InputParameterContainerRandomValuesType;
   const currentValues = values[unitKey];
-  console.log(currentValues.width);
 
-  const [form, fields] = useForm<ExplicitValuesEditorSchemaTypes>({
-    id: 'container-input-parameter-values-explicit-editor',
-    constraint: getFieldsetConstraint(ExplicitValuesSchema),
+  const [form, fields] = useForm<RandomValuesEditorSchemaTypes>({
+    id: 'container-input-parameter-values-random-editor',
+    constraint: getFieldsetConstraint(RandomValuesSchema),
     // lastSubmission: inputTypeFetcher.data?.submission,
     onValidate({ formData }) {
-      console.log('onValidate');
-      console.log(
-        'parsing',
-        parse(formData, {
-          schema: ExplicitValuesSchema,
-        }),
-        'parsed'
-      );
+      const clientData = parse(formData, {
+        schema: RandomValuesSchema,
+      });
+      console.log('clientData', clientData);
       return parse(formData, {
-        schema: ExplicitValuesSchema,
+        schema: RandomValuesSchema,
       });
     },
     defaultValue: {
-      width: currentValues?.width ?? [],
-      height: currentValues?.height ?? [],
-      left: currentValues?.left ?? [],
-      top: currentValues?.top ?? [],
+      width: currentValues?.width.toString() ?? '',
+      height: currentValues?.height.toString() ?? '',
+      left: currentValues?.left.toString() ?? '',
+      top: currentValues?.top.toString() ?? '',
     },
   });
 

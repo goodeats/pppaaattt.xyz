@@ -130,9 +130,7 @@ export function ContainerInputParameters({
         <Stack>
           <ButtonGroup>
             <NavLink to={'edit-input-parameter-values-random'}>
-              <Button variant="outline" colorScheme="red">
-                Edit Random Values
-              </Button>
+              <Button variant="outline">Edit Random Values</Button>
             </NavLink>
           </ButtonGroup>
         </Stack>
