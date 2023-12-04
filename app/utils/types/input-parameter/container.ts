@@ -5,8 +5,6 @@
 // - How to handle weights for the random values
 // - How to handle steps for the range values
 
-import { RangeValuesType } from './global';
-
 type ContainerExplicitValuesType = {
   width: number;
   height: number;
@@ -22,10 +20,10 @@ type ContainerRandomValuesType = {
 };
 
 type ContainerRangeValuesType = {
-  width: RangeValuesType;
-  height: RangeValuesType;
-  left: RangeValuesType;
-  top: RangeValuesType;
+  width: number[];
+  height: number[];
+  left: number[];
+  top: number[];
 };
 
 enum InputTypeEnum {
@@ -96,40 +94,16 @@ export const InputParameterContainerDefault: InputParameterContainerDefaultType 
     },
     rangeValues: {
       px: {
-        width: {
-          min: 0,
-          max: 1000,
-        },
-        height: {
-          min: 0,
-          max: 1000,
-        },
-        left: {
-          min: 0,
-          max: 1000,
-        },
-        top: {
-          min: 0,
-          max: 1000,
-        },
+        width: [0, 1000],
+        height: [0, 1000],
+        left: [-10, 10],
+        top: [-10, 10],
       },
       percent: {
-        width: {
-          min: 0,
-          max: 100,
-        },
-        height: {
-          min: 0,
-          max: 100,
-        },
-        left: {
-          min: 0,
-          max: 100,
-        },
-        top: {
-          min: 0,
-          max: 100,
-        },
+        width: [0, 100],
+        height: [0, 100],
+        left: [-10, 10],
+        top: [-10, 10],
       },
     },
   };

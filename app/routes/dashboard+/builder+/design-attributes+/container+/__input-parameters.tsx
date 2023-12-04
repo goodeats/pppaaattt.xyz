@@ -9,6 +9,10 @@ import {
 import { NavLink } from '@remix-run/react';
 import { InputParameter } from '~/utils/db.server';
 import {
+  formatNumberArrayToString,
+  formatRangeToString,
+} from '~/utils/string-formatting';
+import {
   InputParameterContainerExplicitValuesType,
   InputParameterContainerRandomValuesType,
   InputParameterContainerRangeValuesType,
@@ -119,12 +123,6 @@ export function ContainerInputParameters({
     const currentValues = values[unitKey];
     const { width, height, top, left } = currentValues;
 
-    const numberArrayToString = (numbers: number[]) => {
-      return numbers
-        .map((num: number) => `${num}${unitTypeDisplay}`)
-        .join(', ');
-    };
-
     const InputParameterActions = () => {
       return (
         <Stack>
@@ -141,10 +139,18 @@ export function ContainerInputParameters({
       <Stack>
         <Text>Random Values (evenly distributed probability)</Text>
         <List>
-          <ListItem>Width: {numberArrayToString(width)}</ListItem>
-          <ListItem>Height: {numberArrayToString(height)}</ListItem>
-          <ListItem>Top: {numberArrayToString(top)}</ListItem>
-          <ListItem>Left: {numberArrayToString(left)}</ListItem>
+          <ListItem>
+            Width: {formatNumberArrayToString(width, unitTypeDisplay)}
+          </ListItem>
+          <ListItem>
+            Height: {formatNumberArrayToString(height, unitTypeDisplay)}
+          </ListItem>
+          <ListItem>
+            Top: {formatNumberArrayToString(top, unitTypeDisplay)}
+          </ListItem>
+          <ListItem>
+            Left: {formatNumberArrayToString(left, unitTypeDisplay)}
+          </ListItem>
         </List>
         <InputParameterActions />
       </Stack>
@@ -157,21 +163,34 @@ export function ContainerInputParameters({
     const currentValues = values[unitKey];
     const { width, height, top, left } = currentValues;
 
-    const formatRange = ({ min, max }: RangeValuesType) => {
-      const rangeMin = `${min}${unitTypeDisplay}`;
-      const rangeMax = `${max}${unitTypeDisplay}`;
-      return `${rangeMin} - ${rangeMax}`;
+    const InputParameterActions = () => {
+      return (
+        <Stack>
+          <ButtonGroup>
+            <NavLink to={'edit-input-parameter-values-range'}>
+              <Button variant="outline">Edit Range Values</Button>
+            </NavLink>
+          </ButtonGroup>
+        </Stack>
+      );
     };
 
     return (
       <Stack>
         <Text>Range Values</Text>
         <List>
-          <ListItem>Width: {formatRange(width)}</ListItem>
-          <ListItem>Height: {formatRange(height)}</ListItem>
-          <ListItem>Top: {formatRange(top)}</ListItem>
-          <ListItem>Left: {formatRange(left)}</ListItem>
+          <ListItem>
+            Width: {formatRangeToString(width, unitTypeDisplay)}
+          </ListItem>
+          <ListItem>
+            Height: {formatRangeToString(height, unitTypeDisplay)}
+          </ListItem>
+          <ListItem>Top: {formatRangeToString(top, unitTypeDisplay)}</ListItem>
+          <ListItem>
+            Left: {formatRangeToString(left, unitTypeDisplay)}
+          </ListItem>
         </List>
+        <InputParameterActions />
       </Stack>
     );
   };
