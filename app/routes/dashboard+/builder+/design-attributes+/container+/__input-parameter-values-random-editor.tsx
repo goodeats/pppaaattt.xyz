@@ -13,7 +13,7 @@ import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { InputParameter, prisma } from '~/utils/db.server';
-import { InputParameterContainerExplicitValuesType } from '~/utils/types/input-parameter/container';
+import { InputParameterContainerRandomValuesType } from '~/utils/types/input-parameter/container';
 
 const urlResourcePath = '/dashboard/builder/design-attributes/container';
 
@@ -41,10 +41,10 @@ interface ExplicitValuesEditorSchemaTypes {
   id: string;
   inputType: InputTypeEnumType;
   unitType: UnitTypeEnumType;
-  width: number;
-  height: number;
-  left: number;
-  top: number;
+  width: number[];
+  height: number[];
+  left: number[];
+  top: number[];
 }
 
 const ExplicitValuesSchema: z.Schema<ExplicitValuesEditorSchemaTypes> =
@@ -53,13 +53,14 @@ const ExplicitValuesSchema: z.Schema<ExplicitValuesEditorSchemaTypes> =
     id: z.string(),
     inputType: InputTypeEnumNative,
     unitType: UnitTypeEnumNative,
-    width: z.number(),
-    height: z.number(),
-    left: z.number(),
-    top: z.number(),
+    width: z.array(z.number()),
+    height: z.array(z.number()),
+    left: z.array(z.number()),
+    top: z.array(z.number()),
   });
 
 export async function action({ request }: DataFunctionArgs) {
+  console.log('action');
   const formData = await request.formData();
   const submission = await parse(formData, {
     schema: ExplicitValuesSchema.superRefine(async (data, ctx) => {
@@ -108,17 +109,17 @@ export async function action({ request }: DataFunctionArgs) {
       id: inputParameterId,
     },
     select: {
-      explicitValues: true,
+      randomValues: true,
     },
   });
   if (!currentInputParameter) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  // Ensure explicitValues is treated as an object
-  const currentValues = currentInputParameter.explicitValues || {};
+  // Ensure randomValues is treated as an object
+  const currentValues = currentInputParameter.randomValues || {};
   if (typeof currentValues !== 'object' || Array.isArray(currentValues)) {
-    // Handle the case where explicitValues is not an object
+    // Handle the case where randomValues is not an object
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
@@ -133,10 +134,12 @@ export async function action({ request }: DataFunctionArgs) {
 
   const updatedExplicitValues = { ...currentValues, ...newData };
 
+  console.log({ updatedExplicitValues });
+  return json({ status: 'error', submission } as const, { status: 400 });
   const updatedInputParameter = await prisma.inputParameter.update({
     where: { id: inputParameterId },
     data: {
-      explicitValues: updatedExplicitValues,
+      randomValues: updatedExplicitValues,
     },
   });
 
@@ -151,7 +154,7 @@ type ContainerInputParameterEditorProps = {
   id: string;
   inputParameter: Pick<
     InputParameter,
-    'id' | 'inputType' | 'unitType' | 'explicitValues'
+    'id' | 'inputType' | 'unitType' | 'randomValues'
   >;
 };
 
@@ -169,23 +172,32 @@ export function ContainerInputParameterRandomValuesEditor({
   const unitTypeDisplay = UnitTypeDisplayEnum[unitType];
   const unitKey = unitType as keyof typeof UnitTypeEnum;
   const values =
-    inputParameter.explicitValues as InputParameterContainerExplicitValuesType;
+    inputParameter.randomValues as InputParameterContainerRandomValuesType;
   const currentValues = values[unitKey];
+  console.log(currentValues.width);
 
   const [form, fields] = useForm<ExplicitValuesEditorSchemaTypes>({
     id: 'container-input-parameter-values-explicit-editor',
     constraint: getFieldsetConstraint(ExplicitValuesSchema),
     // lastSubmission: inputTypeFetcher.data?.submission,
     onValidate({ formData }) {
+      console.log('onValidate');
+      console.log(
+        'parsing',
+        parse(formData, {
+          schema: ExplicitValuesSchema,
+        }),
+        'parsed'
+      );
       return parse(formData, {
         schema: ExplicitValuesSchema,
       });
     },
     defaultValue: {
-      width: currentValues?.width ?? 0,
-      height: currentValues?.height ?? 0,
-      left: currentValues?.left ?? 0,
-      top: currentValues?.top ?? 0,
+      width: currentValues?.width ?? [],
+      height: currentValues?.height ?? [],
+      left: currentValues?.left ?? [],
+      top: currentValues?.top ?? [],
     },
   });
 

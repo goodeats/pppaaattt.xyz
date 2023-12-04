@@ -26,8 +26,6 @@ export async function loader({ params }: DataFunctionArgs) {
           inputType: true,
           unitType: true,
           explicitValues: true,
-          randomValues: true,
-          rangeValues: true,
         },
       },
     },
