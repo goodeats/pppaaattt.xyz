@@ -6,7 +6,7 @@ import {
   Stack,
   StackDivider,
   useColorModeValue,
-} from '@chakra-ui/react';
+} from '~/components';
 import { ColumnHeading } from '~/lib/layout/columns/_shared.tsx';
 import { NavLink, Outlet } from '@remix-run/react';
 
