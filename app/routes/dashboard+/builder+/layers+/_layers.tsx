@@ -1,6 +1,14 @@
-import { Box, Text, Flex, Button, Stack, CustomSidebar } from '~/components';
+import {
+  Text,
+  Flex,
+  CustomSidebar,
+  PageOverview,
+  PageActions,
+  PageContent,
+  PageContentContainer,
+} from '~/components';
 import { DataFunctionArgs, json } from '@remix-run/node';
-import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
+import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 
 export const handle = {
@@ -26,39 +34,20 @@ export default function LayersPage() {
 
   const LayerOverview = () => {
     return (
-      <Box as="section" width="full" paddingX={8} paddingY={5}>
-        <Stack textAlign="left">
-          <Text fontSize="lg">Layer Overview</Text>
-          <Text fontSize="sm">Layer count: {layers.length}</Text>
-        </Stack>
-      </Box>
-    );
-  };
-
-  const LayersContent = () => {
-    return (
-      <Flex flex="1" width="full" paddingY={22} borderRadius={6}>
-        <Flex flex="1" width="full">
-          <Outlet />
-        </Flex>
-      </Flex>
+      <PageOverview title="Layers">
+        <Text fontSize="sm">Layer count: {layers.length}</Text>
+      </PageOverview>
     );
   };
 
   return (
     <Flex flexDirection="column" minHeight="30vh">
       <LayerOverview />
-      <Flex flex={1} border="1px" borderColor="gray.300">
-        <Flex flex={1}>
-          <CustomSidebar items={layers} itemType="layers" />
-          <LayersContent />
-        </Flex>
-      </Flex>
-      <Stack height={100} textAlign="left" paddingX={8} paddingY={5}>
-        <NavLink to="new">
-          <Button colorScheme="teal">New Layer</Button>
-        </NavLink>
-      </Stack>
+      <PageContentContainer>
+        <CustomSidebar items={layers} itemType="layers" />
+        <PageContent />
+      </PageContentContainer>
+      <PageActions itemName="Layer" />
     </Flex>
   );
 }

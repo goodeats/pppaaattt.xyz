@@ -1,6 +1,14 @@
-import { Box, Text, Flex, Button, Stack, CustomSidebar } from '~/components';
+import {
+  Text,
+  Flex,
+  CustomSidebar,
+  PageOverview,
+  PageActions,
+  PageContent,
+  PageContentContainer,
+} from '~/components';
 import { DataFunctionArgs, json } from '@remix-run/node';
-import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
+import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 
 export const handle = {
@@ -37,40 +45,21 @@ export default function ContainerPage() {
 
   const ContainerOverview = () => {
     return (
-      <Box as="section" width="full" paddingX={8} paddingY={5}>
-        <Stack textAlign="left">
-          <Text fontSize="lg">Container Overview</Text>
-          <Text fontSize="sm">Container count: {containers.length}</Text>
-          <Text fontSize="sm">Container sets the dimensions of the canvas</Text>
-        </Stack>
-      </Box>
-    );
-  };
-
-  const ContainerContent = () => {
-    return (
-      <Flex flex="1" width="full" paddingY={22} borderRadius={6}>
-        <Flex flex="1" width="full">
-          <Outlet />
-        </Flex>
-      </Flex>
+      <PageOverview title="Container">
+        <Text fontSize="sm">Container count: {containers.length}</Text>
+        <Text fontSize="sm">Container sets the dimensions of the canvas</Text>
+      </PageOverview>
     );
   };
 
   return (
     <Flex flexDirection="column" minHeight="30vh">
       <ContainerOverview />
-      <Flex flex={1} border="1px" borderColor="gray.300">
-        <Flex flex={1}>
-          <CustomSidebar items={containers} itemType="containers" />
-          <ContainerContent />
-        </Flex>
-      </Flex>
-      <Stack height={100} textAlign="left" paddingX={8} paddingY={5}>
-        <NavLink to="new">
-          <Button colorScheme="teal">New Container</Button>
-        </NavLink>
-      </Stack>
+      <PageContentContainer>
+        <CustomSidebar items={containers} itemType="containers" />
+        <PageContent />
+      </PageContentContainer>
+      <PageActions itemName="Container" />
     </Flex>
   );
 }
