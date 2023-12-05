@@ -46,4 +46,5 @@ export {
   type ThemeConfig,
 } from '@chakra-ui/react';
 
+export * from './layout';
 export * from './navigation';
