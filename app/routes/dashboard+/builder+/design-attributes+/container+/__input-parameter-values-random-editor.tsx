@@ -14,10 +14,7 @@ import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { InputParameter, prisma } from '~/utils/db.server';
 import { InputParameterContainerRandomValuesType } from '~/utils/types/input-parameter/container';
-import {
-  removeWhitespace,
-  validateCommaSeparatedNumbers,
-} from '~/utils/validations';
+import { RandomNumbersInputToSchema } from '~/utils/zod-schema';
 
 const urlResourcePath = '/dashboard/builder/design-attributes/container';
 
@@ -63,39 +60,10 @@ const RandomValuesSchema: z.Schema<RandomValuesEditorSchemaTypes> = z.object({
   id: z.string(),
   inputType: InputTypeEnumNative,
   unitType: UnitTypeEnumNative,
-  // function to remove whitespace from string
-  // and then split on comma to validate numbers
-  // and then transform to number[]
-  // very cool programmer move, thanks zod 😎
-  // https://github.com/colinhacks/zod#schema-methods
-  width: z
-    .string()
-    .transform((val) => removeWhitespace(val))
-    .refine(validateCommaSeparatedNumbers, {
-      message: 'Width values must be comma separated numbers',
-    })
-    .transform((val) => val.split(',').map(Number)),
-  height: z
-    .string()
-    .transform((val) => removeWhitespace(val))
-    .refine(validateCommaSeparatedNumbers, {
-      message: 'Height values must be comma separated numbers',
-    })
-    .transform((val) => val.split(',').map(Number)),
-  left: z
-    .string()
-    .transform((val) => removeWhitespace(val))
-    .refine(validateCommaSeparatedNumbers, {
-      message: 'Left values must be comma separated numbers',
-    })
-    .transform((val) => val.split(',').map(Number)),
-  top: z
-    .string()
-    .transform((val) => removeWhitespace(val))
-    .refine(validateCommaSeparatedNumbers, {
-      message: 'Top values must be comma separated numbers',
-    })
-    .transform((val) => val.split(',').map(Number)),
+  width: RandomNumbersInputToSchema('width'),
+  height: RandomNumbersInputToSchema('height'),
+  left: RandomNumbersInputToSchema('left'),
+  top: RandomNumbersInputToSchema('top'),
 });
 
 export async function action({ request }: DataFunctionArgs) {
@@ -170,12 +138,12 @@ export async function action({ request }: DataFunctionArgs) {
     },
   };
 
-  const updatedExplicitValues = { ...currentValues, ...newData };
+  const updatedRandomValues = { ...currentValues, ...newData };
 
   const updatedInputParameter = await prisma.inputParameter.update({
     where: { id: inputParameterId },
     data: {
-      randomValues: updatedExplicitValues,
+      randomValues: updatedRandomValues,
     },
   });
 
@@ -216,10 +184,6 @@ export function ContainerInputParameterRandomValuesEditor({
     constraint: getFieldsetConstraint(RandomValuesSchema),
     // lastSubmission: inputTypeFetcher.data?.submission,
     onValidate({ formData }) {
-      const clientData = parse(formData, {
-        schema: RandomValuesSchema,
-      });
-      console.log('clientData', clientData);
       return parse(formData, {
         schema: RandomValuesSchema,
       });

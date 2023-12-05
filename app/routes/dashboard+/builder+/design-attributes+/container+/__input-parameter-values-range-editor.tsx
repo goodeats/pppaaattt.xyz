@@ -14,11 +14,7 @@ import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { InputParameter, prisma } from '~/utils/db.server';
 import { InputParameterContainerRangeValuesType } from '~/utils/types/input-parameter/container';
-import {
-  removeWhitespace,
-  validateCommaSeparatedNumbers,
-  validateMinMaxRange,
-} from '~/utils/validations';
+import { RangeInputMinMaxToSchema } from '~/utils/zod-schema';
 
 const urlResourcePath = '/dashboard/builder/design-attributes/container';
 
@@ -59,61 +55,15 @@ interface RangeValuesEditorSchemaTypes {
   top: string | number[];
 }
 
-const MinMaxToSchema = (name: string) => {
-  return z
-    .string()
-    .transform((val) => removeWhitespace(val))
-    .refine(validateCommaSeparatedNumbers, {
-      message: `${name.toUpperCase()} values must be comma separated numbers`,
-    })
-    .transform((val) => val.split(',').map(Number))
-    .refine(validateMinMaxRange, {
-      message: 'Min value must be less than max value',
-    });
-};
-
 const RangeValuesSchema: z.Schema<RangeValuesEditorSchemaTypes> = z.object({
   containerId: z.string(),
   id: z.string(),
   inputType: InputTypeEnumNative,
   unitType: UnitTypeEnumNative,
-  // function to remove whitespace from string
-  // and then split on comma to validate numbers
-  // and then transform to number[]
-  // very cool programmer move, thanks zod 😎
-  // https://github.com/colinhacks/zod#schema-methods
-  width: MinMaxToSchema('width'),
-  // width: z
-  //   .string()
-  //   .transform((val) => removeWhitespace(val))
-  //   .refine(validateCommaSeparatedNumbers, {
-  //     message: 'Width values must be comma separated numbers',
-  //   })
-  //   .transform((val) => val.split(',').map(Number))
-  //   .refine(validateMinMaxRange, {
-  //     message: 'Min value must be less than max value',
-  //   }),
-  height: z
-    .string()
-    .transform((val) => removeWhitespace(val))
-    .refine(validateCommaSeparatedNumbers, {
-      message: 'Height values must be comma separated numbers',
-    })
-    .transform((val) => val.split(',').map(Number)),
-  left: z
-    .string()
-    .transform((val) => removeWhitespace(val))
-    .refine(validateCommaSeparatedNumbers, {
-      message: 'Left values must be comma separated numbers',
-    })
-    .transform((val) => val.split(',').map(Number)),
-  top: z
-    .string()
-    .transform((val) => removeWhitespace(val))
-    .refine(validateCommaSeparatedNumbers, {
-      message: 'Top values must be comma separated numbers',
-    })
-    .transform((val) => val.split(',').map(Number)),
+  width: RangeInputMinMaxToSchema('width'),
+  height: RangeInputMinMaxToSchema('height'),
+  left: RangeInputMinMaxToSchema('left'),
+  top: RangeInputMinMaxToSchema('top'),
 });
 
 export async function action({ request }: DataFunctionArgs) {
@@ -228,17 +178,12 @@ export function ContainerInputParameterRangeValuesEditor({
   const values =
     inputParameter.rangeValues as InputParameterContainerRangeValuesType;
   const currentValues = values[unitKey];
-  console.log('currentValues', currentValues);
 
   const [form, fields] = useForm<RangeValuesEditorSchemaTypes>({
     id: 'container-input-parameter-values-range-editor',
     constraint: getFieldsetConstraint(RangeValuesSchema),
     // lastSubmission: inputTypeFetcher.data?.submission,
     onValidate({ formData }) {
-      const clientData = parse(formData, {
-        schema: RangeValuesSchema,
-      });
-      console.log('clientData', clientData);
       return parse(formData, {
         schema: RangeValuesSchema,
       });

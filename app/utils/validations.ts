@@ -10,3 +10,7 @@ export function validateCommaSeparatedNumbers(input: string): boolean {
 export function validateMinMaxRange(input: number[]): boolean {
   return input[0] < input[1];
 }
+
+export function validateRangeHasTwoValues(input: number[]): boolean {
+  return input.length === 2;
+}
