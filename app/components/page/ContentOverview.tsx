@@ -42,7 +42,7 @@ export const ContentOverview = ({ item }: ContentOverviewProps) => {
 
   return (
     <Stack>
-      <Text fontSize="lg">{title}</Text>
+      <Text fontSize="large">{title}</Text>
 
       <DescriptionText />
       <TimeStampsText />
