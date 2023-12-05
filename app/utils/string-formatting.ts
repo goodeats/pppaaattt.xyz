@@ -12,3 +12,7 @@ export const formatRangeToString = (
 ): string => {
   return formatNumberArrayToString(range, units, ' - ');
 };
+
+export const formatTimeStampsReadable = (timestamp: string): string => {
+  return new Date(timestamp).toLocaleString();
+};

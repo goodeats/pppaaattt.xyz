@@ -4,7 +4,7 @@ import {
   CardHeader,
   Heading,
   useColorModeValue,
-} from '@chakra-ui/react';
+} from '~/components';
 import LayerAccordion from '../accordions/LayerAccordion';
 import { AccordionPanelText } from '../accordions/_shared';
 import React from 'react';

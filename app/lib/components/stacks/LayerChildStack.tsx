@@ -5,7 +5,7 @@ import {
   Stack,
   StackDivider,
   Text,
-} from '@chakra-ui/react';
+} from '~/components';
 import LayerCard from '../cards/LayerCard';
 
 type LayerChildStackProps = {

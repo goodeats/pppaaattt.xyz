@@ -1,4 +1,4 @@
-import { Flex } from '@chakra-ui/react';
+import { CustomSidebar, Flex } from '~/components';
 import { type ReactNode } from 'react';
 
 import PageWrapper from './PageWrapper';
@@ -7,20 +7,21 @@ import PageContainer from './PageContainer';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
-import Sidebar from './Sidebar';
 
 export type LayoutProps = {
   children: ReactNode;
 };
 
 const Layout = ({ children }: LayoutProps) => {
+  const items = [{ id: '/dashboard/builder', title: 'Builder' }];
+
   return (
     <PageWrapper>
       <Meta />
       <PageContainer>
         <Header />
         <Flex flex={1}>
-          <Sidebar />
+          <CustomSidebar items={items} itemType="Main" />
           <Main>
             <Flex flex="1" width="full">
               {children}

@@ -1,4 +1,4 @@
-import { Flex, useColorModeValue } from '@chakra-ui/react';
+import { Flex, useColorModeValue } from '~/components';
 import { LayoutProps } from '.';
 
 const Main = ({ children }: LayoutProps) => {

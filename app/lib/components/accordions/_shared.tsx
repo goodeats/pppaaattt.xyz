@@ -4,7 +4,7 @@ import {
   Box,
   Text,
   useColorModeValue,
-} from '@chakra-ui/react';
+} from '~/components';
 
 type AccordionPanelTextProps = {
   children: React.ReactNode;

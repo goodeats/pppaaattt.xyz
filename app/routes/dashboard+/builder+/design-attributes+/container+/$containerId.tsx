@@ -1,16 +1,34 @@
 import {
   Button,
   ButtonGroup,
+  ContentActions,
+  ContentContainer,
+  ContentOverview,
   List,
   ListItem,
   Stack,
   StackDivider,
-} from '@chakra-ui/react';
+} from '~/components';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 import { DeleteContainer, action } from './__delete-container';
 import { ContainerInputParameters } from './__input-parameters';
+
+export const handle = {
+  breadcrumb: (match) => {
+    const { data, params } = match;
+    const containerId = params.containerId;
+    const title = data.container?.title ?? 'Container';
+    return (
+      <NavLink
+        to={`/dashboard/builder/design-attributes/container/${containerId}`}
+      >
+        {title}
+      </NavLink>
+    );
+  },
+};
 
 export { action };
 
@@ -59,21 +77,7 @@ export async function loader({ params }: DataFunctionArgs) {
 export default function ContainerDetailsPage() {
   const data = useLoaderData<typeof loader>();
   const { container } = data;
-  const { title, description, createdAt, updatedAt, inputParameters } =
-    container;
-
-  const ContainerContent = () => {
-    return (
-      <Stack>
-        <List>
-          <ListItem>Container Title: {title}</ListItem>
-          <ListItem>Container Description: {description}</ListItem>
-          <ListItem>Created: {createdAt}</ListItem>
-          <ListItem>Updated: {updatedAt}</ListItem>
-        </List>
-      </Stack>
-    );
-  };
+  const { inputParameters } = container;
 
   const ContainerParameters = () => {
     if (!inputParameters || inputParameters.length === 0)
@@ -94,29 +98,17 @@ export default function ContainerDetailsPage() {
 
   const ContainerActions = () => {
     return (
-      <Stack>
-        <ButtonGroup>
-          <NavLink to="edit">
-            <Button variant="outline">Edit</Button>
-          </NavLink>
-          <DeleteContainer id={container.id} />
-        </ButtonGroup>
-      </Stack>
+      <ContentActions>
+        <DeleteContainer id={container.id} />
+      </ContentActions>
     );
   };
 
   return (
-    <Stack
-      divider={<StackDivider borderColor="gray.200" />}
-      spacing={8}
-      width="full"
-      paddingX={8}
-      paddingY={5}
-      textAlign="left"
-    >
-      <ContainerContent />
+    <ContentContainer>
+      <ContentOverview item={container} />
       <ContainerParameters />
       <ContainerActions />
-    </Stack>
+    </ContentContainer>
   );
 }

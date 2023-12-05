@@ -1,4 +1,4 @@
-import { Heading, useColorModeValue } from '@chakra-ui/react';
+import { Heading, useColorModeValue } from '~/components';
 
 type ColumnHeadingProps = {
   children?: React.ReactNode;

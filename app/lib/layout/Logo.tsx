@@ -1,5 +1,5 @@
 // Importing necessary components from Chakra UI
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex } from '~/components';
 
 // Character component is responsible for creating a recursive layout of the letters in the logo
 const Character = ({ char }: { char: string }) => {

@@ -1,4 +1,4 @@
-import { Stack, StackDivider } from '@chakra-ui/react';
+import { Stack, StackDivider } from '~/components';
 import { SharedModal } from './_shared';
 import { ContainerExplicitForm } from '../forms/design-attributes/ContainerExplicitForm';
 

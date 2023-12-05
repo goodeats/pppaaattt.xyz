@@ -1,9 +1,4 @@
-import {
-  Input,
-  FormControl,
-  FormLabel,
-  FormHelperText,
-} from '@chakra-ui/react';
+import { Input, FormControl, FormLabel, FormHelperText } from '~/components';
 import { SharedModal } from './_shared';
 
 export const BackgroundModal = () => {

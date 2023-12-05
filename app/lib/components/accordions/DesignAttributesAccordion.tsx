@@ -3,7 +3,7 @@ import {
   AccordionItem,
   AccordionPanel,
   useColorModeValue,
-} from '@chakra-ui/react';
+} from '~/components';
 import { SharedAccordionButton, SharedAccordionItemProps } from './_shared';
 import { ContainerStack } from '../stacks/design-attributes/ContainerStack';
 

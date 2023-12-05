@@ -1,4 +1,4 @@
-import { Box, Flex, Stack } from '@chakra-ui/react';
+import { Box, Flex, Stack } from '~/components';
 import { LayoutProps } from '.';
 
 const Column = ({ children }: LayoutProps) => {

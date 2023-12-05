@@ -1,4 +1,4 @@
-import { Box, Button, HStack } from '@chakra-ui/react';
+import { Box, Button, HStack } from '~/components';
 import Column from '../Column';
 import { ColumnHeading } from './_shared';
 

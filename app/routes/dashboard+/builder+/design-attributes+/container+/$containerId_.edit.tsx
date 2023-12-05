@@ -1,8 +1,23 @@
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 import { ContainerEditor, action } from './__container-editor';
 
+// BUG: this removes the id breadcrumb
+export const handle = {
+  breadcrumb: (match) => {
+    const { data, params } = match;
+    const containerId = params.containerId;
+    const title = data.container?.title ?? 'Container';
+    return (
+      <NavLink
+        to={`/dashboard/builder/design-attributes/container/${containerId}`}
+      >
+        {title} (Edit)
+      </NavLink>
+    );
+  },
+};
 export { action };
 
 export async function loader({ params }: DataFunctionArgs) {

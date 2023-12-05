@@ -1,7 +1,21 @@
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 import { LayerEditor, action } from './__layer-editor';
+
+// BUG: this removes the id breadcrumb
+export const handle = {
+  breadcrumb: (match) => {
+    const { data, params } = match;
+    const layerId = params.layerId;
+    const title = data.layer?.title ?? 'Layer';
+    return (
+      <NavLink to={`/dashboard/builder/layers/${layerId}`}>
+        {title} (Edit)
+      </NavLink>
+    );
+  },
+};
 
 export { action };
 

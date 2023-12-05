@@ -1,15 +1,23 @@
 import {
-  Button,
-  ButtonGroup,
-  List,
-  ListItem,
-  Stack,
-  StackDivider,
-} from '@chakra-ui/react';
+  ContentActions,
+  ContentContainer,
+  ContentOverview,
+} from '~/components';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 import { DeleteLayer, action } from './__delete-layer';
+
+export const handle = {
+  breadcrumb: (match) => {
+    const { data, params } = match;
+    const layerId = params.layerId;
+    const title = data.layer?.title ?? 'Layer';
+    return (
+      <NavLink to={`/dashboard/builder/layers/${layerId}`}>{title}</NavLink>
+    );
+  },
+};
 
 export { action };
 
@@ -44,43 +52,19 @@ export async function loader({ params }: DataFunctionArgs) {
 export default function LayerDetailsPage() {
   const data = useLoaderData<typeof loader>();
   const { layer } = data;
-  const { title, description } = layer;
-
-  const LayerContent = () => {
-    return (
-      <Stack>
-        <List>
-          <ListItem>Layer Title: {title}</ListItem>
-          <ListItem>Layer Description: {description}</ListItem>
-        </List>
-      </Stack>
-    );
-  };
 
   const LayerActions = () => {
     return (
-      <Stack>
-        <ButtonGroup>
-          <NavLink to="edit">
-            <Button variant="outline">Edit</Button>
-          </NavLink>
-          <DeleteLayer id={layer.id} />
-        </ButtonGroup>
-      </Stack>
+      <ContentActions>
+        <DeleteLayer id={layer.id} />
+      </ContentActions>
     );
   };
 
   return (
-    <Stack
-      divider={<StackDivider borderColor="gray.200" />}
-      spacing={8}
-      width="full"
-      paddingX={8}
-      paddingY={5}
-      textAlign="left"
-    >
-      <LayerContent />
+    <ContentContainer>
+      <ContentOverview item={layer} />
       <LayerActions />
-    </Stack>
+    </ContentContainer>
   );
 }
