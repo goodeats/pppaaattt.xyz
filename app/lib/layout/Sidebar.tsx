@@ -3,16 +3,14 @@ import { NavLink } from '@remix-run/react';
 
 const Sidebar = () => {
   const bg = useColorModeValue('gray.200', 'gray.600');
+  const bgActive = useColorModeValue('gray.100', 'gray.800');
   const bgHover = useColorModeValue('gray.300', 'gray.700');
 
   type NavLink = {
     name: string;
     to: string;
   };
-  const links: NavLink[] = [
-    { name: 'Dashboard', to: '/dashboard' },
-    { name: 'Builder', to: '/dashboard/builder' },
-  ];
+  const links: NavLink[] = [{ name: 'Builder', to: '/dashboard/builder' }];
 
   return (
     <Box width={200} as="aside" paddingY={22} bg={bg}>
@@ -21,14 +19,17 @@ const Sidebar = () => {
           {links.map((link, i) => (
             <Box as="li" key={i}>
               <NavLink key={i} to={link.to}>
-                <Box
-                  paddingX={8}
-                  paddingY={2}
-                  _hover={{ bg: bgHover }}
-                  transition="background-color 0.2s ease-in-out"
-                >
-                  {link.name}
-                </Box>
+                {({ isActive }) => (
+                  <Box
+                    paddingX={8}
+                    paddingY={2}
+                    bg={isActive ? bgActive : undefined}
+                    _hover={{ bg: bgHover }}
+                    transition="background-color 0.2s ease-in-out"
+                  >
+                    {link.name}
+                  </Box>
+                )}
               </NavLink>
             </Box>
           ))}
