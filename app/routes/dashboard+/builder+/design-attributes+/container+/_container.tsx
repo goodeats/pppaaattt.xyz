@@ -11,7 +11,12 @@ import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 
 export async function loader({ request }: DataFunctionArgs) {
-  const layers = await prisma.layer.findMany({
+  const containers = await prisma.designAttribute.findMany({
+    where: {
+      attributeType: {
+        equals: 'container',
+      },
+    },
     select: {
       id: true,
       title: true,
@@ -20,25 +25,26 @@ export async function loader({ request }: DataFunctionArgs) {
       updatedAt: true,
     },
   });
-  return json({ layers });
+  return json({ containers });
 }
 
-export default function LayersPage() {
+export default function ContainerPage() {
   const data = useLoaderData<typeof loader>();
-  const { layers } = data;
+  const { containers } = data;
 
-  const LayerOverview = () => {
+  const ContainerOverview = () => {
     return (
       <Box as="section" width="full" paddingX={8} paddingY={5}>
         <Stack textAlign="left">
-          <Text fontSize="lg">Layer Overview</Text>
-          <Text fontSize="sm">Layer count: {layers.length}</Text>
+          <Text fontSize="lg">Container Overview</Text>
+          <Text fontSize="sm">Container count: {containers.length}</Text>
+          <Text fontSize="sm">Container sets the dimensions of the canvas</Text>
         </Stack>
       </Box>
     );
   };
 
-  const LayersList = () => {
+  const ContainerList = () => {
     const bg = useColorModeValue('gray.200', 'gray.600');
     const bgHover = useColorModeValue('gray.300', 'gray.700');
 
@@ -52,33 +58,36 @@ export default function LayersPage() {
         borderColor="gray.300"
       >
         <Box as="nav" aria-label="Main navigation">
-          {layers.length === 0 && (
+          {containers.length === 0 && (
             <Box as="p" padding={2}>
-              No layers found.
+              No containers found.
             </Box>
           )}
           <Box as="ul" listStyleType="none" margin={0} padding={0}>
-            {layers.map((layer, i) => (
-              <Box as="li" key={i}>
-                <NavLink to={layer.id}>
-                  <Box
-                    paddingX={8}
-                    paddingY={2}
-                    _hover={{ bg: bgHover }}
-                    transition="background-color 0.2s ease-in-out"
-                  >
-                    {layer.title}
-                  </Box>
-                </NavLink>
-              </Box>
-            ))}
+            {containers.map((container, i) => {
+              const { id, title } = container;
+              return (
+                <Box as="li" key={i}>
+                  <NavLink to={id}>
+                    <Box
+                      paddingX={8}
+                      paddingY={2}
+                      _hover={{ bg: bgHover }}
+                      transition="background-color 0.2s ease-in-out"
+                    >
+                      {title}
+                    </Box>
+                  </NavLink>
+                </Box>
+              );
+            })}
           </Box>
         </Box>
       </Box>
     );
   };
 
-  const LayersContent = () => {
+  const ContainerContent = () => {
     return (
       <Flex flex="1" width="full" paddingY={22} borderRadius={6}>
         <Flex flex="1" width="full">
@@ -90,16 +99,16 @@ export default function LayersPage() {
 
   return (
     <Flex flexDirection="column" minHeight="30vh">
-      <LayerOverview />
+      <ContainerOverview />
       <Flex flex={1} border="1px" borderColor="gray.300">
         <Flex flex={1}>
-          <LayersList />
-          <LayersContent />
+          <ContainerList />
+          <ContainerContent />
         </Flex>
       </Flex>
       <Stack height={100} textAlign="left" paddingX={8} paddingY={5}>
         <NavLink to="new">
-          <Button colorScheme="teal">New Layer</Button>
+          <Button colorScheme="teal">New Container</Button>
         </NavLink>
       </Stack>
     </Flex>

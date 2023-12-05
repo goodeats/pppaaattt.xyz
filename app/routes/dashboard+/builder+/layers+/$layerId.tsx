@@ -44,13 +44,12 @@ export async function loader({ params }: DataFunctionArgs) {
 export default function LayerDetailsPage() {
   const data = useLoaderData<typeof loader>();
   const { layer } = data;
-  const { id, title, description } = layer;
+  const { title, description } = layer;
 
   const LayerContent = () => {
     return (
       <Stack>
         <List>
-          <ListItem>Layer ID: {id}</ListItem>
           <ListItem>Layer Title: {title}</ListItem>
           <ListItem>Layer Description: {description}</ListItem>
         </List>

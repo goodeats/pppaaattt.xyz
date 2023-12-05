@@ -37,14 +37,16 @@ model Layer {
 // Each attribute is of a specific type, defined by the AttributeType enum.
 // Filter attributes have an additional sub-type defined by the FilterType enum.
 model DesignAttribute {
-  id      String  @id @default(uuid())
-  layerId String?
-  layer   Layer?  @relation(fields: [layerId], references: [id])
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  layerId     String?
+  layer       Layer?  @relation(fields: [layerId], references: [id])
 
   attributeType AttributeType // Defines the main type of the design attribute.
   filterType    FilterType? // Defines the sub-type for filter attributes (if filter).
 
-  inputParameters InputParameters? // Each design attribute is linked to input parameters that define its values.
+  inputParameters InputParameter[] // Links to input parameters. Now supports many-to-many relationship.
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -74,21 +76,23 @@ enum FilterType {
 
 // InputParameters define how values for design attributes are determined.
 // Supports different types like 'explicit', 'random', and 'range'.
+// Supports different unit types like 'px' and 'percent'.
 // This unified model simplifies queries and maintenance while providing flexibility.
-model InputParameters {
-  id                String          @id @default(uuid())
-  designAttributeId String          @unique
-  designAttribute   DesignAttribute @relation(fields: [designAttributeId], references: [id])
-  inputType         InputType // Type of input ('explicit', 'random', 'range').
-  explicitValue     Json? // Used for 'explicit' type.
-  randomValues      Json? // Used for 'random' type, includes weights for values.
-  minValue          Float? // Minimum value for 'range' type.
-  maxValue          Float? // Maximum value for 'range' type.
+// Now, each input parameter can be linked to multiple design attributes, forming a many-to-many relationship.
+// values will be customized based on the input type and design attribute type.
+// TODO: refactor when performance becomes an issue, but for now these are just used in the builder interface.
+model InputParameter {
+  id             String    @id @default(uuid())
+  inputType      InputType // Type of input ('explicit', 'random', 'range').
+  unitType       UnitType  @default(px) // Unit type for the value.
+  explicitValues Json? // Used for 'explicit' type.
+  randomValues   Json? // Used for 'random' type, includes weights for values.
+  rangeValues    Json? // Used for 'range' type, includes min, max, and step values.
+
+  designAttributes DesignAttribute[] // Links to design attributes in a many-to-many relationship.
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([designAttributeId]) // Index on designAttributeId
 }
 
 // Enum for the types of input parameters.
@@ -96,4 +100,9 @@ enum InputType {
   explicit
   random
   range
+}
+
+enum UnitType {
+  px
+  percent
 }

@@ -2,6 +2,8 @@
 
 Drawing generative geometric shapes on a canvas
 
+Progress: 🚧 Constructing MVP... 🚧
+
 ## GETTING STARTED
 
 To get started with this project, follow these steps:
@@ -19,3 +21,7 @@ To get started with this project, follow these steps:
 - DB: [PostgreSQL](https://www.postgresql.org/)
 - ORM: [Prisma](https://www.prisma.io/)
 - UI: [Chakra UI](https://chakra-ui.com/) | ⚠️ [Not type safe](https://github.com/chakra-ui/chakra-ui/issues/7203)
+
+## DOCS
+
+[Docs](https://github.com/goodeats/pppaaattt.xyz/tree/main/docs)
