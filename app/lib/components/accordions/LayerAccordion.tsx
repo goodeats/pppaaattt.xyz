@@ -3,7 +3,7 @@ import {
   AccordionItem,
   AccordionPanel,
   useColorModeValue,
-} from '@chakra-ui/react';
+} from '~/components';
 import DesignAttributesAccordion from './DesignAttributesAccordion';
 import {
   AccordionPanelText,

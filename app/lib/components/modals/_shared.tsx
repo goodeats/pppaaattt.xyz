@@ -8,7 +8,7 @@ import {
   ModalCloseButton,
   useDisclosure,
   Button,
-} from '@chakra-ui/react';
+} from '~/components';
 
 type SharedModalProps = {
   buttonText: string;

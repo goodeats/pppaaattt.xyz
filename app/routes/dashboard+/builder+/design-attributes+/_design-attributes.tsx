@@ -6,7 +6,7 @@ import {
   Stack,
   ButtonGroup,
   StackDivider,
-} from '@chakra-ui/react';
+} from '~/components';
 import { NavLink, Outlet } from '@remix-run/react';
 
 export default function DesignAttributesPage() {

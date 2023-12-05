@@ -1,4 +1,4 @@
-import { Box, Radio, RadioGroup, Stack } from '@chakra-ui/react';
+import { Box, Radio, RadioGroup, Stack } from '~/components';
 import { useState } from 'react';
 import { InputParameterType } from '../../../utils/store';
 

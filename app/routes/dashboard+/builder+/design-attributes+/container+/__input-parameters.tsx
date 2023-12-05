@@ -1,11 +1,4 @@
-import {
-  Button,
-  ButtonGroup,
-  List,
-  ListItem,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
+import { Button, ButtonGroup, List, ListItem, Stack, Text } from '~/components';
 import { NavLink } from '@remix-run/react';
 import { InputParameter } from '~/utils/db.server';
 import {

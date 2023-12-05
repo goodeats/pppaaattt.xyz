@@ -1,4 +1,4 @@
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex } from '~/components';
 
 import Logo from './Logo';
 import ThemeToggle from './ThemeToggle';

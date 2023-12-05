@@ -1,4 +1,4 @@
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider } from '~/components';
 import { theme } from '../lib/styles/theme/index.ts';
 import Layout from '~/lib/layout';
 import { DataFunctionArgs, json } from '@remix-run/node';

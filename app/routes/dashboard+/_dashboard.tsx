@@ -1,4 +1,4 @@
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider } from '~/components';
 import Layout from '~/lib/layout';
 import Column from '~/lib/layout/Column.tsx';
 import { theme } from '~/lib/styles/theme';

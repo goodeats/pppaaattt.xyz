@@ -5,7 +5,7 @@ import {
   ListItem,
   Stack,
   StackDivider,
-} from '@chakra-ui/react';
+} from '~/components';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';

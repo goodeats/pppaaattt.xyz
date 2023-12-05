@@ -6,7 +6,7 @@ import {
   FormLabel,
   Input,
   Stack,
-} from '@chakra-ui/react';
+} from '~/components';
 import { useState } from 'react';
 
 export const ContainerExplicitForm = () => {

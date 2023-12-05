@@ -1,4 +1,4 @@
-import { Stack, Text } from '@chakra-ui/react';
+import { Stack, Text } from '~/components';
 
 export default function BuilderIndexPage() {
   return (

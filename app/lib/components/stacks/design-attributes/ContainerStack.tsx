@@ -1,4 +1,4 @@
-import { Box, Stack, StackDivider, useColorModeValue } from '@chakra-ui/react';
+import { Box, Stack, StackDivider, useColorModeValue } from '~/components';
 import { AccordionPanelText } from '../../accordions/_shared';
 import { ContainerModal } from '../../modals/ContainerModal';
 

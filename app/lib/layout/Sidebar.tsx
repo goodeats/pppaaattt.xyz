@@ -1,4 +1,4 @@
-import { Box, useColorModeValue } from '@chakra-ui/react';
+import { Box, useColorModeValue } from '~/components';
 import { NavLink } from '@remix-run/react';
 
 const Sidebar = () => {

@@ -5,7 +5,7 @@ import {
   useColorModeValue,
   Button,
   Stack,
-} from '@chakra-ui/react';
+} from '~/components';
 import { DataFunctionArgs, json } from '@remix-run/node';
 import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
