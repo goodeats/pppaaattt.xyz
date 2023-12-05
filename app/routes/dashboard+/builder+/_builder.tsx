@@ -1,5 +1,7 @@
 import {
   Box,
+  BreadcrumbLink,
+  BreadcrumbLinkType,
   Button,
   ButtonGroup,
   Flex,
@@ -10,9 +12,12 @@ import {
 import { ColumnHeading } from '~/lib/layout/columns/_shared.tsx';
 import { NavLink, Outlet } from '@remix-run/react';
 
+export const handle = {
+  breadcrumb: () => <NavLink to={'/dashboard/builder'}>Builder</NavLink>,
+};
+
 export default function BuilderPage() {
   const navs = [
-    { id: '', title: 'Overview' },
     { id: 'layers', title: 'Layers' },
     { id: 'design-attributes', title: 'Design Attributes' },
   ];

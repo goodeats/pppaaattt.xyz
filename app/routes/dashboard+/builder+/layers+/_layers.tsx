@@ -10,6 +10,10 @@ import { DataFunctionArgs, json } from '@remix-run/node';
 import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 
+export const handle = {
+  breadcrumb: () => <NavLink to={'/dashboard/builder/layers'}>Layers</NavLink>,
+};
+
 export async function loader({ request }: DataFunctionArgs) {
   const layers = await prisma.layer.findMany({
     select: {

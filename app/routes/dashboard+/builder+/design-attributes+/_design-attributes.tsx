@@ -9,6 +9,14 @@ import {
 } from '~/components';
 import { NavLink, Outlet } from '@remix-run/react';
 
+export const handle = {
+  breadcrumb: () => (
+    <NavLink to={'/dashboard/builder/design-attributes'}>
+      Design Attributes
+    </NavLink>
+  ),
+};
+
 export default function DesignAttributesPage() {
   const navs = [
     { id: '', title: 'Overview' },

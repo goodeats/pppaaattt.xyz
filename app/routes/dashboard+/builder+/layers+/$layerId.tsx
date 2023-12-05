@@ -11,6 +11,17 @@ import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 import { DeleteLayer, action } from './__delete-layer';
 
+export const handle = {
+  breadcrumb: (match) => {
+    const { data, params } = match;
+    const layerId = params.layerId;
+    const title = data.layer?.title ?? 'Layer';
+    return (
+      <NavLink to={`/dashboard/builder/layers/${layerId}`}>{title}</NavLink>
+    );
+  },
+};
+
 export { action };
 
 export async function loader({ params }: DataFunctionArgs) {

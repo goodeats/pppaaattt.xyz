@@ -1,10 +1,25 @@
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
+import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 import {
   ContainerInputParameterTypesEditor,
   action,
 } from './__input-parameter-types-editor';
+
+export const handle = {
+  breadcrumb: (match) => {
+    const { data, params } = match;
+    const containerId = params.containerId;
+    const title = data.container?.title ?? 'Container';
+    return (
+      <NavLink
+        to={`/dashboard/builder/design-attributes/container/${containerId}`}
+      >
+        {title} (Edit Input Parameter Types)
+      </NavLink>
+    );
+  },
+};
 
 export { action };
 
@@ -20,6 +35,7 @@ export async function loader({ params }: DataFunctionArgs) {
     },
     select: {
       id: true,
+      title: true,
       inputParameters: {
         select: {
           id: true,

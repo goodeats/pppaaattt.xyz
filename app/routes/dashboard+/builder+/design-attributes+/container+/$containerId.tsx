@@ -12,6 +12,21 @@ import { prisma } from '~/utils/db.server';
 import { DeleteContainer, action } from './__delete-container';
 import { ContainerInputParameters } from './__input-parameters';
 
+export const handle = {
+  breadcrumb: (match) => {
+    const { data, params } = match;
+    const containerId = params.containerId;
+    const title = data.container?.title ?? 'Container';
+    return (
+      <NavLink
+        to={`/dashboard/builder/design-attributes/container/${containerId}`}
+      >
+        {title}
+      </NavLink>
+    );
+  },
+};
+
 export { action };
 
 export async function loader({ params }: DataFunctionArgs) {

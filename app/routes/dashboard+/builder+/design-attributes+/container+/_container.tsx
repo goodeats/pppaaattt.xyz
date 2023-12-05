@@ -10,6 +10,16 @@ import { DataFunctionArgs, json } from '@remix-run/node';
 import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 
+export const handle = {
+  breadcrumb: () => {
+    return (
+      <NavLink to={`/dashboard/builder/design-attributes/container`}>
+        Container
+      </NavLink>
+    );
+  },
+};
+
 export async function loader({ request }: DataFunctionArgs) {
   const containers = await prisma.designAttribute.findMany({
     where: {

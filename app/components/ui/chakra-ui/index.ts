@@ -5,6 +5,9 @@ export {
   AccordionButton,
   AccordionIcon,
   Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
   Button,
   ButtonGroup,
   Card,
@@ -42,3 +45,5 @@ export {
   extendTheme,
   type ThemeConfig,
 } from '@chakra-ui/react';
+
+export * from './navigation';
