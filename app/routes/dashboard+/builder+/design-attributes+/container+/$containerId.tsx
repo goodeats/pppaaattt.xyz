@@ -1,6 +1,9 @@
 import {
   Button,
   ButtonGroup,
+  ContentActions,
+  ContentContainer,
+  ContentOverview,
   List,
   ListItem,
   Stack,
@@ -74,21 +77,7 @@ export async function loader({ params }: DataFunctionArgs) {
 export default function ContainerDetailsPage() {
   const data = useLoaderData<typeof loader>();
   const { container } = data;
-  const { title, description, createdAt, updatedAt, inputParameters } =
-    container;
-
-  const ContainerContent = () => {
-    return (
-      <Stack>
-        <List>
-          <ListItem>Container Title: {title}</ListItem>
-          <ListItem>Container Description: {description}</ListItem>
-          <ListItem>Created: {createdAt}</ListItem>
-          <ListItem>Updated: {updatedAt}</ListItem>
-        </List>
-      </Stack>
-    );
-  };
+  const { inputParameters } = container;
 
   const ContainerParameters = () => {
     if (!inputParameters || inputParameters.length === 0)
@@ -109,29 +98,17 @@ export default function ContainerDetailsPage() {
 
   const ContainerActions = () => {
     return (
-      <Stack>
-        <ButtonGroup>
-          <NavLink to="edit">
-            <Button variant="outline">Edit</Button>
-          </NavLink>
-          <DeleteContainer id={container.id} />
-        </ButtonGroup>
-      </Stack>
+      <ContentActions>
+        <DeleteContainer id={container.id} />
+      </ContentActions>
     );
   };
 
   return (
-    <Stack
-      divider={<StackDivider borderColor="gray.200" />}
-      spacing={8}
-      width="full"
-      paddingX={8}
-      paddingY={5}
-      textAlign="left"
-    >
-      <ContainerContent />
+    <ContentContainer>
+      <ContentOverview item={container} />
       <ContainerParameters />
       <ContainerActions />
-    </Stack>
+    </ContentContainer>
   );
 }
