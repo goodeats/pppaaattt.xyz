@@ -1,4 +1,9 @@
-import { PrismaClient, DesignAttribute, InputParameter } from '@prisma/client';
+import {
+  PrismaClient,
+  DesignAttribute,
+  InputParameter,
+  Layer,
+} from '@prisma/client';
 
 // look to expand on this later
 // https://github.com/goodeats/epic-pat-stack/blob/main/app/utils/db.server.ts
@@ -15,4 +20,12 @@ export enum InputTypeEnum { // do not use, read comment
   explicit = 'explicit',
   random = 'random',
   range = 'range',
+}
+
+export interface ILayer extends Layer {
+  designAttributes?: DesignAttribute[];
+}
+
+export interface IDesignAttribute extends DesignAttribute {
+  inputParameters?: InputParameter[];
 }

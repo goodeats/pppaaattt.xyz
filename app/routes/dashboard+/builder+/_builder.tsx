@@ -1,8 +1,14 @@
 import { Flex, Stack, StackDivider } from '~/components';
-import { NavLink, Outlet } from '@remix-run/react';
+import { Link, Outlet } from '@remix-run/react';
 
 export const handle = {
-  breadcrumb: () => <NavLink to={'/dashboard/builder'}>Builder</NavLink>,
+  breadcrumb: () => (
+    // switched to Link from NavLink
+    // NavLink was not reloading loader at builder
+    <Link to={'/dashboard/builder'} reloadDocument>
+      Builder
+    </Link>
+  ),
 };
 
 export default function BuilderPage() {

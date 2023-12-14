@@ -13,6 +13,8 @@ export {
   Card,
   CardBody,
   CardHeader,
+  CardFooter,
+  Divider,
   Flex,
   FormControl,
   FormErrorMessage,
@@ -34,8 +36,18 @@ export {
   ModalCloseButton,
   Radio,
   RadioGroup,
+  Spacer,
   Stack,
   StackDivider,
+  Table,
+  Thead,
+  Tbody,
+  Tfoot,
+  Tr,
+  Th,
+  Td,
+  TableCaption,
+  TableContainer,
   Text,
   Textarea,
   useColorMode,
@@ -46,5 +58,6 @@ export {
   type ThemeConfig,
 } from '@chakra-ui/react';
 
+export * from './display';
 export * from './layout';
 export * from './navigation';
