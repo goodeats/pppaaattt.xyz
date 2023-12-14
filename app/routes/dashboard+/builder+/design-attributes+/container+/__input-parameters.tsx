@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, List, ListItem, Stack, Text } from '~/components';
+import { Button, ButtonGroup, Stack, Text } from '~/components';
 import { NavLink } from '@remix-run/react';
 import { InputParameter } from '~/utils/db.server';
 import {
@@ -10,7 +10,6 @@ import {
   InputParameterContainerRandomValuesType,
   InputParameterContainerRangeValuesType,
 } from '~/utils/types/input-parameter/container';
-import { RangeValuesType } from '~/utils/types/input-parameter/global';
 
 enum UnitTypeEnum {
   px = 'px',
@@ -41,13 +40,25 @@ export function ContainerInputParameters({
   const unitTypeDisplay = UnitTypeDisplayEnum[unitType];
   const unitKey = unitType as keyof typeof UnitTypeEnum;
 
-  const InputParameterTypes = () => {
+  type InputContentOverviewProps = {
+    title: string;
+    values: string[];
+    linkTo: string;
+    linkText: string;
+  };
+
+  const InputContentOverview = ({
+    title,
+    values,
+    linkTo,
+    linkText,
+  }: InputContentOverviewProps) => {
     const InputParameterActions = () => {
       return (
         <Stack>
           <ButtonGroup>
-            <NavLink to={'edit-input-parameter-types'}>
-              <Button variant="outline">Edit Types</Button>
+            <NavLink to={linkTo}>
+              <Button variant="outline">{linkText}</Button>
             </NavLink>
           </ButtonGroup>
         </Stack>
@@ -56,13 +67,23 @@ export function ContainerInputParameters({
 
     return (
       <Stack>
-        <Text>Input Types</Text>
-        <List>
-          <ListItem>Input Type: {inputType}</ListItem>
-          <ListItem>Unit Type: {unitType}</ListItem>
-        </List>
+        <Text fontSize="medium">{title}</Text>
+        {values.map((value) => (
+          <Text fontSize="small">{value}</Text>
+        ))}
         <InputParameterActions />
       </Stack>
+    );
+  };
+
+  const InputParameterTypes = () => {
+    return (
+      <InputContentOverview
+        title="Parameter Types"
+        values={[`Input Type: ${inputType}`, `Unit Type: ${unitType}`]}
+        linkTo={'edit-input-parameter-types'}
+        linkText={'Edit Types'}
+      />
     );
   };
 
@@ -72,41 +93,18 @@ export function ContainerInputParameters({
     const currentValues = values[unitKey];
     const { width, height, top, left } = currentValues;
 
-    const InputParameterActions = () => {
-      return (
-        <Stack>
-          <ButtonGroup>
-            <NavLink to={'edit-input-parameter-values-explicit'}>
-              <Button variant="outline">Edit Explicit Values</Button>
-            </NavLink>
-          </ButtonGroup>
-        </Stack>
-      );
-    };
-
     return (
-      <Stack>
-        <Text>Explicit Values</Text>
-        <List>
-          <ListItem>
-            Width: {width.toString()}
-            {unitTypeDisplay}
-          </ListItem>
-          <ListItem>
-            Height: {height.toString()}
-            {unitTypeDisplay}
-          </ListItem>
-          <ListItem>
-            Top: {top.toString()}
-            {unitTypeDisplay}
-          </ListItem>
-          <ListItem>
-            Left: {left.toString()}
-            {unitTypeDisplay}
-          </ListItem>
-        </List>
-        <InputParameterActions />
-      </Stack>
+      <InputContentOverview
+        title="Explicit Values"
+        values={[
+          `Width: ${width.toString()}${unitTypeDisplay}`,
+          `Height: ${height.toString()}${unitTypeDisplay}`,
+          `Top: ${top.toString()}${unitTypeDisplay}`,
+          `Left: ${left.toString()}${unitTypeDisplay}`,
+        ]}
+        linkTo={'edit-input-parameter-values-explicit'}
+        linkText={'Edit Explicit Values'}
+      />
     );
   };
 
@@ -116,37 +114,19 @@ export function ContainerInputParameters({
     const currentValues = values[unitKey];
     const { width, height, top, left } = currentValues;
 
-    const InputParameterActions = () => {
-      return (
-        <Stack>
-          <ButtonGroup>
-            <NavLink to={'edit-input-parameter-values-random'}>
-              <Button variant="outline">Edit Random Values</Button>
-            </NavLink>
-          </ButtonGroup>
-        </Stack>
-      );
-    };
-
     return (
-      <Stack>
-        <Text>Random Values (evenly distributed probability)</Text>
-        <List>
-          <ListItem>
-            Width: {formatNumberArrayToString(width, unitTypeDisplay)}
-          </ListItem>
-          <ListItem>
-            Height: {formatNumberArrayToString(height, unitTypeDisplay)}
-          </ListItem>
-          <ListItem>
-            Top: {formatNumberArrayToString(top, unitTypeDisplay)}
-          </ListItem>
-          <ListItem>
-            Left: {formatNumberArrayToString(left, unitTypeDisplay)}
-          </ListItem>
-        </List>
-        <InputParameterActions />
-      </Stack>
+      <InputContentOverview
+        title="Random Values**"
+        values={[
+          `Width: ${formatNumberArrayToString(width, unitTypeDisplay)}`,
+          `Height: ${formatNumberArrayToString(height, unitTypeDisplay)}`,
+          `Top: ${formatNumberArrayToString(top, unitTypeDisplay)}`,
+          `Left: ${formatNumberArrayToString(left, unitTypeDisplay)}`,
+          `** evenly distributed probability`,
+        ]}
+        linkTo={'edit-input-parameter-values-random'}
+        linkText={'Edit Random Values'}
+      />
     );
   };
 
@@ -156,35 +136,18 @@ export function ContainerInputParameters({
     const currentValues = values[unitKey];
     const { width, height, top, left } = currentValues;
 
-    const InputParameterActions = () => {
-      return (
-        <Stack>
-          <ButtonGroup>
-            <NavLink to={'edit-input-parameter-values-range'}>
-              <Button variant="outline">Edit Range Values</Button>
-            </NavLink>
-          </ButtonGroup>
-        </Stack>
-      );
-    };
-
     return (
-      <Stack>
-        <Text>Range Values</Text>
-        <List>
-          <ListItem>
-            Width: {formatRangeToString(width, unitTypeDisplay)}
-          </ListItem>
-          <ListItem>
-            Height: {formatRangeToString(height, unitTypeDisplay)}
-          </ListItem>
-          <ListItem>Top: {formatRangeToString(top, unitTypeDisplay)}</ListItem>
-          <ListItem>
-            Left: {formatRangeToString(left, unitTypeDisplay)}
-          </ListItem>
-        </List>
-        <InputParameterActions />
-      </Stack>
+      <InputContentOverview
+        title="Range Values"
+        values={[
+          `Width: ${formatRangeToString(width, unitTypeDisplay)}`,
+          `Height: ${formatRangeToString(height, unitTypeDisplay)}`,
+          `Top: ${formatRangeToString(top, unitTypeDisplay)}`,
+          `Left: ${formatRangeToString(left, unitTypeDisplay)}`,
+        ]}
+        linkTo={'edit-input-parameter-values-range'}
+        linkText={'Edit Range Values'}
+      />
     );
   };
 
@@ -203,7 +166,7 @@ export function ContainerInputParameters({
 
   return (
     <Stack>
-      <Text fontSize="large">Container Parameters:</Text>
+      <Text fontSize="large">Container Parameters</Text>
       <Stack spacing={5}>
         <InputParameterTypes />
         <InputParameterValuesByType />
