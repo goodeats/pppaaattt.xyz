@@ -1,12 +1,8 @@
-import {
-  ContentActions,
-  ContentContainer,
-  ContentOverview,
-} from '~/components';
+import { ContentContainer, LayerCard } from '~/components';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
-import { NavLink, useLoaderData } from '@remix-run/react';
+import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-import { DeleteLayer, action } from './__delete-layer';
+import { action } from './__delete-layer';
 
 export const handle = {
   breadcrumb: (match) => {
@@ -37,6 +33,16 @@ export async function loader({ params }: DataFunctionArgs) {
       description: true,
       createdAt: true,
       updatedAt: true,
+      designAttributes: {
+        select: {
+          id: true,
+          title: true,
+          attributeType: true,
+        },
+      },
+      _count: {
+        select: { designAttributes: true },
+      },
     },
   });
 
@@ -53,18 +59,16 @@ export default function LayerDetailsPage() {
   const data = useLoaderData<typeof loader>();
   const { layer } = data;
 
-  const LayerActions = () => {
-    return (
-      <ContentActions>
-        <DeleteLayer id={layer.id} />
-      </ContentActions>
-    );
-  };
-
   return (
     <ContentContainer>
-      <ContentOverview item={layer} />
-      <LayerActions />
+      <LayerCard
+        layer={{
+          ...layer,
+          createdAt: new Date(layer.createdAt),
+          updatedAt: new Date(layer.updatedAt),
+        }}
+      />
+      <Outlet />
     </ContentContainer>
   );
 }
