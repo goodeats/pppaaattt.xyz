@@ -1,4 +1,11 @@
-import { ContentContainer, LayerCard } from '~/components';
+import {
+  Box,
+  Column,
+  ColumnContainer,
+  ContentContainer,
+  Flex,
+  LayerCard,
+} from '~/components';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
@@ -57,15 +64,25 @@ export default function LayerDetailsPage() {
   const { layer } = data;
 
   return (
-    <ContentContainer>
-      <LayerCard
-        layer={{
-          ...layer,
-          createdAt: new Date(layer.createdAt),
-          updatedAt: new Date(layer.updatedAt),
-        }}
-      />
-      <Outlet />
-    </ContentContainer>
+    <ColumnContainer>
+      <Column>
+        <LayerCard
+          layer={{
+            ...layer,
+            createdAt: new Date(layer.createdAt),
+            updatedAt: new Date(layer.updatedAt),
+          }}
+        />
+      </Column>
+      <Column>
+        <LayerCard
+          layer={{
+            ...layer,
+            createdAt: new Date(layer.createdAt),
+            updatedAt: new Date(layer.updatedAt),
+          }}
+        />
+      </Column>
+    </ColumnContainer>
   );
 }
