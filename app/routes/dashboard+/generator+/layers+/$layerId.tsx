@@ -1,5 +1,6 @@
 import {
   Box,
+  CanvasCard,
   Column,
   ColumnContainer,
   ContentContainer,
@@ -75,7 +76,7 @@ export default function LayerDetailsPage() {
         />
       </Column>
       <Column>
-        <LayerCard
+        <CanvasCard
           layer={{
             ...layer,
             createdAt: new Date(layer.createdAt),
