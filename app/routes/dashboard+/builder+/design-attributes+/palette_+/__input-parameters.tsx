@@ -117,21 +117,17 @@ export function PaletteInputParameters({
     const values =
       inputParameter.randomValues as InputParameterPaletteRandomValuesType;
     const currentValues = values[unitKey];
-    const { width, height, top, left } = currentValues;
+    const valuesString = `${currentValues.toString()} random colors`;
 
     return (
-      <InputContentOverview
-        title="Random Values**"
-        values={[
-          `Width: ${formatNumberArrayToString(width, unitTypeDisplay)}`,
-          `Height: ${formatNumberArrayToString(height, unitTypeDisplay)}`,
-          `Top: ${formatNumberArrayToString(top, unitTypeDisplay)}`,
-          `Left: ${formatNumberArrayToString(left, unitTypeDisplay)}`,
-          `** evenly distributed probability`,
-        ]}
-        linkTo={'edit-input-parameter-values-random'}
-        linkText={'Edit Random Values'}
-      />
+      <InputParametersStack>
+        <InputParametersTitle title="Random Values" />
+        <InputParametersBody values={[valuesString]} />
+        <InputParametersActions
+          linkTo={'edit-values-random'}
+          linkText={'Edit Random Values'}
+        />
+      </InputParametersStack>
     );
   };
 
@@ -160,8 +156,8 @@ export function PaletteInputParameters({
     switch (inputType) {
       case 'explicit':
         return <InputParameterExplicitValues />;
-      // case 'random':
-      //   return <InputParameterRandomValues />;
+      case 'random':
+        return <InputParameterRandomValues />;
       // case 'range':
       //   return <InputParameterRangeValues />;
       default:

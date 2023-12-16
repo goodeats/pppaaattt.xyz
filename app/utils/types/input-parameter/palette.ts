@@ -1,5 +1,5 @@
 type PaletteExplicitValuesType = string[];
-type PaletteRandomValuesType = string[];
+type PaletteRandomValuesType = number;
 type PaletteRangeValuesType = string[];
 
 enum InputTypeEnum {
@@ -66,7 +66,7 @@ export const InputParameterPaletteDefault: InputParameterPaletteDefaultType = {
     hexcode: ['#000000', '#ffffff'],
   },
   randomValues: {
-    hexcode: ['#000000', '#ffffff'],
+    hexcode: 4,
   },
   rangeValues: {
     hexcode: ['#000000', '#ffffff'],

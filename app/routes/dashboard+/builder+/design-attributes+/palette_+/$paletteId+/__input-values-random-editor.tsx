@@ -14,13 +14,13 @@ import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { IInputParameter, prisma } from '~/utils/db.server';
-import { InputParameterPaletteExplicitValuesType } from '~/utils/types/input-parameter/palette';
+import { InputParameterPaletteRandomValuesType } from '~/utils/types/input-parameter/palette';
 import { StringsToHexSchma } from '~/utils/zod-schema';
 
 const urlResourcePath = '/dashboard/builder/design-attributes/palette';
 
 enum InputTypeEnum {
-  explicit = 'explicit',
+  random = 'random',
 }
 const InputTypeEnumNative = z.nativeEnum(InputTypeEnum);
 type InputTypeEnumType = z.infer<typeof InputTypeEnumNative>;
@@ -31,27 +31,27 @@ enum UnitTypeEnum {
 const UnitTypeEnumNative = z.nativeEnum(UnitTypeEnum);
 type UnitTypeEnumType = z.infer<typeof UnitTypeEnumNative>;
 
-interface PaletteValuesExplicitEditorSchemaTypes {
+interface PaletteValuesRandomEditorSchemaTypes {
   paletteId: string;
   id: string;
   inputType: InputTypeEnumType;
   unitType: UnitTypeEnumType;
-  hexcode: string | string[];
+  hexcode: number;
 }
 
-const PaletteValuesExplicitEditorSchema: z.Schema<PaletteValuesExplicitEditorSchemaTypes> =
+const PaletteValuesRandomEditorSchema: z.Schema<PaletteValuesRandomEditorSchemaTypes> =
   z.object({
     paletteId: z.string(),
     id: z.string(),
     inputType: InputTypeEnumNative,
     unitType: UnitTypeEnumNative,
-    hexcode: StringsToHexSchma('hexcode'),
+    hexcode: z.number(),
   });
 
 export async function action({ request }: DataFunctionArgs) {
   const formData = await request.formData();
   const submission = await parse(formData, {
-    schema: PaletteValuesExplicitEditorSchema.superRefine(async (data, ctx) => {
+    schema: PaletteValuesRandomEditorSchema.superRefine(async (data, ctx) => {
       if (!data.id) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -94,17 +94,17 @@ export async function action({ request }: DataFunctionArgs) {
       id: inputParameterId,
     },
     select: {
-      explicitValues: true,
+      randomValues: true,
     },
   });
   if (!currentInputParameter) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  // Ensure explicitValues is treated as an object
-  const currentValues = currentInputParameter.explicitValues || [];
+  // Ensure randomValues is treated as an object
+  const currentValues = currentInputParameter.randomValues || [];
   if (Array.isArray(currentValues)) {
-    // Handle the case where explicitValues is not an array
+    // Handle the case where randomValues is not an array
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
@@ -120,7 +120,7 @@ export async function action({ request }: DataFunctionArgs) {
   const updatedInputParameter = await prisma.inputParameter.update({
     where: { id: inputParameterId },
     data: {
-      explicitValues: updatedValues,
+      randomValues: updatedValues,
     },
   });
 
@@ -131,23 +131,23 @@ export async function action({ request }: DataFunctionArgs) {
   return redirect(`${urlResourcePath}/${paletteId}`);
 }
 
-type PaletteValuesExplicitEditorProps = {
+type PaletteValuesRandomEditorProps = {
   id: string;
   inputParameter: Pick<
     IInputParameter,
-    'id' | 'inputType' | 'unitType' | 'explicitValues'
+    'id' | 'inputType' | 'unitType' | 'randomValues'
   >;
 };
 
-export function PaletteValuesExplicitEditor({
+export function PaletteValuesRandomEditor({
   id,
   inputParameter,
-}: PaletteValuesExplicitEditorProps) {
+}: PaletteValuesRandomEditorProps) {
   const { unitType } = inputParameter;
   const unitTypeDisplay = UnitTypeEnum[unitType as 'hexcode'];
   const unitKey = unitType as keyof typeof UnitTypeEnum;
   const values =
-    inputParameter.explicitValues as InputParameterPaletteExplicitValuesType;
+    inputParameter.randomValues as InputParameterPaletteRandomValuesType;
   const currentValues = values[unitKey];
 
   // BUG: when navigating to /new this causes an infinite loop
@@ -156,15 +156,15 @@ export function PaletteValuesExplicitEditor({
   // const inputTypeFetcher = useFetcher<typeof action>();
   // const isPending = inputTypeFetcher.state !== 'idle';
 
-  const [form, fields] = useForm<PaletteValuesExplicitEditorSchemaTypes>({
-    id: 'palette-values-explicit-editor',
-    constraint: getFieldsetConstraint(PaletteValuesExplicitEditorSchema),
+  const [form, fields] = useForm<PaletteValuesRandomEditorSchemaTypes>({
+    id: 'palette-values-random-editor',
+    constraint: getFieldsetConstraint(PaletteValuesRandomEditorSchema),
     // lastSubmission: inputTypeFetcher.data?.submission,
     onValidate({ formData }) {
-      return parse(formData, { schema: PaletteValuesExplicitEditorSchema });
+      return parse(formData, { schema: PaletteValuesRandomEditorSchema });
     },
     defaultValue: {
-      hexcode: currentValues ?? '',
+      hexcode: currentValues ?? 4,
     },
   });
 
@@ -173,6 +173,7 @@ export function PaletteValuesExplicitEditor({
       <FormControl isInvalid={!!fields.hexcode.error}>
         <FormLabel>Colors ({unitTypeDisplay})</FormLabel>
         <Input
+          type="number"
           name={fields.hexcode.name}
           defaultValue={fields.hexcode.defaultValue}
         />
