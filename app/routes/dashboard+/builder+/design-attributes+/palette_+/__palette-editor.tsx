@@ -19,13 +19,13 @@ import {
 import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { DesignAttribute, prisma } from '~/utils/db.server';
-import { InputParameterContainerDefault } from '~/utils/types/input-parameter/container';
+import { InputParameterPaletteDefault } from '~/utils/types/input-parameter/palette';
 
 const titleMinLength = 1;
 const titleMaxLength = 100;
 const descriptionMinLength = 1;
 const descriptionMaxLength = 10000;
-const urlResourcePath = '/dashboard/builder/design-attributes/container';
+const urlResourcePath = '/dashboard/builder/design-attributes/palette';
 
 interface PaletteEditorSchemaTypes {
   id?: string;
@@ -49,15 +49,15 @@ export async function action({ request }: DataFunctionArgs) {
     schema: PaletteEditorSchema.superRefine(async (data, ctx) => {
       if (!data.id) return;
 
-      const container = await prisma.designAttribute.findUnique({
+      const palette = await prisma.designAttribute.findUnique({
         where: {
           id: data.id,
         },
       });
-      if (!container) {
+      if (!palette) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Container not found',
+          message: 'Palette not found',
         });
       }
     }),
@@ -72,16 +72,16 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  const { id: containerId, title, description } = submission.value;
+  const { id: paletteId, title, description } = submission.value;
   const designAttribute = await prisma.designAttribute.upsert({
-    where: { id: containerId ?? '__new_container__' },
+    where: { id: paletteId ?? '__new_palette__' },
     create: {
       title,
       description,
-      attributeType: 'container', // quick and dirty, no editing attribute type
+      attributeType: 'palette', // quick and dirty, no editing attribute type
       inputParameters: {
         // initialize with default input parameters
-        create: InputParameterContainerDefault,
+        create: InputParameterPaletteDefault,
       },
     },
     update: {
@@ -98,12 +98,12 @@ export async function action({ request }: DataFunctionArgs) {
 }
 
 type PaletteEditorProps = {
-  container?: SerializeFrom<
+  palette?: SerializeFrom<
     Pick<DesignAttribute, 'id' | 'title' | 'description'>
   >;
 };
 
-export function PaletteEditor({ container }: PaletteEditorProps) {
+export function PaletteEditor({ palette }: PaletteEditorProps) {
   // BUG: when navigating to /new this causes an infinite loop
   // Warning: Maximum update depth exceeded.
   // don't really need this right now, but will want to fix it later for other forms
@@ -111,15 +111,15 @@ export function PaletteEditor({ container }: PaletteEditorProps) {
   // const isPending = layerFetcher.state !== 'idle';
 
   const [form, fields] = useForm<PaletteEditorSchemaTypes>({
-    id: 'container-editor',
+    id: 'palette-editor',
     constraint: getFieldsetConstraint(PaletteEditorSchema),
     // lastSubmission: layerFetcher.data?.submission,
     onValidate({ formData }) {
       return parse(formData, { schema: PaletteEditorSchema });
     },
     defaultValue: {
-      title: container?.title ?? '',
-      description: container?.description ?? '',
+      title: palette?.title ?? '',
+      description: palette?.description ?? '',
     },
   });
 
@@ -157,13 +157,13 @@ export function PaletteEditor({ container }: PaletteEditorProps) {
             {/* <Button type="submit" disabled={isPending}> */}
             Submit
           </Button>
-          {container ? (
+          {palette ? (
             <Button form={form.id} variant="outline" type="reset">
               Reset
             </Button>
           ) : null}
-          {container ? (
-            <NavLink to={`${urlResourcePath}/${container.id}`}>
+          {palette ? (
+            <NavLink to={`${urlResourcePath}/${palette.id}`}>
               <Button variant="ghost">Cancel</Button>
             </NavLink>
           ) : null}
@@ -176,9 +176,7 @@ export function PaletteEditor({ container }: PaletteEditorProps) {
     <Stack width="full" paddingX={8} paddingY={5}>
       <Form method="post" {...form.props}>
         {/* if editing, include id in hidden field */}
-        {container ? (
-          <input type="hidden" name="id" value={container.id} />
-        ) : null}
+        {palette ? <input type="hidden" name="id" value={palette.id} /> : null}
 
         <Stack spacing={5}>
           <FormTitle />
