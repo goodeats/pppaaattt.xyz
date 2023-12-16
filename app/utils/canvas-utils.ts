@@ -51,6 +51,11 @@ const findDimensionValue = (
     return defaultValue;
   }
 
+  if (unitType === 'percent') {
+    console.log('Percent cannot be used for outer layer');
+    return defaultValue;
+  }
+
   if (
     typeof inputValues === 'object' &&
     inputValues !== null &&

@@ -43,7 +43,6 @@ export const CanvasCard = ({ designAttributes }: CanvasCardProps) => {
   };
 
   const Canvas = () => {
-    // TODO: need to make sure parent layer container is in px
     const width = CanvasWidth({ designAttributes });
     const height = CanvasHeight({ designAttributes });
 
