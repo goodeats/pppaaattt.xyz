@@ -16,7 +16,7 @@ import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { InputParameter, prisma } from '~/utils/db.server';
 
-const urlResourcePath = '/dashboard/builder/design-attributes/container';
+const urlResourcePath = '/dashboard/builder/design-attributes/palette';
 
 enum InputTypeEnum {
   explicit = 'explicit',
@@ -27,20 +27,19 @@ const InputTypeEnumNative = z.nativeEnum(InputTypeEnum);
 type InputTypeEnumType = z.infer<typeof InputTypeEnumNative>;
 
 enum UnitTypeEnum {
-  px = 'px',
-  percent = 'percent',
+  hexcode = 'hexcode',
 }
 const UnitTypeEnumNative = z.nativeEnum(UnitTypeEnum);
 type UnitTypeEnumType = z.infer<typeof UnitTypeEnumNative>;
 
-interface ContainerInputParameterEditorSchemaTypes {
+interface PaletteInputParameterEditorSchemaTypes {
   containerId: string;
   id: string;
   inputType: InputTypeEnumType;
   unitType: UnitTypeEnumType;
 }
 
-const ContainerInputParameterEditorSchema: z.Schema<ContainerInputParameterEditorSchemaTypes> =
+const PaletteInputParameterEditorSchema: z.Schema<PaletteInputParameterEditorSchemaTypes> =
   z.object({
     containerId: z.string(),
     id: z.string(),
@@ -51,28 +50,26 @@ const ContainerInputParameterEditorSchema: z.Schema<ContainerInputParameterEdito
 export async function action({ request }: DataFunctionArgs) {
   const formData = await request.formData();
   const submission = await parse(formData, {
-    schema: ContainerInputParameterEditorSchema.superRefine(
-      async (data, ctx) => {
-        if (!data.id) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Input parameter not provided',
-          });
-        }
-
-        const inputParameter = await prisma.inputParameter.findUnique({
-          where: {
-            id: data.id,
-          },
+    schema: PaletteInputParameterEditorSchema.superRefine(async (data, ctx) => {
+      if (!data.id) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Input parameter not provided',
         });
-        if (!inputParameter) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Input parameter not found',
-          });
-        }
       }
-    ),
+
+      const inputParameter = await prisma.inputParameter.findUnique({
+        where: {
+          id: data.id,
+        },
+      });
+      if (!inputParameter) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Input parameter not found',
+        });
+      }
+    }),
     async: true,
   });
 
@@ -105,27 +102,27 @@ export async function action({ request }: DataFunctionArgs) {
   return redirect(`${urlResourcePath}/${containerId}`);
 }
 
-type ContainerInputParameterEditorProps = {
+type PaletteInputParameterEditorProps = {
   id: string;
   inputParameter: Pick<InputParameter, 'id' | 'inputType' | 'unitType'>;
 };
 
-export function ContainerInputParameterTypesEditor({
+export function PaletteInputParameterTypesEditor({
   id,
   inputParameter,
-}: ContainerInputParameterEditorProps) {
+}: PaletteInputParameterEditorProps) {
   // BUG: when navigating to /new this causes an infinite loop
   // Warning: Maximum update depth exceeded.
   // don't really need this right now, but will want to fix it later for other forms
   // const inputTypeFetcher = useFetcher<typeof action>();
   // const isPending = inputTypeFetcher.state !== 'idle';
 
-  const [form, fields] = useForm<ContainerInputParameterEditorSchemaTypes>({
-    id: 'container-input-type-editor',
-    constraint: getFieldsetConstraint(ContainerInputParameterEditorSchema),
+  const [form, fields] = useForm<PaletteInputParameterEditorSchemaTypes>({
+    id: 'palette-input-type-editor',
+    constraint: getFieldsetConstraint(PaletteInputParameterEditorSchema),
     // lastSubmission: inputTypeFetcher.data?.submission,
     onValidate({ formData }) {
-      return parse(formData, { schema: ContainerInputParameterEditorSchema });
+      return parse(formData, { schema: PaletteInputParameterEditorSchema });
     },
     defaultValue: {
       inputType: inputParameter.inputType ?? '',
@@ -162,10 +159,7 @@ export function ContainerInputParameterTypesEditor({
 
   const FormUnitType = () => {
     type OptionsType = { value: string; label: string };
-    const options: OptionsType[] = [
-      { value: 'px', label: 'Pixels' },
-      { value: 'percent', label: 'Percentage' },
-    ];
+    const options: OptionsType[] = [{ value: 'hexcode', label: 'Hexcode' }];
 
     return (
       <Stack textAlign="left">

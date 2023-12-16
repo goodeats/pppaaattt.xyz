@@ -1,19 +1,17 @@
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-import { PaletteEditor, action } from './__palette-editor';
+import { PaletteEditor, action } from './../__palette-editor';
 
 // BUG: this removes the id breadcrumb
 export const handle = {
   breadcrumb: (match) => {
     const { data, params } = match;
-    const containerId = params.containerId;
-    const title = data.container?.title ?? 'Container';
+    const paletteId = params.paletteId;
+    const title = data.palette?.title ?? 'Palette';
     return (
-      <NavLink
-        to={`/dashboard/builder/design-attributes/container/${containerId}`}
-      >
-        {title} (Edit)
+      <NavLink to={`/dashboard/builder/design-attributes/palette/${paletteId}`}>
+        Edit
       </NavLink>
     );
   },
@@ -21,14 +19,14 @@ export const handle = {
 export { action };
 
 export async function loader({ params }: DataFunctionArgs) {
-  const { containerId } = params;
-  if (!containerId) {
-    return redirect('/dashboard/builder/design-attributes/container');
+  const { paletteId } = params;
+  if (!paletteId) {
+    return redirect('/dashboard/builder/design-attributes/palette');
   }
 
-  const container = await prisma.designAttribute.findUnique({
+  const palette = await prisma.designAttribute.findUnique({
     where: {
-      id: containerId,
+      id: paletteId,
     },
     select: {
       id: true,
@@ -39,20 +37,20 @@ export async function loader({ params }: DataFunctionArgs) {
     },
   });
 
-  if (!container) {
+  if (!palette) {
     // TODO: redirect to 404 page
     // create toast notification
     // https://www.youtube.com/watch?v=N2yMZR6B31U
     return redirect(
-      '/dashboard/builder/design-attributes/container?notFound=true'
+      '/dashboard/builder/design-attributes/palette?notFound=true'
     );
   }
 
-  return json({ container });
+  return json({ palette });
 }
 
-export default function ContainerEditPage() {
+export default function PaletteEditPage() {
   const data = useLoaderData<typeof loader>();
 
-  return <PaletteEditor container={data.container} />;
+  return <PaletteEditor palette={data.palette} />;
 }

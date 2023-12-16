@@ -69,8 +69,10 @@ export function PaletteInputParameters({
     return (
       <Stack>
         <Text fontSize="medium">{title}</Text>
-        {values.map((value) => (
-          <Text fontSize="small">{value}</Text>
+        {values.map((value, i) => (
+          <Text key={i} fontSize="small">
+            {value}
+          </Text>
         ))}
         <InputParameterActions />
       </Stack>

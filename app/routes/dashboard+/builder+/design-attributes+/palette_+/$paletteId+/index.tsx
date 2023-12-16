@@ -7,25 +7,12 @@ import {
   ContentContainer,
 } from '~/components';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
-import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
+import { useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-// import { action } from './__delete-palette';
-import { PaletteInputParameters } from './__input-parameters';
+import { PaletteInputParameters } from '../__input-parameters';
+import { DeletePalette, action } from './__delete-palette';
 
-export const handle = {
-  breadcrumb: (match) => {
-    const { data, params } = match;
-    const paletteId = params.paletteId;
-    const title = data.palette?.title ?? 'Palette';
-    return (
-      <NavLink to={`/dashboard/builder/design-attributes/palette/${paletteId}`}>
-        {title}
-      </NavLink>
-    );
-  },
-};
-
-// export { action };
+export { action };
 
 export async function loader({ params }: DataFunctionArgs) {
   const { paletteId } = params;
@@ -70,6 +57,40 @@ export async function loader({ params }: DataFunctionArgs) {
 }
 
 export default function PaletteDetailsPage() {
-  // TODO: add palette content on top of content
-  return <Outlet />;
+  const data = useLoaderData<typeof loader>();
+  const { palette } = data;
+  const { inputParameters } = palette;
+
+  const PaletteParameters = () => {
+    if (!inputParameters || inputParameters.length === 0)
+      return (
+        <Stack>
+          <List>
+            <ListItem>No Palette Parameters</ListItem>
+          </List>
+        </Stack>
+      );
+
+    // only one input parameter for design attributes right now
+    // later we will add heirarchy of input parameters
+    const inputParameter = inputParameters[0];
+
+    return <PaletteInputParameters inputParameter={inputParameter} />;
+  };
+
+  const PaletteActions = () => {
+    return (
+      <ContentActions>
+        <DeletePalette id={palette.id} />
+      </ContentActions>
+    );
+  };
+
+  return (
+    <ContentContainer>
+      <ContentOverview item={palette} />
+      <PaletteParameters />
+      <PaletteActions />
+    </ContentContainer>
+  );
 }
