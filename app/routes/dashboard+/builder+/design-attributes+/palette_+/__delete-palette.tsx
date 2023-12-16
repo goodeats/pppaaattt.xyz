@@ -8,12 +8,12 @@ import { prisma } from '~/utils/db.server';
 
 interface DeleteFormSchemaTypes {
   intent: string;
-  containerId: string;
+  paletteId: string;
 }
 
 const DeleteFormSchema: z.Schema<DeleteFormSchemaTypes> = z.object({
   intent: z.literal('delete-layer'),
-  containerId: z.string(),
+  paletteId: z.string(),
 });
 
 export async function action({ request }: DataFunctionArgs) {
@@ -30,34 +30,34 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  const { containerId } = submission.value;
+  const { paletteId } = submission.value;
 
-  const container = await prisma.designAttribute.findFirst({
+  const palette = await prisma.designAttribute.findFirst({
     select: { id: true },
-    where: { id: containerId },
+    where: { id: paletteId },
   });
-  if (!container) {
+  if (!palette) {
     return json({ status: 'error', submission } as const, { status: 404 });
   }
 
   await prisma.designAttribute.delete({
-    where: { id: container.id },
+    where: { id: palette.id },
   });
 
-  return redirect(`/dashboard/builder/design-attributes/container`);
+  return redirect(`/dashboard/builder/design-attributes/palette`);
 }
 
-export function DeleteContainer({ id }: { id: string }) {
+export function DeletePalette({ id }: { id: string }) {
   // const actionData = useActionData<typeof action>();
   // const isPending = useIsPending();
   const [form] = useForm({
-    id: 'delete-container',
+    id: 'delete-palette',
     // lastSubmission: actionData?.submission,
   });
 
   return (
     <Form method="post" {...form.props}>
-      <input type="hidden" name="containerId" value={id} />
+      <input type="hidden" name="paletteId" value={id} />
       {/* TODO: make this an alert dialog
           https://chakra-ui.com/docs/components/alert-dialog */}
       <Button

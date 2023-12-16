@@ -12,7 +12,7 @@ import {
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-// import { DeletePalette, action } from './__delete-palette';
+import { DeletePalette, action } from './__delete-palette';
 // import { PaletteInputParameters } from './__input-parameters';
 
 export const handle = {
@@ -28,7 +28,7 @@ export const handle = {
   },
 };
 
-// export { action };
+export { action };
 
 export async function loader({ params }: DataFunctionArgs) {
   const { paletteId } = params;
@@ -96,7 +96,9 @@ export default function PaletteDetailsPage() {
 
   const PaletteActions = () => {
     return (
-      <ContentActions>{/* <DeletePalette id={palette.id} /> */}</ContentActions>
+      <ContentActions>
+        <DeletePalette id={palette.id} />
+      </ContentActions>
     );
   };
 
