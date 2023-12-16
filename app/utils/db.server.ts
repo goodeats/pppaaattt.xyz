@@ -29,3 +29,7 @@ export interface ILayer extends Layer {
 export interface IDesignAttribute extends DesignAttribute {
   inputParameters?: InputParameter[];
 }
+
+export interface IInputParameter extends InputParameter {
+  designAttribute?: DesignAttribute;
+}

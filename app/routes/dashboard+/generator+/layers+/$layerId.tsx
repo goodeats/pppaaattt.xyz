@@ -43,10 +43,17 @@ export async function loader({ params }: DataFunctionArgs) {
           id: true,
           title: true,
           attributeType: true,
+          inputParameters: {
+            select: {
+              id: true,
+              inputType: true,
+              unitType: true,
+              explicitValues: true,
+              randomValues: true,
+              rangeValues: true,
+            },
+          },
         },
-      },
-      _count: {
-        select: { designAttributes: true },
       },
     },
   });
@@ -63,6 +70,7 @@ export async function loader({ params }: DataFunctionArgs) {
 export default function LayerDetailsPage() {
   const data = useLoaderData<typeof loader>();
   const { layer } = data;
+  const { designAttributes } = layer;
 
   return (
     <ColumnContainer>
@@ -76,13 +84,7 @@ export default function LayerDetailsPage() {
         />
       </Column>
       <Column>
-        <CanvasCard
-          layer={{
-            ...layer,
-            createdAt: new Date(layer.createdAt),
-            updatedAt: new Date(layer.updatedAt),
-          }}
-        />
+        <CanvasCard designAttributes={designAttributes} />
       </Column>
     </ColumnContainer>
   );
