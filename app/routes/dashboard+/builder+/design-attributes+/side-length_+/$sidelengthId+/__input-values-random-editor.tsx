@@ -6,63 +6,52 @@ import {
   FormLabel,
   Input,
   Stack,
+  StackDivider,
 } from '~/components';
 import { useForm } from '@conform-to/react';
 import { getFieldsetConstraint, parse } from '@conform-to/zod';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
-import { InputParameter, prisma } from '~/utils/db.server';
-import { InputParameterContainerExplicitValuesType } from '~/utils/types/input-parameter/container';
+import { IInputParameter, prisma } from '~/utils/db.server';
+import { InputParameterPaletteRandomValuesType } from '~/utils/types/input-parameter/palette';
+import { StringsToHexSchma } from '~/utils/zod-schema';
 
-const urlResourcePath = '/dashboard/builder/design-attributes/container';
+const urlResourcePath = '/dashboard/builder/design-attributes/palette';
 
 enum InputTypeEnum {
-  explicit = 'explicit',
   random = 'random',
-  range = 'range',
-}
-enum UnitTypeDisplayEnum {
-  px = 'px',
-  percent = '%',
 }
 const InputTypeEnumNative = z.nativeEnum(InputTypeEnum);
 type InputTypeEnumType = z.infer<typeof InputTypeEnumNative>;
 
 enum UnitTypeEnum {
-  px = 'px',
-  percent = 'percent',
+  hexcode = 'hexcode',
 }
 const UnitTypeEnumNative = z.nativeEnum(UnitTypeEnum);
 type UnitTypeEnumType = z.infer<typeof UnitTypeEnumNative>;
 
-interface ExplicitValuesEditorSchemaTypes {
-  containerId: string;
+interface PaletteValuesRandomEditorSchemaTypes {
+  paletteId: string;
   id: string;
   inputType: InputTypeEnumType;
   unitType: UnitTypeEnumType;
-  width: number;
-  height: number;
-  left: number;
-  top: number;
+  hexcode: number;
 }
 
-const ExplicitValuesSchema: z.Schema<ExplicitValuesEditorSchemaTypes> =
+const PaletteValuesRandomEditorSchema: z.Schema<PaletteValuesRandomEditorSchemaTypes> =
   z.object({
-    containerId: z.string(),
+    paletteId: z.string(),
     id: z.string(),
     inputType: InputTypeEnumNative,
     unitType: UnitTypeEnumNative,
-    width: z.number(),
-    height: z.number(),
-    left: z.number(),
-    top: z.number(),
+    hexcode: z.number(),
   });
 
 export async function action({ request }: DataFunctionArgs) {
   const formData = await request.formData();
   const submission = await parse(formData, {
-    schema: ExplicitValuesSchema.superRefine(async (data, ctx) => {
+    schema: PaletteValuesRandomEditorSchema.superRefine(async (data, ctx) => {
       if (!data.id) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -96,11 +85,8 @@ export async function action({ request }: DataFunctionArgs) {
   const {
     id: inputParameterId,
     unitType,
-    containerId,
-    width,
-    height,
-    left,
-    top,
+    paletteId,
+    hexcode,
   } = submission.value;
 
   const currentInputParameter = await prisma.inputParameter.findUnique({
@@ -108,35 +94,33 @@ export async function action({ request }: DataFunctionArgs) {
       id: inputParameterId,
     },
     select: {
-      explicitValues: true,
+      randomValues: true,
     },
   });
   if (!currentInputParameter) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  // Ensure explicitValues is treated as an object
-  const currentValues = currentInputParameter.explicitValues || {};
-  if (typeof currentValues !== 'object' || Array.isArray(currentValues)) {
-    // Handle the case where explicitValues is not an object
+  // Ensure randomValues is treated as an object
+  const currentValues = currentInputParameter.randomValues || [];
+  if (Array.isArray(currentValues)) {
+    // Handle the case where randomValues is not an array
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  const newData = {
-    [unitType]: {
-      width,
-      height,
-      left,
-      top,
-    },
+  const hexcodeArray =
+    typeof hexcode === 'string' ? hexcode.split(',') : hexcode;
+
+  const newValues = {
+    [unitType]: hexcodeArray,
   };
 
-  const updatedExplicitValues = { ...currentValues, ...newData };
+  const updatedValues = newValues;
 
   const updatedInputParameter = await prisma.inputParameter.update({
     where: { id: inputParameterId },
     data: {
-      explicitValues: updatedExplicitValues,
+      randomValues: updatedValues,
     },
   });
 
@@ -144,96 +128,56 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  return redirect(`${urlResourcePath}/${containerId}`);
+  return redirect(`${urlResourcePath}/${paletteId}`);
 }
 
-type ContainerInputParameterEditorProps = {
+type PaletteValuesRandomEditorProps = {
   id: string;
   inputParameter: Pick<
-    InputParameter,
-    'id' | 'inputType' | 'unitType' | 'explicitValues'
+    IInputParameter,
+    'id' | 'inputType' | 'unitType' | 'randomValues'
   >;
 };
 
-export function ContainerInputParameterExplicitValuesEditor({
+export function PaletteValuesRandomEditor({
   id,
   inputParameter,
-}: ContainerInputParameterEditorProps) {
+}: PaletteValuesRandomEditorProps) {
+  const { unitType } = inputParameter;
+  const unitTypeDisplay = UnitTypeEnum[unitType as 'hexcode'];
+  const unitKey = unitType as keyof typeof UnitTypeEnum;
+  const values =
+    inputParameter.randomValues as InputParameterPaletteRandomValuesType;
+  const currentValues = values[unitKey];
+
   // BUG: when navigating to /new this causes an infinite loop
   // Warning: Maximum update depth exceeded.
   // don't really need this right now, but will want to fix it later for other forms
   // const inputTypeFetcher = useFetcher<typeof action>();
   // const isPending = inputTypeFetcher.state !== 'idle';
 
-  const { unitType } = inputParameter;
-  const unitTypeDisplay = UnitTypeDisplayEnum[unitType];
-  const unitKey = unitType as keyof typeof UnitTypeEnum;
-  const values =
-    inputParameter.explicitValues as InputParameterContainerExplicitValuesType;
-  const currentValues = values[unitKey];
-
-  const [form, fields] = useForm<ExplicitValuesEditorSchemaTypes>({
-    id: 'container-input-parameter-values-explicit-editor',
-    constraint: getFieldsetConstraint(ExplicitValuesSchema),
+  const [form, fields] = useForm<PaletteValuesRandomEditorSchemaTypes>({
+    id: 'palette-values-random-editor',
+    constraint: getFieldsetConstraint(PaletteValuesRandomEditorSchema),
     // lastSubmission: inputTypeFetcher.data?.submission,
     onValidate({ formData }) {
-      return parse(formData, {
-        schema: ExplicitValuesSchema,
-      });
+      return parse(formData, { schema: PaletteValuesRandomEditorSchema });
     },
     defaultValue: {
-      width: currentValues?.width ?? 0,
-      height: currentValues?.height ?? 0,
-      left: currentValues?.left ?? 0,
-      top: currentValues?.top ?? 0,
+      hexcode: currentValues ?? 4,
     },
   });
 
-  const FormWidth = () => {
+  const FormHexCode = () => {
     return (
-      <FormControl isInvalid={!!fields.width.error}>
-        <FormLabel>Width ({unitTypeDisplay})</FormLabel>
+      <FormControl isInvalid={!!fields.hexcode.error}>
+        <FormLabel>Colors ({unitTypeDisplay})</FormLabel>
         <Input
-          name={fields.width.name}
-          defaultValue={fields.width.defaultValue}
+          type="number"
+          name={fields.hexcode.name}
+          defaultValue={fields.hexcode.defaultValue}
         />
-        <FormErrorMessage>{fields.width.error}</FormErrorMessage>
-      </FormControl>
-    );
-  };
-
-  const FormHeight = () => {
-    return (
-      <FormControl isInvalid={!!fields.height.error}>
-        <FormLabel>Height ({unitTypeDisplay})</FormLabel>
-        <Input
-          name={fields.height.name}
-          defaultValue={fields.height.defaultValue}
-        />
-        <FormErrorMessage>{fields.height.error}</FormErrorMessage>
-      </FormControl>
-    );
-  };
-
-  const FormLeft = () => {
-    return (
-      <FormControl isInvalid={!!fields.left.error}>
-        <FormLabel>Left ({unitTypeDisplay})</FormLabel>
-        <Input
-          name={fields.left.name}
-          defaultValue={fields.left.defaultValue}
-        />
-        <FormErrorMessage>{fields.left.error}</FormErrorMessage>
-      </FormControl>
-    );
-  };
-
-  const FormTop = () => {
-    return (
-      <FormControl isInvalid={!!fields.top.error}>
-        <FormLabel>Top ({unitTypeDisplay})</FormLabel>
-        <Input name={fields.top.name} defaultValue={fields.top.defaultValue} />
-        <FormErrorMessage>{fields.top.error}</FormErrorMessage>
+        <FormErrorMessage>{fields.hexcode.error}</FormErrorMessage>
       </FormControl>
     );
   };
@@ -260,7 +204,7 @@ export function ContainerInputParameterExplicitValuesEditor({
   return (
     <Stack width="full" paddingX={8} paddingY={5}>
       <Form method="post" {...form.props}>
-        <input type="hidden" name="containerId" value={id} />
+        <input type="hidden" name="paletteId" value={id} />
         <input type="hidden" name="id" value={inputParameter.id} />
         <input
           type="hidden"
@@ -269,12 +213,8 @@ export function ContainerInputParameterExplicitValuesEditor({
         />
         <input type="hidden" name="unitType" value={inputParameter.unitType} />
 
-        <Stack spacing={5}>
-          <FormWidth />
-          <FormHeight />
-          <FormLeft />
-          <FormTop />
-
+        <Stack divider={<StackDivider borderColor="gray.200" />} spacing={5}>
+          <FormHexCode />
           <FormActions />
         </Stack>
       </Form>

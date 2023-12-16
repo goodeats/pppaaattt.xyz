@@ -8,10 +8,18 @@ export const colorHexInvert = (hex: string): string => {
   const b = parseInt(hex.substring(4, 6), 16);
 
   // Invert each component
-  const rInv = (255 - r).toString(16).padStart(2, '0');
-  const gInv = (255 - g).toString(16).padStart(2, '0');
-  const bInv = (255 - b).toString(16).padStart(2, '0');
+  const rInv = (255 - r).toString(16).padStart(2, '0').toUpperCase();
+  const gInv = (255 - g).toString(16).padStart(2, '0').toUpperCase();
+  const bInv = (255 - b).toString(16).padStart(2, '0').toUpperCase();
 
   // Combine and return the inverted hex code
   return `#${rInv}${gInv}${bInv}`;
+};
+
+export const colorRandomHex = (): string => {
+  let random = Math.floor(Math.random() * 16777215).toString(16);
+  if (random.length === 5) {
+    random = '0' + random;
+  }
+  return `#${random.toUpperCase()}`;
 };

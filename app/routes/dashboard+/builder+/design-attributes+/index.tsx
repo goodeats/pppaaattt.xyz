@@ -4,6 +4,7 @@ export default function DesignAttributesIndexPage() {
   const navs = [
     { to: 'container', title: 'Container' },
     { to: 'palette', title: 'Palette' },
+    { to: 'side-length', title: 'Side Length' },
   ];
 
   return (

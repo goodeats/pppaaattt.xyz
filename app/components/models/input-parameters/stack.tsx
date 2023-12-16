@@ -71,15 +71,19 @@ export const InputParametersActions = ({
   );
 };
 
-export const PaletteStack = ({ values }: { values: string[] }) => {
+type PaletteStackProps = {
+  values: string[];
+};
+
+export const PaletteStack = ({ values }: PaletteStackProps) => {
   return (
     <ColumnContainer>
       {values.map((value, i) => {
         return (
           <Column key={i}>
             <Box p={8} bg={value} textAlign="center">
-              <Text color={colorHexInvert(value)} fontWeight="bold">
-                {value}
+              <Text colorScheme={colorHexInvert(value)} fontWeight="bold">
+                Random
               </Text>
             </Box>
           </Column>

@@ -37,7 +37,8 @@ export function ContainerInputParameters({
   inputParameter,
 }: ContainerInputParameterEditorProps) {
   const { inputType, unitType } = inputParameter;
-  const unitTypeDisplay = UnitTypeDisplayEnum[unitType];
+  const unitTypeDisplay =
+    UnitTypeDisplayEnum[unitType as keyof typeof UnitTypeEnum];
   const unitKey = unitType as keyof typeof UnitTypeEnum;
 
   type InputContentOverviewProps = {

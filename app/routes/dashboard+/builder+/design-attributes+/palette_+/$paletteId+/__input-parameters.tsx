@@ -1,6 +1,4 @@
 import {
-  Button,
-  ButtonGroup,
   InputParametersActions,
   InputParametersBody,
   InputParametersStack,
@@ -8,23 +6,14 @@ import {
   Stack,
   Text,
 } from '~/components';
-import { NavLink } from '@remix-run/react';
 import { InputParameter } from '~/utils/db.server';
-import {
-  formatNumberArrayToString,
-  formatRangeToString,
-} from '~/utils/string-formatting';
 import {
   InputParameterPaletteExplicitValuesType,
   InputParameterPaletteRandomValuesType,
-  InputParameterPaletteRangeValuesType,
 } from '~/utils/types/input-parameter/palette';
+import { colorRandomHex } from '~/utils/color-utils';
 
 enum UnitTypeEnum {
-  hexcode = 'hexcode',
-}
-
-enum UnitTypeDisplayEnum {
   hexcode = 'hexcode',
 }
 
@@ -47,42 +36,7 @@ export function PaletteInputParameters({
   if (unitType !== 'hexcode') {
     throw new Error(`Invalid unitType: ${unitType}. Expected 'hexcode'.`);
   }
-  const unitTypeDisplay = UnitTypeDisplayEnum[unitType];
   const unitKey = unitType as keyof typeof UnitTypeEnum;
-
-  type InputContentOverviewProps = {
-    title: string;
-    linkTo: string;
-    linkText: string;
-    children?: React.ReactNode | string;
-  };
-
-  const InputContentOverview = ({
-    title,
-    linkTo,
-    linkText,
-    children,
-  }: InputContentOverviewProps) => {
-    const InputParameterActions = () => {
-      return (
-        <Stack>
-          <ButtonGroup>
-            <NavLink to={linkTo}>
-              <Button variant="outline">{linkText}</Button>
-            </NavLink>
-          </ButtonGroup>
-        </Stack>
-      );
-    };
-
-    return (
-      <Stack>
-        <Text fontSize="medium">{title}</Text>
-        {children}
-        <InputParameterActions />
-      </Stack>
-    );
-  };
 
   const InputParameterTypes = () => {
     const values = [`Input Type: ${inputType}`, `Unit Type: ${unitType}`];
@@ -117,38 +71,20 @@ export function PaletteInputParameters({
     const values =
       inputParameter.randomValues as InputParameterPaletteRandomValuesType;
     const currentValues = values[unitKey];
-    const valuesString = `${currentValues.toString()} random colors`;
+    const randomColors = [];
+    for (let i = 0; i < currentValues; i++) {
+      randomColors.push(colorRandomHex());
+    }
 
     return (
       <InputParametersStack>
         <InputParametersTitle title="Random Values" />
-        <InputParametersBody values={[valuesString]} />
+        <InputParametersBody values={randomColors} attributeType="palette" />
         <InputParametersActions
           linkTo={'edit-values-random'}
           linkText={'Edit Random Values'}
         />
       </InputParametersStack>
-    );
-  };
-
-  const InputParameterRangeValues = () => {
-    const values =
-      inputParameter.rangeValues as InputParameterPaletteRangeValuesType;
-    const currentValues = values[unitKey];
-    const { width, height, top, left } = currentValues;
-
-    return (
-      <InputContentOverview
-        title="Range Values"
-        values={[
-          `Width: ${formatRangeToString(width, unitTypeDisplay)}`,
-          `Height: ${formatRangeToString(height, unitTypeDisplay)}`,
-          `Top: ${formatRangeToString(top, unitTypeDisplay)}`,
-          `Left: ${formatRangeToString(left, unitTypeDisplay)}`,
-        ]}
-        linkTo={'edit-input-parameter-values-range'}
-        linkText={'Edit Range Values'}
-      />
     );
   };
 
@@ -158,8 +94,6 @@ export function PaletteInputParameters({
         return <InputParameterExplicitValues />;
       case 'random':
         return <InputParameterRandomValues />;
-      // case 'range':
-      //   return <InputParameterRangeValues />;
       default:
         return null;
     }

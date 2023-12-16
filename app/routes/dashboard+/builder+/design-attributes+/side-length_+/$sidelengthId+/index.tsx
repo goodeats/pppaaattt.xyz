@@ -9,20 +9,22 @@ import {
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-import { PaletteInputParameters } from './__input-parameters';
-import { DeletePalette, action } from './__delete-palette';
+import { DeleteSideLength, action } from './__delete-side-length';
+import { SideLengthInputParameters } from './__input-parameters';
+
+const urlResourcePath = '/dashboard/builder/design-attributes/side-length';
 
 export { action };
 
 export async function loader({ params }: DataFunctionArgs) {
-  const { paletteId } = params;
-  if (!paletteId) {
-    return redirect('/dashboard/builder/design-attributes/palette');
+  const { sidelengthId } = params;
+  if (!sidelengthId) {
+    return redirect(urlResourcePath);
   }
 
-  const palette = await prisma.designAttribute.findUnique({
+  const sideLength = await prisma.designAttribute.findUnique({
     where: {
-      id: paletteId,
+      id: sidelengthId,
     },
     select: {
       id: true,
@@ -45,28 +47,26 @@ export async function loader({ params }: DataFunctionArgs) {
     },
   });
 
-  if (!palette) {
+  if (!sideLength) {
     // TODO: redirect to 404 page
     // create toast notification
-    return redirect(
-      '/dashboard/builder/design-attributes/palette?notFound=true'
-    );
+    return redirect(`${urlResourcePath}?notFound=true`);
   }
 
-  return json({ palette });
+  return json({ sideLength });
 }
 
-export default function PaletteDetailsPage() {
+export default function SidelengthDetailsPage() {
   const data = useLoaderData<typeof loader>();
-  const { palette } = data;
-  const { inputParameters } = palette;
+  const { sideLength } = data;
+  const { inputParameters } = sideLength;
 
-  const PaletteParameters = () => {
+  const InputParameters = () => {
     if (!inputParameters || inputParameters.length === 0)
       return (
         <Stack>
           <List>
-            <ListItem>No Palette Parameters</ListItem>
+            <ListItem>No SideLength Parameters</ListItem>
           </List>
         </Stack>
       );
@@ -75,21 +75,21 @@ export default function PaletteDetailsPage() {
     // later we will add heirarchy of input parameters
     const inputParameter = inputParameters[0];
 
-    return <PaletteInputParameters inputParameter={inputParameter} />;
+    return <SideLengthInputParameters inputParameter={inputParameter} />;
   };
 
   const PaletteActions = () => {
     return (
       <ContentActions>
-        <DeletePalette id={palette.id} />
+        <DeleteSideLength id={sideLength.id} />
       </ContentActions>
     );
   };
 
   return (
     <ContentContainer>
-      <ContentOverview item={palette} />
-      <PaletteParameters />
+      <ContentOverview item={sideLength} />
+      <InputParameters />
       <PaletteActions />
     </ContentContainer>
   );
