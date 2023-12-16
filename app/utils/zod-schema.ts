@@ -2,10 +2,13 @@ import { z } from 'zod';
 import {
   removeWhitespace,
   validateCommaSeparatedNumbers,
+  validateCommaSeparatedStrings,
   validateMinMaxRange,
   validateRangeHasTwoValues,
+  validateStringsAreHexcodes,
 } from './validations';
 import { sortNumbers } from './sorts';
+import { formatSringsToHex } from './string-formatting';
 
 const messageCommaSeparatedValues = (name: string) =>
   `${name.toUpperCase()} values must be comma separated numbers`;
@@ -49,5 +52,21 @@ export const RangeInputMinMaxToSchema = (name: string) => {
     })
     .refine(validateMinMaxRange, {
       message: 'Min value must be less than max value',
+    });
+};
+
+export const StringsToHexSchma = (name: string) => {
+  return z
+    .string()
+    .transform((val) => removeWhitespace(val))
+    .refine(validateCommaSeparatedStrings, {
+      message: messageCommaSeparatedValues(name),
+    })
+    .transform((val) => {
+      const strings = val.split(',');
+      return formatSringsToHex(strings);
+    })
+    .refine(validateStringsAreHexcodes, {
+      message: 'Values must be valid hexcodes',
     });
 };

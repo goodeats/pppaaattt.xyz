@@ -1,14 +1,17 @@
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-import { PaletteInputTypeEditor, action } from './__input-type-editor';
+import {
+  PaletteValuesExplicitEditor,
+  action,
+} from './__input-values-explicit-editor';
 
 export const handle = {
   breadcrumb: (match) => {
     const paletteId = match.params.paletteId;
     return (
       <NavLink to={`/dashboard/builder/design-attributes/palette/${paletteId}`}>
-        Edit Type
+        Edit Explicit Values
       </NavLink>
     );
   },
@@ -17,10 +20,6 @@ export { action };
 
 export async function loader({ params }: DataFunctionArgs) {
   const { paletteId } = params;
-  if (!paletteId) {
-    return redirect('/dashboard/builder/design-attributes/palette');
-  }
-
   const palette = await prisma.designAttribute.findUnique({
     where: {
       id: paletteId,
@@ -33,6 +32,7 @@ export async function loader({ params }: DataFunctionArgs) {
           id: true,
           inputType: true,
           unitType: true,
+          explicitValues: true,
         },
       },
     },
@@ -50,13 +50,16 @@ export async function loader({ params }: DataFunctionArgs) {
   return json({ palette });
 }
 
-export default function EditPaletteTypePage() {
+export default function EditPaletteExplicitValuesPage() {
   const data = useLoaderData<typeof loader>();
   const { palette } = data;
   const { inputParameters } = palette;
   const inputParameter = inputParameters[0];
 
   return (
-    <PaletteInputTypeEditor id={palette.id} inputParameter={inputParameter} />
+    <PaletteValuesExplicitEditor
+      id={palette.id}
+      inputParameter={inputParameter}
+    />
   );
 }

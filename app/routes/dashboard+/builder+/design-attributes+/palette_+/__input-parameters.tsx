@@ -106,7 +106,7 @@ export function PaletteInputParameters({
         <InputParametersTitle title="Explicit Values" />
         <InputParametersBody values={currentValues} attributeType="palette" />
         <InputParametersActions
-          linkTo={'edit-input-parameter-values-explicit'}
+          linkTo={'edit-values-explicit'}
           linkText={'Edit Explicit Values'}
         />
       </InputParametersStack>

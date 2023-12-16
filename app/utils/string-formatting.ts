@@ -16,3 +16,13 @@ export const formatRangeToString = (
 export const formatTimeStampsReadable = (timestamp: string): string => {
   return new Date(timestamp).toLocaleString();
 };
+
+export const formatSringsToHex = (strings: string[]): string[] => {
+  return strings.map((str) => {
+    if (str.startsWith('#')) {
+      return str.toUpperCase();
+    } else {
+      return `#${str}`.toUpperCase();
+    }
+  });
+};
