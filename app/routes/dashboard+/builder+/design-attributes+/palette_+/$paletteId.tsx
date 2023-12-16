@@ -1,16 +1,6 @@
-import {
-  ContentActions,
-  ContentOverview,
-  List,
-  ListItem,
-  Stack,
-  ContentContainer,
-} from '~/components';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
-import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
+import { NavLink, Outlet } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-// import { action } from './__delete-palette';
-import { PaletteInputParameters } from './__input-parameters';
 
 export const handle = {
   breadcrumb: (match) => {
@@ -24,8 +14,6 @@ export const handle = {
     );
   },
 };
-
-// export { action };
 
 export async function loader({ params }: DataFunctionArgs) {
   const { paletteId } = params;

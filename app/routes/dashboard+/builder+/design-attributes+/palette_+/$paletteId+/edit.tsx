@@ -6,9 +6,7 @@ import { PaletteEditor, action } from './../__palette-editor';
 // BUG: this removes the id breadcrumb
 export const handle = {
   breadcrumb: (match) => {
-    const { data, params } = match;
-    const paletteId = params.paletteId;
-    const title = data.palette?.title ?? 'Palette';
+    const paletteId = match.params.paletteId;
     return (
       <NavLink to={`/dashboard/builder/design-attributes/palette/${paletteId}`}>
         Edit
