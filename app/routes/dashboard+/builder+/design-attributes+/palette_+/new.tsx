@@ -1,11 +1,11 @@
 import { DataFunctionArgs, json } from '@remix-run/node';
-import { ContainerEditor, action } from './__container-editor';
+import { PaletteEditor, action } from './__palette-editor';
 import { NavLink } from '@remix-run/react';
 
 export const handle = {
   breadcrumb: () => {
     return (
-      <NavLink to={'/dashboard/builder/design-attributes/container/new'}>
+      <NavLink to={'/dashboard/builder/design-attributes/palette/new'}>
         New
       </NavLink>
     );
@@ -17,6 +17,6 @@ export async function loader({ params }: DataFunctionArgs) {
 }
 
 export { action };
-export default function NewContainerPage() {
-  return <ContainerEditor />;
+export default function NewPalettePage() {
+  return <PaletteEditor />;
 }

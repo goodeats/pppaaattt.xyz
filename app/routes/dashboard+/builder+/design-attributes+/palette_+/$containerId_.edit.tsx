@@ -1,7 +1,7 @@
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-import { ContainerEditor, action } from './__container-editor';
+import { PaletteEditor, action } from './__palette-editor';
 
 // BUG: this removes the id breadcrumb
 export const handle = {
@@ -54,5 +54,5 @@ export async function loader({ params }: DataFunctionArgs) {
 export default function ContainerEditPage() {
   const data = useLoaderData<typeof loader>();
 
-  return <ContainerEditor container={data.container} />;
+  return <PaletteEditor container={data.container} />;
 }

@@ -27,13 +27,13 @@ const descriptionMinLength = 1;
 const descriptionMaxLength = 10000;
 const urlResourcePath = '/dashboard/builder/design-attributes/container';
 
-interface ContainerEditorSchemaTypes {
+interface PaletteEditorSchemaTypes {
   id?: string;
   title: string;
   description?: string;
 }
 
-const ContainerEditorSchema: z.Schema<ContainerEditorSchemaTypes> = z.object({
+const PaletteEditorSchema: z.Schema<PaletteEditorSchemaTypes> = z.object({
   id: z.string().optional(),
   title: z.string().min(titleMinLength).max(titleMaxLength),
   description: z
@@ -46,7 +46,7 @@ const ContainerEditorSchema: z.Schema<ContainerEditorSchemaTypes> = z.object({
 export async function action({ request }: DataFunctionArgs) {
   const formData = await request.formData();
   const submission = await parse(formData, {
-    schema: ContainerEditorSchema.superRefine(async (data, ctx) => {
+    schema: PaletteEditorSchema.superRefine(async (data, ctx) => {
       if (!data.id) return;
 
       const container = await prisma.designAttribute.findUnique({
@@ -97,25 +97,25 @@ export async function action({ request }: DataFunctionArgs) {
   return redirect(`${urlResourcePath}/${designAttribute.id}`);
 }
 
-type ContainerEditorProps = {
+type PaletteEditorProps = {
   container?: SerializeFrom<
     Pick<DesignAttribute, 'id' | 'title' | 'description'>
   >;
 };
 
-export function ContainerEditor({ container }: ContainerEditorProps) {
+export function PaletteEditor({ container }: PaletteEditorProps) {
   // BUG: when navigating to /new this causes an infinite loop
   // Warning: Maximum update depth exceeded.
   // don't really need this right now, but will want to fix it later for other forms
   // const layerFetcher = useFetcher<typeof action>();
   // const isPending = layerFetcher.state !== 'idle';
 
-  const [form, fields] = useForm<ContainerEditorSchemaTypes>({
+  const [form, fields] = useForm<PaletteEditorSchemaTypes>({
     id: 'container-editor',
-    constraint: getFieldsetConstraint(ContainerEditorSchema),
+    constraint: getFieldsetConstraint(PaletteEditorSchema),
     // lastSubmission: layerFetcher.data?.submission,
     onValidate({ formData }) {
-      return parse(formData, { schema: ContainerEditorSchema });
+      return parse(formData, { schema: PaletteEditorSchema });
     },
     defaultValue: {
       title: container?.title ?? '',
