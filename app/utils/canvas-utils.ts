@@ -15,42 +15,39 @@ type DesignAttributeWithInputParameters = Pick<
   >[];
 };
 
-type Canvasprops = {
+type CanvasProps = {
   designAttributes: DesignAttributeWithInputParameters[];
 };
 
-export const CanvasWidth = ({ designAttributes }: Canvasprops): number => {
+const findDimensionValue = (
+  designAttributes: DesignAttributeWithInputParameters[],
+  dimension: 'width' | 'height'
+): number => {
   const defaultValue = 400;
 
-  const containers = designAttributes.filter(
-    (designAttribute) => designAttribute.attributeType === 'container'
+  const container = designAttributes.find(
+    (attr) => attr.attributeType === 'container'
   );
-
-  if (containers.length === 0) {
-    console.log('no containers');
+  if (!container) {
+    console.log('No containers');
     return defaultValue;
   }
 
-  const container = containers[0];
-  const { inputParameters } = container;
-
-  if (inputParameters.length === 0) {
-    console.log('no input parameters');
+  const inputParameter = container.inputParameters[0];
+  if (!inputParameter) {
+    console.log('No input parameters');
     return defaultValue;
   }
 
-  const inputParameter = inputParameters[0];
-  const { inputType } = inputParameter;
-
-  const inputValues = inputParameter[`${inputType}Values`];
+  const inputValues = inputParameter[`${inputParameter.inputType}Values`];
   if (!inputValues) {
-    console.log('no input type');
+    console.log('No input type');
     return defaultValue;
   }
 
   const unitType = inputParameter.unitType as 'px' | 'percent';
   if (!unitType) {
-    console.log('no unit type');
+    console.log('No unit type');
     return defaultValue;
   }
 
@@ -61,88 +58,30 @@ export const CanvasWidth = ({ designAttributes }: Canvasprops): number => {
   ) {
     const unitValues = inputValues[unitType as keyof typeof inputValues];
     if (!unitValues) {
-      console.log(`no ${unitType} values`);
+      console.log(`No ${unitType} values`);
       return defaultValue;
     }
-    if (
-      typeof unitValues === 'object' &&
-      'width' in unitValues &&
-      typeof unitValues.width === 'number'
-    ) {
-      return unitValues.width;
+
+    if (typeof unitValues === 'object' && dimension in unitValues) {
+      return (unitValues as { [K in 'width' | 'height']: number })[dimension];
     } else {
       console.log(
-        `${inputType} ${unitType} does not have a width property or width is not a number`
+        `${inputParameter.inputType} ${unitType} does not have a ${dimension} property`
       );
       return defaultValue;
     }
   } else {
     console.log(
-      `${inputType}Values is not an object or does not contain unitType`
+      `${inputParameter.inputType}Values is not an object or does not contain unitType`
     );
     return defaultValue;
   }
 };
 
-export const CanvasHeight = ({ designAttributes }: Canvasprops): number => {
-  const defaultValue = 400;
+export const CanvasWidth = ({ designAttributes }: CanvasProps): number => {
+  return findDimensionValue(designAttributes, 'width');
+};
 
-  const containers = designAttributes.filter(
-    (designAttribute) => designAttribute.attributeType === 'container'
-  );
-
-  if (containers.length === 0) {
-    console.log('no containers');
-    return defaultValue;
-  }
-
-  const container = containers[0];
-  const { inputParameters } = container;
-
-  if (inputParameters.length === 0) {
-    console.log('no input parameters');
-    return defaultValue;
-  }
-
-  const inputParameter = inputParameters[0];
-  const { inputType } = inputParameter;
-
-  const inputValues = inputParameter[`${inputType}Values`];
-  if (!inputValues) {
-    console.log('no input type');
-    return defaultValue;
-  }
-
-  const unitType = inputParameter.unitType as 'px' | 'percent';
-  if (!unitType) {
-    console.log('no unit type');
-    return defaultValue;
-  }
-
-  if (
-    typeof inputValues === 'object' &&
-    inputValues !== null &&
-    unitType in inputValues
-  ) {
-    const unitValues = inputValues[unitType as keyof typeof inputValues];
-    if (!unitValues) {
-      console.log(`no ${unitType} values`);
-      return defaultValue;
-    }
-    if (
-      typeof unitValues === 'object' &&
-      'height' in unitValues &&
-      typeof unitValues.height === 'number'
-    ) {
-      return unitValues.height;
-    } else {
-      console.log(`${inputType} ${unitType} does not have a height property`);
-      return defaultValue;
-    }
-  } else {
-    console.log(
-      `${inputType}Values is not an object or does not contain unitType`
-    );
-    return defaultValue;
-  }
+export const CanvasHeight = ({ designAttributes }: CanvasProps): number => {
+  return findDimensionValue(designAttributes, 'height');
 };
