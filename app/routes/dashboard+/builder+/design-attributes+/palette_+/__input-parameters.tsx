@@ -2,6 +2,7 @@ import {
   Button,
   ButtonGroup,
   InputParametersActions,
+  InputParametersBody,
   InputParametersStack,
   InputParametersTitle,
   Stack,
@@ -85,17 +86,11 @@ export function PaletteInputParameters({
 
   const InputParameterTypes = () => {
     const values = [`Input Type: ${inputType}`, `Unit Type: ${unitType}`];
-    const Values = () =>
-      values.map((value, i) => (
-        <Text key={i} fontSize="small">
-          {value}
-        </Text>
-      ));
 
     return (
       <InputParametersStack>
         <InputParametersTitle title="Parameter Types" />
-        <Values />
+        <InputParametersBody values={values} />
         <InputParametersActions linkTo={'edit-type'} linkText={'Edit Types'} />
       </InputParametersStack>
     );
@@ -105,16 +100,16 @@ export function PaletteInputParameters({
     const values =
       inputParameter.explicitValues as InputParameterPaletteExplicitValuesType;
     const currentValues = values[unitKey];
-    console.log('currentValues', currentValues);
-    // const { width, height, top, left } = currentValues;
 
     return (
-      <InputContentOverview
-        title="Explicit Values"
-        values={['values']}
-        linkTo={'edit-input-parameter-values-explicit'}
-        linkText={'Edit Explicit Values'}
-      />
+      <InputParametersStack>
+        <InputParametersTitle title="Explicit Values" />
+        <InputParametersBody values={currentValues} attributeType="palette" />
+        <InputParametersActions
+          linkTo={'edit-input-parameter-values-explicit'}
+          linkText={'Edit Explicit Values'}
+        />
+      </InputParametersStack>
     );
   };
 
@@ -179,7 +174,7 @@ export function PaletteInputParameters({
       <Text fontSize="large">Palette Parameters</Text>
       <Stack spacing={5}>
         <InputParameterTypes />
-        {/* <InputParameterValuesByType /> */}
+        <InputParameterValuesByType />
       </Stack>
     </Stack>
   );
