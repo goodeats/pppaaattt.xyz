@@ -1,14 +1,14 @@
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-import { PaletteEditor, action } from './../__palette-editor';
+import { PaletteInputTypeEditor, action } from './__input-type-editor';
 
 export const handle = {
   breadcrumb: (match) => {
     const paletteId = match.params.paletteId;
     return (
       <NavLink to={`/dashboard/builder/design-attributes/palette/${paletteId}`}>
-        Edit
+        Edit Type
       </NavLink>
     );
   },
@@ -28,9 +28,13 @@ export async function loader({ params }: DataFunctionArgs) {
     select: {
       id: true,
       title: true,
-      description: true,
-      createdAt: true,
-      updatedAt: true,
+      inputParameters: {
+        select: {
+          id: true,
+          inputType: true,
+          unitType: true,
+        },
+      },
     },
   });
 
@@ -46,8 +50,13 @@ export async function loader({ params }: DataFunctionArgs) {
   return json({ palette });
 }
 
-export default function PaletteEditPage() {
+export default function PaletteInputParameterTypesEditPage() {
   const data = useLoaderData<typeof loader>();
+  const { palette } = data;
+  const { inputParameters } = palette;
+  const inputParameter = inputParameters[0];
 
-  return <PaletteEditor palette={data.palette} />;
+  return (
+    <PaletteInputTypeEditor id={palette.id} inputParameter={inputParameter} />
+  );
 }

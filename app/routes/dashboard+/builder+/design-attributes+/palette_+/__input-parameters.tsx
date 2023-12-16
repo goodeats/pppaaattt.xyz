@@ -84,7 +84,7 @@ export function PaletteInputParameters({
       <InputContentOverview
         title="Parameter Types"
         values={[`Input Type: ${inputType}`, `Unit Type: ${unitType}`]}
-        linkTo={'edit-input-parameter-types'}
+        linkTo={'edit-type'}
         linkText={'Edit Types'}
       />
     );
