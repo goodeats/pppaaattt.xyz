@@ -2,7 +2,7 @@ import {
   Button,
   ButtonGroup,
   ContentActions,
-  ContentContainer,
+  ContentPalette,
   ContentOverview,
   List,
   ListItem,
@@ -12,35 +12,33 @@ import {
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-import { DeleteContainer, action } from './__delete-container';
-import { ContainerInputParameters } from './__input-parameters';
+// import { DeletePalette, action } from './__delete-palette';
+// import { PaletteInputParameters } from './__input-parameters';
 
 export const handle = {
   breadcrumb: (match) => {
     const { data, params } = match;
-    const containerId = params.containerId;
-    const title = data.container?.title ?? 'Container';
+    const paletteId = params.paletteId;
+    const title = data.palette?.title ?? 'Palette';
     return (
-      <NavLink
-        to={`/dashboard/builder/design-attributes/container/${containerId}`}
-      >
+      <NavLink to={`/dashboard/builder/design-attributes/palette/${paletteId}`}>
         {title}
       </NavLink>
     );
   },
 };
 
-export { action };
+// export { action };
 
 export async function loader({ params }: DataFunctionArgs) {
-  const { containerId } = params;
-  if (!containerId) {
-    return redirect('/dashboard/builder/design-attributes/container');
+  const { paletteId } = params;
+  if (!paletteId) {
+    return redirect('/dashboard/builder/design-attributes/palette');
   }
 
-  const container = await prisma.designAttribute.findUnique({
+  const palette = await prisma.designAttribute.findUnique({
     where: {
-      id: containerId,
+      id: paletteId,
     },
     select: {
       id: true,
@@ -63,28 +61,28 @@ export async function loader({ params }: DataFunctionArgs) {
     },
   });
 
-  if (!container) {
+  if (!palette) {
     // TODO: redirect to 404 page
     // create toast notification
     return redirect(
-      '/dashboard/builder/design-attributes/container?notFound=true'
+      '/dashboard/builder/design-attributes/palette?notFound=true'
     );
   }
 
-  return json({ container });
+  return json({ palette });
 }
 
-export default function ContainerDetailsPage() {
+export default function PaletteDetailsPage() {
   const data = useLoaderData<typeof loader>();
-  const { container } = data;
-  const { inputParameters } = container;
+  const { palette } = data;
+  const { inputParameters } = palette;
 
-  const ContainerParameters = () => {
+  const PaletteParameters = () => {
     if (!inputParameters || inputParameters.length === 0)
       return (
         <Stack>
           <List>
-            <ListItem>No Container Parameters</ListItem>
+            <ListItem>No Palette Parameters</ListItem>
           </List>
         </Stack>
       );
@@ -93,22 +91,20 @@ export default function ContainerDetailsPage() {
     // later we will add heirarchy of input parameters
     const inputParameter = inputParameters[0];
 
-    return <ContainerInputParameters inputParameter={inputParameter} />;
+    return <PaletteInputParameters inputParameter={inputParameter} />;
   };
 
-  const ContainerActions = () => {
+  const PaletteActions = () => {
     return (
-      <ContentActions>
-        <DeleteContainer id={container.id} />
-      </ContentActions>
+      <ContentActions>{/* <DeletePalette id={palette.id} /> */}</ContentActions>
     );
   };
 
   return (
-    <ContentContainer>
-      <ContentOverview item={container} />
-      <ContainerParameters />
-      <ContainerActions />
-    </ContentContainer>
+    <div>
+      <ContentOverview item={palette} />
+      {/* <PaletteParameters /> */}
+      <PaletteActions />
+    </div>
   );
 }

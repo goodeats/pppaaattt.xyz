@@ -24,6 +24,7 @@ export const handle = {
 export async function loader({ request }: DataFunctionArgs) {
   const palettes = await prisma.designAttribute.findMany({
     where: {
+      layerId: null,
       attributeType: {
         equals: 'palette',
       },
