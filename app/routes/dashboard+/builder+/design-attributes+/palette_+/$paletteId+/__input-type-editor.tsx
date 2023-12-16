@@ -135,7 +135,7 @@ export function PaletteInputTypeEditor({
     const options: { value: string; label: string }[] = [
       { value: 'explicit', label: 'Explicit' },
       { value: 'random', label: 'Random' },
-      { value: 'range', label: 'Range' },
+      // { value: 'range', label: 'Range' },
     ];
 
     return (
