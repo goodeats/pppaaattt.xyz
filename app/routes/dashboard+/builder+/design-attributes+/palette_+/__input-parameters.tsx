@@ -1,4 +1,12 @@
-import { Button, ButtonGroup, Stack, Text } from '~/components';
+import {
+  Button,
+  ButtonGroup,
+  InputParametersActions,
+  InputParametersStack,
+  InputParametersTitle,
+  Stack,
+  Text,
+} from '~/components';
 import { NavLink } from '@remix-run/react';
 import { InputParameter } from '~/utils/db.server';
 import {
@@ -43,16 +51,16 @@ export function PaletteInputParameters({
 
   type InputContentOverviewProps = {
     title: string;
-    values: string[];
     linkTo: string;
     linkText: string;
+    children?: React.ReactNode | string;
   };
 
   const InputContentOverview = ({
     title,
-    values,
     linkTo,
     linkText,
+    children,
   }: InputContentOverviewProps) => {
     const InputParameterActions = () => {
       return (
@@ -69,24 +77,27 @@ export function PaletteInputParameters({
     return (
       <Stack>
         <Text fontSize="medium">{title}</Text>
-        {values.map((value, i) => (
-          <Text key={i} fontSize="small">
-            {value}
-          </Text>
-        ))}
+        {children}
         <InputParameterActions />
       </Stack>
     );
   };
 
   const InputParameterTypes = () => {
+    const values = [`Input Type: ${inputType}`, `Unit Type: ${unitType}`];
+    const Values = () =>
+      values.map((value, i) => (
+        <Text key={i} fontSize="small">
+          {value}
+        </Text>
+      ));
+
     return (
-      <InputContentOverview
-        title="Parameter Types"
-        values={[`Input Type: ${inputType}`, `Unit Type: ${unitType}`]}
-        linkTo={'edit-type'}
-        linkText={'Edit Types'}
-      />
+      <InputParametersStack>
+        <InputParametersTitle title="Parameter Types" />
+        <Values />
+        <InputParametersActions linkTo={'edit-type'} linkText={'Edit Types'} />
+      </InputParametersStack>
     );
   };
 
@@ -94,17 +105,13 @@ export function PaletteInputParameters({
     const values =
       inputParameter.explicitValues as InputParameterPaletteExplicitValuesType;
     const currentValues = values[unitKey];
-    const { width, height, top, left } = currentValues;
+    console.log('currentValues', currentValues);
+    // const { width, height, top, left } = currentValues;
 
     return (
       <InputContentOverview
         title="Explicit Values"
-        values={[
-          `Width: ${width.toString()}${unitTypeDisplay}`,
-          `Height: ${height.toString()}${unitTypeDisplay}`,
-          `Top: ${top.toString()}${unitTypeDisplay}`,
-          `Left: ${left.toString()}${unitTypeDisplay}`,
-        ]}
+        values={['values']}
         linkTo={'edit-input-parameter-values-explicit'}
         linkText={'Edit Explicit Values'}
       />
@@ -158,10 +165,10 @@ export function PaletteInputParameters({
     switch (inputType) {
       case 'explicit':
         return <InputParameterExplicitValues />;
-      case 'random':
-        return <InputParameterRandomValues />;
-      case 'range':
-        return <InputParameterRangeValues />;
+      // case 'random':
+      //   return <InputParameterRandomValues />;
+      // case 'range':
+      //   return <InputParameterRangeValues />;
       default:
         return null;
     }
