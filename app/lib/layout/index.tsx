@@ -13,7 +13,10 @@ export type LayoutProps = {
 };
 
 const Layout = ({ children }: LayoutProps) => {
-  const items = [{ id: '/dashboard/builder', title: 'Builder' }];
+  const items = [
+    { id: '/dashboard/builder', title: 'Builder' },
+    { id: '/dashboard/generator', title: 'Generator' },
+  ];
 
   return (
     <PageWrapper>

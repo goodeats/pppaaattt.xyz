@@ -5,14 +5,21 @@ import { formatTimeStampsReadable } from '~/utils/string-formatting';
 
 type LayersTableProps = {
   layers: Pick<ILayer, 'id' | 'title' | 'createdAt'>[];
-  layerCount: number;
+  layerCount?: number;
+  caption?: React.ReactNode | string;
+  navRoute?: string;
 };
 
-export const LayersTable = ({ layers, layerCount }: LayersTableProps) => {
-  const Caption = () => (
+export const LayersTable = ({
+  layers,
+  layerCount,
+  caption,
+  navRoute = '/dashboard/builder',
+}: LayersTableProps) => {
+  const DefaultCaption = () => (
     <NavLink to={'/dashboard/builder/layers'} unstable_viewTransition>
       <Button variant="link" colorScheme="blue">
-        More Layers ({layerCount})
+        {layerCount ? `More Layers (${layerCount})` : 'View Layers'}
       </Button>
     </NavLink>
   );
@@ -23,7 +30,7 @@ export const LayersTable = ({ layers, layerCount }: LayersTableProps) => {
     const { id, title, createdAt } = layer;
 
     const titleCell = (
-      <NavLink to={`/dashboard/builder/layers/${id}`}>
+      <NavLink to={`${navRoute}/layers/${id}`}>
         <Button variant="link">{title}</Button>
       </NavLink>
     );
@@ -36,6 +43,10 @@ export const LayersTable = ({ layers, layerCount }: LayersTableProps) => {
   });
 
   return (
-    <CustomTable caption={<Caption />} columnNames={columnNames} rows={rows} />
+    <CustomTable
+      caption={caption || <DefaultCaption />}
+      columnNames={columnNames}
+      rows={rows}
+    />
   );
 };
