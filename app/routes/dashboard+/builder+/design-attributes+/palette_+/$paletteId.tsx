@@ -13,7 +13,7 @@ import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 import { DeletePalette, action } from './__delete-palette';
-// import { PaletteInputParameters } from './__input-parameters';
+import { PaletteInputParameters } from './__input-parameters';
 
 export const handle = {
   breadcrumb: (match) => {
@@ -105,7 +105,7 @@ export default function PaletteDetailsPage() {
   return (
     <div>
       <ContentOverview item={palette} />
-      {/* <PaletteParameters /> */}
+      <PaletteParameters />
       <PaletteActions />
     </div>
   );

@@ -6,22 +6,20 @@ import {
   formatRangeToString,
 } from '~/utils/string-formatting';
 import {
-  InputParameterContainerExplicitValuesType,
-  InputParameterContainerRandomValuesType,
-  InputParameterContainerRangeValuesType,
-} from '~/utils/types/input-parameter/container';
+  InputParameterPaletteExplicitValuesType,
+  InputParameterPaletteRandomValuesType,
+  InputParameterPaletteRangeValuesType,
+} from '~/utils/types/input-parameter/palette';
 
 enum UnitTypeEnum {
-  px = 'px',
-  percent = 'percent',
+  hexcode = 'hexcode',
 }
 
 enum UnitTypeDisplayEnum {
-  px = 'px',
-  percent = '%',
+  hexcode = 'hexcode',
 }
 
-type ContainerInputParameterEditorProps = {
+type PaletteInputParameterEditorProps = {
   inputParameter: Pick<
     InputParameter,
     | 'id'
@@ -33,10 +31,13 @@ type ContainerInputParameterEditorProps = {
   >;
 };
 
-export function ContainerInputParameters({
+export function PaletteInputParameters({
   inputParameter,
-}: ContainerInputParameterEditorProps) {
+}: PaletteInputParameterEditorProps) {
   const { inputType, unitType } = inputParameter;
+  if (unitType !== 'hexcode') {
+    throw new Error(`Invalid unitType: ${unitType}. Expected 'hexcode'.`);
+  }
   const unitTypeDisplay = UnitTypeDisplayEnum[unitType];
   const unitKey = unitType as keyof typeof UnitTypeEnum;
 
@@ -89,7 +90,7 @@ export function ContainerInputParameters({
 
   const InputParameterExplicitValues = () => {
     const values =
-      inputParameter.explicitValues as InputParameterContainerExplicitValuesType;
+      inputParameter.explicitValues as InputParameterPaletteExplicitValuesType;
     const currentValues = values[unitKey];
     const { width, height, top, left } = currentValues;
 
@@ -110,7 +111,7 @@ export function ContainerInputParameters({
 
   const InputParameterRandomValues = () => {
     const values =
-      inputParameter.randomValues as InputParameterContainerRandomValuesType;
+      inputParameter.randomValues as InputParameterPaletteRandomValuesType;
     const currentValues = values[unitKey];
     const { width, height, top, left } = currentValues;
 
@@ -132,7 +133,7 @@ export function ContainerInputParameters({
 
   const InputParameterRangeValues = () => {
     const values =
-      inputParameter.rangeValues as InputParameterContainerRangeValuesType;
+      inputParameter.rangeValues as InputParameterPaletteRangeValuesType;
     const currentValues = values[unitKey];
     const { width, height, top, left } = currentValues;
 
@@ -166,10 +167,10 @@ export function ContainerInputParameters({
 
   return (
     <Stack>
-      <Text fontSize="large">Container Parameters</Text>
+      <Text fontSize="large">Palette Parameters</Text>
       <Stack spacing={5}>
         <InputParameterTypes />
-        <InputParameterValuesByType />
+        {/* <InputParameterValuesByType /> */}
       </Stack>
     </Stack>
   );

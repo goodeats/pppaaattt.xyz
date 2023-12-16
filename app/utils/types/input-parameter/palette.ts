@@ -41,7 +41,7 @@ export type InputParameterPaletteRandomValuesType = {
 };
 
 // how to range??
-export type InputParameterContainerRangeValuesType = {
+export type InputParameterPaletteRangeValuesType = {
   hexcode: PaletteRangeValuesType;
   // rgba: PaletteRangeValuesType;
   // hsl: PaletteRangeValuesType;
@@ -56,7 +56,7 @@ export type InputParameterPaletteDefaultType = {
   unitType: UnitTypeEnum;
   explicitValues: InputParameterPaletteExplicitValuesType;
   randomValues: InputParameterPaletteRandomValuesType;
-  rangeValues: InputParameterContainerRangeValuesType;
+  rangeValues: InputParameterPaletteRangeValuesType;
 };
 
 export const InputParameterPaletteDefault: InputParameterPaletteDefaultType = {
