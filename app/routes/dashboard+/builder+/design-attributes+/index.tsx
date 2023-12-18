@@ -1,7 +1,11 @@
 import { CustomButtonNavGroup, Stack, Text } from '~/components';
 
 export default function DesignAttributesIndexPage() {
-  const navs = [{ to: 'container', title: 'Container' }];
+  const navs = [
+    { to: 'container', title: 'Container' },
+    { to: 'palette', title: 'Palette' },
+    { to: 'side-length', title: 'Side Length' },
+  ];
 
   return (
     <Stack width="full" paddingX={8} paddingY={5} textAlign="left">

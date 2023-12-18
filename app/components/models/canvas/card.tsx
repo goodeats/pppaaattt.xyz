@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import {
   Box,
   Card,
@@ -11,7 +12,7 @@ import {
   StackDivider,
   Text,
 } from '~/components';
-import { CanvasHeight, CanvasWidth } from '~/utils/canvas-utils';
+import { CanvasDraw } from '~/utils/canvas/draw';
 import { IDesignAttribute, IInputParameter } from '~/utils/db.server';
 
 type DesignAttributeWithInputParameters = Pick<
@@ -43,17 +44,16 @@ export const CanvasCard = ({ designAttributes }: CanvasCardProps) => {
   };
 
   const Canvas = () => {
-    const width = CanvasWidth({ designAttributes });
-    const height = CanvasHeight({ designAttributes });
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+
+    useEffect(() => {
+      const canvas = canvasRef.current;
+      canvas && CanvasDraw({ canvas, designAttributes });
+    }, []);
 
     return (
       <Box textAlign="center">
-        <canvas
-          id="canvas"
-          width={width}
-          height={height}
-          style={{ background: 'gold' }}
-        ></canvas>
+        <canvas id="canvas" ref={canvasRef} width={400} height={400}></canvas>
       </Box>
     );
   };

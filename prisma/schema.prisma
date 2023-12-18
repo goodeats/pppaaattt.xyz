@@ -105,4 +105,5 @@ enum InputType {
 enum UnitType {
   px
   percent
+  hexcode
 }

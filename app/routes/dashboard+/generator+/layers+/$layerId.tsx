@@ -1,14 +1,6 @@
-import {
-  Box,
-  CanvasCard,
-  Column,
-  ColumnContainer,
-  ContentContainer,
-  Flex,
-  LayerCard,
-} from '~/components';
+import { CanvasCard, Column, ColumnContainer, LayerCard } from '~/components';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
-import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
+import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
 
 export const handle = {
