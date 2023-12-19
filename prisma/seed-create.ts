@@ -1,5 +1,8 @@
 import { PrismaClient } from '@prisma/client';
-import { InputParameterContainerDefault } from '~/utils/types/input-parameter/container';
+import {
+  InputParameterContainerAspectRatio,
+  InputParameterContainerDefault,
+} from '~/utils/types/input-parameter/container';
 import { InputParameterPaletteDefault } from '~/utils/types/input-parameter/palette';
 const prisma = new PrismaClient();
 
@@ -9,6 +12,10 @@ export const seedLayers = async () => {
     {
       title: 'Default Layer',
       description: 'A template of default settings for a root layer',
+    },
+    {
+      title: 'Empty Layer',
+      description: 'A template of a root layer with no design attributes',
     },
   ];
 
@@ -45,6 +52,16 @@ export const seedContainerDesignAttributes = async () => {
     {
       title: 'Default Container',
       description: 'A template of default settings for a container attribute',
+      inputParameters: InputParameterContainerDefault,
+    },
+    {
+      title: '9:16 Container',
+      description: 'A template of a container with an aspect ratio of 9:16',
+      inputParameters: InputParameterContainerAspectRatio({
+        aspectRatio: '9:16',
+        multiplier: 0.1,
+        values: 'explicit',
+      }),
     },
   ];
 
