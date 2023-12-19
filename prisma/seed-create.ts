@@ -121,3 +121,32 @@ export const seedPaletteDesignAttributes = async () => {
   await Promise.all(promises);
   console.log('Palette design attributes seeded.');
 };
+
+export const seedDesignAttributesOnLayers = async () => {
+  console.log('Seeding design attributes on layers...');
+
+  const layer = await prisma.layer.findFirst({
+    where: { title: 'Default Layer' },
+  });
+
+  if (!layer) {
+    throw new Error('Default layer not found.');
+  }
+
+  const container = await prisma.designAttribute.findFirst({
+    where: { title: 'Default Container' },
+  });
+
+  if (!container) {
+    throw new Error('Default container not found.');
+  }
+
+  const newDesignAttribute = await prisma.designAttributesOnLayers.create({
+    data: {
+      layerId: layer.id,
+      designAttributeId: container.id,
+    },
+  });
+
+  console.log('Design attributes on layers seeded.');
+};

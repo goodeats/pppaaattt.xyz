@@ -1,5 +1,9 @@
 import { PrismaClient } from '@prisma/client';
-import { seedDesignAttributes, seedLayers } from './seed-create';
+import {
+  seedDesignAttributes,
+  seedDesignAttributesOnLayers,
+  seedLayers,
+} from './seed-create';
 const prisma = new PrismaClient();
 
 const resetDb = async () => {
@@ -14,6 +18,7 @@ const seedTables = async () => {
   console.log('Seeding tables...');
   await seedLayers();
   await seedDesignAttributes();
+  await seedDesignAttributesOnLayers();
   console.log('Tables seeded.');
 };
 
