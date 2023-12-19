@@ -66,7 +66,6 @@ export async function action({ request }: DataFunctionArgs) {
       const designAttribute = await prisma.designAttribute.findUnique({
         where: {
           id: data.designAttributeId,
-          layerId: null,
         },
       });
 
@@ -94,7 +93,6 @@ export async function action({ request }: DataFunctionArgs) {
   const designAttribute = await prisma.designAttribute.findUnique({
     where: {
       id: designAttributeId,
-      layerId: null,
     },
     include: {
       inputParameters: {
@@ -113,23 +111,36 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  // create new design attribute copy with layerId
-  const { title, description, attributeType, inputParameters } =
-    designAttribute;
-  const newDesignAttribute = await prisma.designAttribute.create({
-    data: {
-      title,
-      description,
-      attributeType,
-      layerId,
-      inputParameters: {
-        create: inputParameters.map((param) => ({
-          ...param,
-          explicitValues: param.explicitValues || {}, // ensure explicitValues is not undefined
-          randomValues: param.randomValues || {}, // ensure explicitValues is not undefined
-          rangeValues: param.rangeValues || {}, // ensure explicitValues is not undefined
-        })),
+  // get attributeType of design attribute
+  const { attributeType } = designAttribute;
+
+  // remove any existing design attributes by attributeType for layerId
+  const existingDesignAttribute =
+    await prisma.designAttributesOnLayers.findFirst({
+      where: {
+        layerId: layerId,
+        designAttribute: {
+          attributeType: attributeType,
+        },
       },
+    });
+
+  if (existingDesignAttribute) {
+    await prisma.designAttributesOnLayers.delete({
+      where: {
+        layerId_designAttributeId: {
+          layerId: layerId,
+          designAttributeId: existingDesignAttribute.designAttributeId,
+        },
+      },
+    });
+  }
+
+  // create new design attribute on layer
+  const newDesignAttribute = await prisma.designAttributesOnLayers.create({
+    data: {
+      layerId: layerId,
+      designAttributeId: designAttributeId,
     },
   });
 
