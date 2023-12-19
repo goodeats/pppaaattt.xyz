@@ -22,6 +22,9 @@ model Layer {
   id               String            @id @default(uuid())
   title            String
   description      String?
+
+  buildAttributes  Json?             // Used to store constant build attributes for the layer.
+
   parentId         String?
   parent           Layer?            @relation("LayerToLayer", fields: [parentId], references: [id])
   children         Layer[]           @relation("LayerToLayer")
