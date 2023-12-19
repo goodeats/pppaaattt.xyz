@@ -1,0 +1,106 @@
+import { PrismaClient } from '@prisma/client';
+import { InputParameterContainerDefault } from '~/utils/types/input-parameter/container';
+import { InputParameterPaletteDefault } from '~/utils/types/input-parameter/palette';
+const prisma = new PrismaClient();
+
+export const seedLayers = async () => {
+  console.log('Seeding layers...');
+  const layersSeedJson = [
+    {
+      title: 'Default Layer',
+      description: 'A template of default settings for a root layer',
+    },
+  ];
+
+  const promises = layersSeedJson.map(async (layer) => {
+    const { title, description } = layer;
+    const exists = await prisma.layer.findFirst({
+      where: { title },
+    });
+
+    if (!exists) {
+      await prisma.layer.create({
+        data: {
+          title,
+          description,
+        },
+      });
+    }
+  });
+
+  await Promise.all(promises);
+  console.log('Layers seeded.');
+};
+
+export const seedDesignAttributes = async () => {
+  console.log('Seeding design attributes...');
+  await seedContainerDesignAttributes();
+  await seedPaletteDesignAttributes();
+  console.log('Design attributes seeded.');
+};
+
+export const seedContainerDesignAttributes = async () => {
+  console.log('Seeding container design attributes...');
+  const containersSeedJson = [
+    {
+      title: 'Default Container',
+      description: 'A template of default settings for a container attribute',
+    },
+  ];
+
+  const promises = containersSeedJson.map(async (designAttribute) => {
+    const { title, description } = designAttribute;
+    const exists = await prisma.designAttribute.findFirst({
+      where: { title },
+    });
+
+    if (!exists) {
+      await prisma.designAttribute.create({
+        data: {
+          title,
+          description,
+          attributeType: 'container',
+          inputParameters: {
+            create: InputParameterContainerDefault,
+          },
+        },
+      });
+    }
+  });
+
+  await Promise.all(promises);
+  console.log('Container design attributes seeded.');
+};
+
+export const seedPaletteDesignAttributes = async () => {
+  console.log('Seeding palette design attributes...');
+  const palettesSeedJson = [
+    {
+      title: 'Default Palette',
+      description: 'A template of default settings for a palette attribute',
+    },
+  ];
+
+  const promises = palettesSeedJson.map(async (designAttribute) => {
+    const { title, description } = designAttribute;
+    const exists = await prisma.designAttribute.findFirst({
+      where: { title },
+    });
+
+    if (!exists) {
+      await prisma.designAttribute.create({
+        data: {
+          title,
+          description,
+          attributeType: 'palette',
+          inputParameters: {
+            create: InputParameterPaletteDefault,
+          },
+        },
+      });
+    }
+  });
+
+  await Promise.all(promises);
+  console.log('Palette design attributes seeded.');
+};
