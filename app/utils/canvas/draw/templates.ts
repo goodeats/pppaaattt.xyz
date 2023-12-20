@@ -4,6 +4,8 @@ import {
 } from '~/lib/utils/build-structure/build-attributes';
 import { PixelCoordColorHex } from '~/utils/pixel-utils';
 import { CanvasDrawBackground } from './background';
+import { ContextBegin, ContextEnd } from './context';
+import { CanvasDrawTriangleAtCoords } from './triangle';
 
 const COUNT = 10000;
 
@@ -30,11 +32,15 @@ export const CanvasDrawTemplates = async ({
     const x = randomInRange(1, width - 1);
     const y = randomInRange(1, height - 1);
     const pixelColor = PixelCoordColorHex({ ctx, x, y });
+    const size = 100;
+    const rotate = (45 / 360) * 2;
 
     const templateBuild = {
       x,
       y,
       pixelColor,
+      size,
+      rotate,
     };
 
     templateBuilds.push(templateBuild);
@@ -43,10 +49,18 @@ export const CanvasDrawTemplates = async ({
   // redraw background to hide image
   CanvasDrawBackground({ ctx, palette, dimensions });
 
-  console.log(templateBuilds);
+  templateBuilds.forEach(({ x, y, pixelColor, size, rotate }) => {
+    ContextBegin({ ctx });
+    CanvasDrawTriangleAtCoords({
+      ctx,
+      triangle: { position: { x, y }, size, rotate },
+    });
 
-  templateBuilds.forEach(({ x, y, pixelColor }) => {
-    ctx.fillStyle = pixelColor;
-    ctx.fillRect(x - 5, y - 5, 10, 10);
+    // ctx.fillStyle = pixelColor;
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = pixelColor;
+    ctx.stroke();
+
+    ContextEnd({ ctx });
   });
 };

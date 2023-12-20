@@ -324,8 +324,8 @@ export const seedDesignAttributesOnLayers = async () => {
 
   // https://www.docucopies.com/image-resolution/#:~:text=How%20many%20pixels%20is%208.5,artwork%20at%203400px%20x%204400px.
   const buildDimensions: BuildDimensions = {
-    width: 255,
-    height: 330,
+    width: 2550,
+    height: 3300,
     format: 'px',
   };
   const buildPalette: BuildPalette = {

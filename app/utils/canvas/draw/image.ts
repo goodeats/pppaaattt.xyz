@@ -124,7 +124,6 @@ export const CanvasDrawImage = async ({
     img,
     style: 'stretched',
   });
-  console.log('coords', coords);
 
   CanvasDrawImageToContext({ ctx, img, coords });
 };

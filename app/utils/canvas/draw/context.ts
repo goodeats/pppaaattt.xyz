@@ -1,13 +1,13 @@
 type ContextProps = {
-  context: CanvasRenderingContext2D;
+  ctx: CanvasRenderingContext2D;
 };
 
-export const ContextBegin = ({ context }: ContextProps) => {
-  context.beginPath();
-  context.save();
+export const ContextBegin = ({ ctx }: ContextProps) => {
+  ctx.beginPath();
+  ctx.save();
 };
 
-export const ContextEnd = ({ context }: ContextProps) => {
-  context.restore();
-  context.closePath();
+export const ContextEnd = ({ ctx }: ContextProps) => {
+  ctx.restore();
+  ctx.closePath();
 };
