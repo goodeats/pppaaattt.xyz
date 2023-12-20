@@ -1,5 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import {
+  BuildAttributes,
+  BuildDimensions,
+  BuildPalette,
+} from '~/lib/utils/build-structure/build-attributes';
+import {
   InputParameterContainerAspectRatio,
   InputParameterContainerDefault,
 } from '~/utils/types/input-parameter/container';
@@ -160,24 +165,26 @@ export const seedDesignAttributesOnLayers = async () => {
     throw new Error('Default layer not found.');
   }
 
+  // find default container
   const container = await prisma.designAttribute.findFirst({
     where: { title: 'Default Container' },
+    include: { inputParameters: true },
   });
 
   if (!container) {
     throw new Error('Default container not found.');
   }
 
-  const defaultContainerOnDefaultLayer =
-    await prisma.designAttributesOnLayers.create({
-      data: {
-        layerId: layer.id,
-        designAttributeId: container.id,
-      },
-    });
+  console.log('adding default container to default layer...');
+  await prisma.designAttributesOnLayers.create({
+    data: {
+      layerId: layer.id,
+      designAttributeId: container.id,
+    },
+  });
+  console.log('default container added to default layer.');
 
-  // TODO: build attributes for layer
-
+  // find default palette
   const palette = await prisma.designAttribute.findFirst({
     where: { title: 'Default Palette' },
   });
@@ -186,15 +193,40 @@ export const seedDesignAttributesOnLayers = async () => {
     throw new Error('Default palette not found.');
   }
 
-  const defaultPaletteOnDefaultLayer =
-    await prisma.designAttributesOnLayers.create({
-      data: {
-        layerId: layer.id,
-        designAttributeId: palette.id,
-      },
-    });
+  console.log('adding default palette to default layer...');
+  await prisma.designAttributesOnLayers.create({
+    data: {
+      layerId: layer.id,
+      designAttributeId: palette.id,
+    },
+  });
+  console.log('default palette added to default layer.');
 
-  // TODO: build attributes for layer
+  // update layer build attributes for palette
+  const buildAttributes = (layer.buildAttributes || {}) as BuildAttributes;
+
+  const buildDimensions: BuildDimensions = {
+    width: 1000,
+    height: 1000,
+    format: 'px',
+  };
+  const buildPalette: BuildPalette = {
+    colors: ['#000000', '#ffffff'],
+    format: 'hex',
+  };
+
+  console.log('updating layer build attributes...');
+  await prisma.layer.update({
+    where: { id: layer.id },
+    data: {
+      buildAttributes: {
+        ...buildAttributes,
+        dimensions: buildDimensions,
+        palette: buildPalette,
+      },
+    },
+  });
+  console.log('layer build attributes updated.');
 
   console.log('Design attributes on layers seeded.');
 };

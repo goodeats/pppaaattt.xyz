@@ -1,7 +1,6 @@
 export type Dimension = number;
 export type DistanceFormat = 'px' | 'percent';
 
-export type Color = 'string';
 export type ColorFormat = 'hex' | 'rgb' | 'rgba' | 'hsl' | 'hsla';
 export type ColorStyle =
   | 'none' // transparent
@@ -11,14 +10,14 @@ export type ColorStyle =
   | 'palette-random' // random from palette
   | 'position-pixel'; // color at position pixel
 
-export type Dimensions = {
+export type BuildDimensions = {
   width: Dimension;
   height: Dimension;
-  distanceStyle: DistanceFormat;
+  format: DistanceFormat;
 };
 
-export type Palette = {
-  colors: Color[];
+export type BuildPalette = {
+  colors: string[];
   format: ColorFormat;
 };
 
@@ -26,8 +25,8 @@ export type Background = {
   colorStyle: ColorStyle;
 };
 
-export type BuildAttributesType = {
-  dimensions: Dimensions;
-  palette: Palette;
-  background: Background;
+export type BuildAttributes = {
+  dimensions?: BuildDimensions;
+  palette?: BuildPalette;
+  background?: Background;
 };
