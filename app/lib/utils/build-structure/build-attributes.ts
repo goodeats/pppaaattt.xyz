@@ -21,12 +21,12 @@ export type BuildPalette = {
   format: ColorFormat;
 };
 
-export type Background = {
+export type BuildBackground = {
   colorStyle: ColorStyle;
 };
 
 export type BuildAttributes = {
   dimensions?: BuildDimensions;
   palette?: BuildPalette;
-  background?: Background;
+  background?: BuildBackground;
 };

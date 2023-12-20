@@ -72,7 +72,7 @@ export default function LayerDetailsPage() {
       </Column>
       <Column>
         <CanvasCard
-          buildAttributes={buildAttributes}
+          buildAttributes={buildAttributes ?? {}}
           designAttributes={designAttributes}
         />
       </Column>

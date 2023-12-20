@@ -26,6 +26,7 @@ import { BuildAttributes } from '~/lib/utils/build-structure/build-attributes';
 enum AttributeType {
   container = 'container',
   palette = 'palette',
+  background = 'background',
   position = 'position',
   sideLength = 'sideLength',
   strokeStyle = 'strokeStyle',
@@ -234,6 +235,8 @@ export async function action({ request }: DataFunctionArgs) {
     if (!updatedLayer) {
       return json({ status: 'error', submission } as const, { status: 400 });
     }
+  } else if (attributeType === AttributeType.background) {
+    console.log('oh no not ready');
   }
 
   return redirect(
