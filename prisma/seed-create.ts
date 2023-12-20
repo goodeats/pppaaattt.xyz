@@ -322,9 +322,10 @@ export const seedDesignAttributesOnLayers = async () => {
   // update layer build attributes for palette
   const buildAttributes = (layer.buildAttributes || {}) as BuildAttributes;
 
+  // https://www.docucopies.com/image-resolution/#:~:text=How%20many%20pixels%20is%208.5,artwork%20at%203400px%20x%204400px.
   const buildDimensions: BuildDimensions = {
-    width: 1000,
-    height: 1000,
+    width: 255,
+    height: 330,
     format: 'px',
   };
   const buildPalette: BuildPalette = {

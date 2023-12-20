@@ -2,6 +2,7 @@ import { DesignAttributeWithInputParameters } from '~/utils/canvas-utils';
 import { CanvasDrawDimensions } from './dimensions';
 import { CanvasDrawBackground } from './background';
 import { BuildAttributes } from '~/lib/utils/build-structure/build-attributes';
+import { CanvasDrawImage } from './image';
 
 type CanvasDrawProps = {
   canvas: HTMLCanvasElement;
@@ -9,11 +10,11 @@ type CanvasDrawProps = {
   designAttributes: DesignAttributeWithInputParameters[];
 };
 
-export const CanvasDraw = ({
+export const CanvasDraw = async ({
   canvas,
   buildAttributes,
   designAttributes,
-}: CanvasDrawProps): void => {
+}: CanvasDrawProps) => {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
@@ -24,4 +25,6 @@ export const CanvasDraw = ({
   const { palette } = buildAttributes;
   if (!palette) throw new Error('Palette not found');
   CanvasDrawBackground({ ctx, palette, dimensions });
+
+  await CanvasDrawImage({ canvas, ctx, dimensions });
 };
