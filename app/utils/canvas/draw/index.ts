@@ -3,6 +3,7 @@ import { CanvasDrawDimensions } from './dimensions';
 import { CanvasDrawBackground } from './background';
 import { BuildAttributes } from '~/lib/utils/build-structure/build-attributes';
 import { CanvasDrawImage } from './image';
+import { CanvasDrawTemplates } from './templates';
 
 type CanvasDrawProps = {
   canvas: HTMLCanvasElement;
@@ -27,4 +28,6 @@ export const CanvasDraw = async ({
   CanvasDrawBackground({ ctx, palette, dimensions });
 
   await CanvasDrawImage({ canvas, ctx, dimensions });
+
+  CanvasDrawTemplates({ ctx, palette, dimensions });
 };
