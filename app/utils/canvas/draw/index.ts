@@ -1,21 +1,25 @@
 import { DesignAttributeWithInputParameters } from '~/utils/canvas-utils';
 import { CanvasDrawDimensions } from './dimensions';
 import { CanvasDrawBackground } from './background';
+import { BuildAttributes } from '~/lib/utils/build-structure/build-attributes';
 
 type CanvasDrawProps = {
   canvas: HTMLCanvasElement;
+  buildAttributes: BuildAttributes;
   designAttributes: DesignAttributeWithInputParameters[];
 };
 
 export const CanvasDraw = ({
   canvas,
+  buildAttributes,
   designAttributes,
 }: CanvasDrawProps): void => {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  const { width, height } = CanvasDrawDimensions({ canvas, designAttributes });
-  const dimensions = { width, height };
+  const { dimensions } = buildAttributes;
+  if (!dimensions) throw new Error('Dimensions not found');
+  CanvasDrawDimensions({ canvas, dimensions });
 
   const { background } = CanvasDrawBackground({
     ctx,

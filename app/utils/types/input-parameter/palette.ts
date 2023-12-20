@@ -45,13 +45,13 @@ export const InputParameterPaletteDefault: InputParameterPaletteType = {
   inputType: InputTypeEnum.explicit,
   unitType: UnitTypeEnum.hexcode,
   explicitValues: {
-    hexcode: ['#000000', '#ffffff'],
+    hexcode: ['#E8E8E8', '#5588A3', '#145374', '#00334E'],
   },
   randomValues: {
     hexcode: 4,
   },
   rangeValues: {
-    hexcode: ['#000000', '#ffffff'],
+    hexcode: ['#E8E8E8', '#5588A3', '#145374', '#00334E'],
   },
 };
 

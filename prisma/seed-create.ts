@@ -113,9 +113,20 @@ export const seedPaletteDesignAttributes = async () => {
   const paletteDefault = JSON.parse(
     JSON.stringify(InputParameterPaletteDefault)
   );
-  const paletteRGB = InputParameterPaletteColors({
-    colors: ['#ff0000', '#00ff00', '#0000ff'],
-  });
+  const paletteRGB = JSON.parse(
+    JSON.stringify(
+      InputParameterPaletteColors({
+        colors: ['#ff0000', '#00ff00', '#0000ff'],
+      })
+    )
+  );
+  const paletteBnW = JSON.parse(
+    JSON.stringify(
+      InputParameterPaletteColors({
+        colors: ['#FFFFFF', '#000000'],
+      })
+    )
+  );
 
   const palettesSeedJson = [
     {
@@ -127,6 +138,11 @@ export const seedPaletteDesignAttributes = async () => {
       title: 'RGB Palette',
       description: 'A template of a palette with primary colors',
       inputParameters: paletteRGB,
+    },
+    {
+      title: 'B&W Palette',
+      description: 'A template of a palette with black and white colors',
+      inputParameters: paletteBnW,
     },
   ];
 
