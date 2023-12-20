@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import {
   BuildAttributes,
+  BuildBackground,
   BuildDimensions,
   BuildPalette,
 } from '~/lib/utils/build-structure/build-attributes';
@@ -52,6 +53,7 @@ export const seedDesignAttributes = async () => {
   console.log('Seeding design attributes...');
   await seedContainerDesignAttributes();
   await seedPaletteDesignAttributes();
+  await seedBackgroundDesignAttributes();
   console.log('Design attributes seeded.');
 };
 
@@ -171,6 +173,104 @@ export const seedPaletteDesignAttributes = async () => {
   console.log('Palette design attributes seeded.');
 };
 
+export const seedBackgroundDesignAttributes = async () => {
+  console.log('Seeding background design attributes...');
+  // haha typescript is something else sometimes
+  // TODO: refactor
+  enum InputTypeEnum {
+    explicit = 'explicit',
+  }
+  enum UnitType {
+    none = 'none',
+    random = 'random',
+    palette = 'palette',
+    paletteShuffle = 'paletteShuffle',
+    paletteRandom = 'paletteRandom',
+    positionPixel = 'positionPixel',
+  }
+
+  const defaultBackgroundParameters = {
+    inputType: InputTypeEnum.explicit,
+    explicitValues: {},
+    randomValues: {},
+    rangeValues: {},
+  };
+
+  const backgroundSeedJson = [
+    {
+      title: 'No Background',
+      description: 'The background is transparent',
+      inputParameters: {
+        ...defaultBackgroundParameters,
+        unitType: UnitType.none,
+      },
+    },
+    {
+      title: 'Random Background',
+      description: 'The background is a random color',
+      inputParameters: {
+        ...defaultBackgroundParameters,
+        unitType: UnitType.random,
+      },
+    },
+    {
+      title: 'Palette Background',
+      description: 'The background is the first color from the palette',
+      inputParameters: {
+        ...defaultBackgroundParameters,
+        unitType: UnitType.palette,
+      },
+    },
+    {
+      title: 'Palette Shuffle Background',
+      description: 'The background is any color from the palette',
+      inputParameters: {
+        ...defaultBackgroundParameters,
+        unitType: UnitType.paletteShuffle,
+      },
+    },
+    {
+      title: 'Palette Random Background',
+      description: 'The background is a random color from the palette',
+      inputParameters: {
+        ...defaultBackgroundParameters,
+        unitType: UnitType.paletteRandom,
+      },
+    },
+    {
+      title: 'Position Pixel Background',
+      description: 'The background is the color at the position pixel',
+      inputParameters: {
+        ...defaultBackgroundParameters,
+        unitType: UnitType.positionPixel,
+      },
+    },
+  ];
+
+  const promises = backgroundSeedJson.map(async (designAttribute) => {
+    const { title, description, inputParameters } = designAttribute;
+    const exists = await prisma.designAttribute.findFirst({
+      where: { title },
+    });
+
+    if (!exists) {
+      await prisma.designAttribute.create({
+        data: {
+          title,
+          description,
+          attributeType: 'background',
+          inputParameters: {
+            create: inputParameters,
+          },
+        },
+      });
+    }
+  });
+
+  await Promise.all(promises);
+  console.log('Palette design attributes seeded.');
+};
+
 export const seedDesignAttributesOnLayers = async () => {
   console.log('Seeding design attributes on layers...');
 
@@ -231,6 +331,9 @@ export const seedDesignAttributesOnLayers = async () => {
     colors: defaultPaletteColors,
     format: 'hex',
   };
+  const buildBackground: BuildBackground = {
+    colorStyle: 'palette',
+  };
 
   console.log('updating layer build attributes...');
   await prisma.layer.update({
@@ -240,6 +343,7 @@ export const seedDesignAttributesOnLayers = async () => {
         ...buildAttributes,
         dimensions: buildDimensions,
         palette: buildPalette,
+        background: buildBackground,
       },
     },
   });
