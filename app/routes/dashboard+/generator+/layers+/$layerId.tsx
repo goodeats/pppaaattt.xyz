@@ -40,7 +40,7 @@ export async function loader({ params }: DataFunctionArgs) {
   if (!query) {
     // TODO: redirect to 404 page
     // create toast notification
-    return redirect('/dashboard/builder/layers?notFound=true');
+    return redirect('/dashboard/generator/layers?notFound=true');
   }
 
   const layer = {
