@@ -2,6 +2,7 @@ import {
   ContentActions,
   ContentContainer,
   ContentOverview,
+  LayersTable,
   List,
   ListItem,
   Stack,
@@ -35,32 +36,21 @@ export async function loader({ params }: DataFunctionArgs) {
     return redirect('/dashboard/builder/design-attributes/container');
   }
 
-  const container = await prisma.designAttribute.findUnique({
+  const query = await prisma.designAttribute.findUnique({
     where: {
       id: containerId,
     },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      createdAt: true,
-      updatedAt: true,
-      inputParameters: {
-        select: {
-          id: true,
-          inputType: true,
-          unitType: true,
-          explicitValues: true,
-          randomValues: true,
-          rangeValues: true,
-          createdAt: true,
-          updatedAt: true,
+    include: {
+      inputParameters: true,
+      layers: {
+        include: {
+          layer: true,
         },
       },
     },
   });
 
-  if (!container) {
+  if (!query) {
     // TODO: redirect to 404 page
     // create toast notification
     return redirect(
@@ -68,13 +58,19 @@ export async function loader({ params }: DataFunctionArgs) {
     );
   }
 
+  const container = {
+    ...query,
+    // https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/working-with-many-to-many-relations#explicit-relations
+    layers: query.layers.map((attr) => attr.layer),
+  };
+
   return json({ container });
 }
 
 export default function ContainerDetailsPage() {
   const data = useLoaderData<typeof loader>();
   const { container } = data;
-  const { inputParameters } = container;
+  const { inputParameters, layers } = container;
 
   const ContainerParameters = () => {
     if (!inputParameters || inputParameters.length === 0)
@@ -93,6 +89,17 @@ export default function ContainerDetailsPage() {
     return <ContainerInputParameters inputParameter={inputParameter} />;
   };
 
+  const ContainerLayers = () => {
+    return (
+      <LayersTable
+        layers={layers.map((layer) => ({
+          ...layer,
+          createdAt: new Date(layer.createdAt),
+        }))}
+      />
+    );
+  };
+
   const ContainerActions = () => {
     return (
       <ContentActions>
@@ -105,6 +112,7 @@ export default function ContainerDetailsPage() {
     <ContentContainer>
       <ContentOverview item={container} />
       <ContainerParameters />
+      <ContainerLayers />
       <ContainerActions />
     </ContentContainer>
   );

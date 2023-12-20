@@ -22,36 +22,18 @@ enum UnitTypeEnum {
 
 export type InputParameterPaletteExplicitValuesType = {
   hexcode: PaletteExplicitValuesType;
-  // rgba: PaletteExplicitValuesType;
-  // hsl: PaletteExplicitValuesType;
-  // hsla: PaletteExplicitValuesType;
-  // cmky: PaletteExplicitValuesType;
-  // pantone: PaletteExplicitValuesType;
-  // cielab: PaletteExplicitValuesType;
 };
 
 export type InputParameterPaletteRandomValuesType = {
-  hexcode: PaletteRandomValuesType;
-  // rgba: PaletteRandomValuesType;
-  // hsl: PaletteRandomValuesType;
-  // hsla: PaletteRandomValuesType;
-  // cmky: PaletteRandomValuesType;
-  // pantone: PaletteRandomValuesType;
-  // cielab: PaletteRandomValuesType;
+  hexcode: number;
 };
 
 // how to range??
 export type InputParameterPaletteRangeValuesType = {
   hexcode: PaletteRangeValuesType;
-  // rgba: PaletteRangeValuesType;
-  // hsl: PaletteRangeValuesType;
-  // hsla: PaletteRangeValuesType;
-  // cmky: PaletteRangeValuesType;
-  // pantone: PaletteRangeValuesType;
-  // cielab: PaletteRangeValuesType;
 };
 
-export type InputParameterPaletteDefaultType = {
+export type InputParameterPaletteType = {
   inputType: InputTypeEnum;
   unitType: UnitTypeEnum;
   explicitValues: InputParameterPaletteExplicitValuesType;
@@ -59,16 +41,44 @@ export type InputParameterPaletteDefaultType = {
   rangeValues: InputParameterPaletteRangeValuesType;
 };
 
-export const InputParameterPaletteDefault: InputParameterPaletteDefaultType = {
+export const defaultPaletteColors = [
+  '#FF5959',
+  '#FFAD5A',
+  '#4F9DA6',
+  '#1A0841',
+];
+
+export const InputParameterPaletteDefault: InputParameterPaletteType = {
   inputType: InputTypeEnum.explicit,
   unitType: UnitTypeEnum.hexcode,
   explicitValues: {
-    hexcode: ['#000000', '#ffffff'],
+    hexcode: defaultPaletteColors,
   },
   randomValues: {
     hexcode: 4,
   },
   rangeValues: {
-    hexcode: ['#000000', '#ffffff'],
+    hexcode: defaultPaletteColors,
   },
+};
+
+export const InputParameterPaletteColors = ({
+  colors,
+}: {
+  colors: string[];
+}): InputParameterPaletteType => {
+  const defaultPalette = InputParameterPaletteDefault;
+  const { explicitValues, rangeValues, ...newPalette } = defaultPalette;
+
+  // set the colors on explicitValues and rangeValues
+  explicitValues.hexcode = colors;
+  rangeValues.hexcode = colors;
+
+  const colorsPalette = {
+    ...newPalette,
+    explicitValues,
+    rangeValues,
+  };
+
+  return colorsPalette;
 };

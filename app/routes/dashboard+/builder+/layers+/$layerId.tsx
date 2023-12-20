@@ -23,34 +23,32 @@ export async function loader({ params }: DataFunctionArgs) {
     return redirect('/layers');
   }
 
-  const layer = await prisma.layer.findUnique({
+  const query = await prisma.layer.findUnique({
     where: {
       id: layerId,
     },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      createdAt: true,
-      updatedAt: true,
+    include: {
       designAttributes: {
-        select: {
-          id: true,
-          title: true,
-          attributeType: true,
+        include: {
+          designAttribute: true,
         },
-      },
-      _count: {
-        select: { designAttributes: true },
       },
     },
   });
 
-  if (!layer) {
+  if (!query) {
     // TODO: redirect to 404 page
     // create toast notification
     return redirect('/dashboard/builder/layers?notFound=true');
   }
+
+  const layer = {
+    ...query,
+    // https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/working-with-many-to-many-relations#explicit-relations
+    designAttributes: query.designAttributes.map(
+      (attr) => attr.designAttribute
+    ),
+  };
 
   return json({ layer });
 }

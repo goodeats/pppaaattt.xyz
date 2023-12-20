@@ -6,31 +6,34 @@ import { useLoaderData } from '@remix-run/react';
 export async function loader({ params }: DataFunctionArgs) {
   const { layerId } = params;
 
-  const layer = await prisma.layer.findUnique({
+  const query = await prisma.layer.findUnique({
     where: {
       id: layerId,
     },
-    select: {
-      id: true,
-      title: true,
+    include: {
       designAttributes: {
-        select: {
-          id: true,
+        include: {
+          designAttribute: true,
         },
       },
     },
   });
 
-  if (!layer) {
+  if (!query) {
     // TODO: redirect to 404 page
     // create toast notification
     return redirect('/dashboard/builder/layers?notFound=true');
   }
 
+  const layer = {
+    ...query,
+    // https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/working-with-many-to-many-relations#explicit-relations
+    designAttributes: query.designAttributes.map(
+      (attr) => attr.designAttribute
+    ),
+  };
+
   const designAttributes = await prisma.designAttribute.findMany({
-    where: {
-      layerId: null,
-    },
     select: {
       id: true,
       title: true,

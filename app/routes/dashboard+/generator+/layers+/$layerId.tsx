@@ -20,29 +20,16 @@ export async function loader({ params }: DataFunctionArgs) {
     return redirect('/layers');
   }
 
-  const layer = await prisma.layer.findUnique({
+  const query = await prisma.layer.findUnique({
     where: {
       id: layerId,
     },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      createdAt: true,
-      updatedAt: true,
+    include: {
       designAttributes: {
-        select: {
-          id: true,
-          title: true,
-          attributeType: true,
-          inputParameters: {
-            select: {
-              id: true,
-              inputType: true,
-              unitType: true,
-              explicitValues: true,
-              randomValues: true,
-              rangeValues: true,
+        include: {
+          designAttribute: {
+            include: {
+              inputParameters: true,
             },
           },
         },
@@ -50,11 +37,19 @@ export async function loader({ params }: DataFunctionArgs) {
     },
   });
 
-  if (!layer) {
+  if (!query) {
     // TODO: redirect to 404 page
     // create toast notification
     return redirect('/dashboard/generator/layers?notFound=true');
   }
+
+  const layer = {
+    ...query,
+    // https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/working-with-many-to-many-relations#explicit-relations
+    designAttributes: query.designAttributes.map(
+      (attr) => attr.designAttribute
+    ),
+  };
 
   return json({ layer });
 }
@@ -62,7 +57,7 @@ export async function loader({ params }: DataFunctionArgs) {
 export default function LayerDetailsPage() {
   const data = useLoaderData<typeof loader>();
   const { layer } = data;
-  const { designAttributes } = layer;
+  const { buildAttributes, designAttributes } = layer;
 
   return (
     <ColumnContainer>
@@ -76,7 +71,10 @@ export default function LayerDetailsPage() {
         />
       </Column>
       <Column>
-        <CanvasCard designAttributes={designAttributes} />
+        <CanvasCard
+          buildAttributes={buildAttributes}
+          designAttributes={designAttributes}
+        />
       </Column>
     </ColumnContainer>
   );

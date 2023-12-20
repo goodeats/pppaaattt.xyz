@@ -22,10 +22,14 @@ model Layer {
   id               String            @id @default(uuid())
   title            String
   description      String?
+
+  buildAttributes  Json?             // Used to store constant build attributes for the layer.
+
   parentId         String?
   parent           Layer?            @relation("LayerToLayer", fields: [parentId], references: [id])
   children         Layer[]           @relation("LayerToLayer")
-  designAttributes DesignAttribute[]
+
+  designAttributes DesignAttributesOnLayers[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -40,18 +44,17 @@ model DesignAttribute {
   id          String  @id @default(uuid())
   title       String
   description String?
-  layerId     String?
-  layer       Layer?  @relation(fields: [layerId], references: [id])
 
   attributeType AttributeType // Defines the main type of the design attribute.
   filterType    FilterType? // Defines the sub-type for filter attributes (if filter).
+
+  layers DesignAttributesOnLayers[] // Links to layers in a many-to-many relationship.
 
   inputParameters InputParameter[] // Links to input parameters. Now supports many-to-many relationship.
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([layerId]) // Index on layerId
   @@index([attributeType, filterType]) // Composite index on attributeType and filterType
 }
 
@@ -106,4 +109,17 @@ enum UnitType {
   px
   percent
   hexcode
+}
+
+model DesignAttributesOnLayers {
+  @@id([layerId, designAttributeId])
+
+  layerId          String
+  layer            Layer             @relation(fields: [layerId], references: [id], onDelete: Cascade)
+
+  designAttributeId String
+  designAttribute   DesignAttribute   @relation(fields: [designAttributeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

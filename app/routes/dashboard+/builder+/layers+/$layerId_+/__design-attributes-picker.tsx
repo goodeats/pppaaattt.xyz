@@ -21,6 +21,7 @@ import {
   redirect,
 } from '@remix-run/node';
 import { IDesignAttribute, ILayer, prisma } from '~/utils/db.server';
+import { BuildAttributes } from '~/lib/utils/build-structure/build-attributes';
 
 enum AttributeType {
   container = 'container',
@@ -66,7 +67,6 @@ export async function action({ request }: DataFunctionArgs) {
       const designAttribute = await prisma.designAttribute.findUnique({
         where: {
           id: data.designAttributeId,
-          layerId: null,
         },
       });
 
@@ -94,7 +94,6 @@ export async function action({ request }: DataFunctionArgs) {
   const designAttribute = await prisma.designAttribute.findUnique({
     where: {
       id: designAttributeId,
-      layerId: null,
     },
     include: {
       inputParameters: {
@@ -113,28 +112,128 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  // create new design attribute copy with layerId
-  const { title, description, attributeType, inputParameters } =
-    designAttribute;
-  const newDesignAttribute = await prisma.designAttribute.create({
-    data: {
-      title,
-      description,
-      attributeType,
-      layerId,
-      inputParameters: {
-        create: inputParameters.map((param) => ({
-          ...param,
-          explicitValues: param.explicitValues || {}, // ensure explicitValues is not undefined
-          randomValues: param.randomValues || {}, // ensure explicitValues is not undefined
-          rangeValues: param.rangeValues || {}, // ensure explicitValues is not undefined
-        })),
+  // get attributeType of design attribute
+  const { attributeType, inputParameters } = designAttribute;
+
+  // remove any existing design attributes by attributeType for layerId
+  const existingDesignAttribute =
+    await prisma.designAttributesOnLayers.findFirst({
+      where: {
+        layerId: layerId,
+        designAttribute: {
+          attributeType: attributeType,
+        },
       },
+    });
+
+  if (existingDesignAttribute) {
+    await prisma.designAttributesOnLayers.delete({
+      where: {
+        layerId_designAttributeId: {
+          layerId: layerId,
+          designAttributeId: existingDesignAttribute.designAttributeId,
+        },
+      },
+    });
+  }
+
+  // create new design attribute on layer
+  const newDesignAttribute = await prisma.designAttributesOnLayers.create({
+    data: {
+      layerId: layerId,
+      designAttributeId: designAttributeId,
     },
   });
 
   if (!newDesignAttribute) {
     return json({ status: 'error', submission } as const, { status: 400 });
+  }
+
+  // update layer build attributes
+  const layer = await prisma.layer.findUnique({
+    where: {
+      id: layerId,
+    },
+  });
+  if (!layer) {
+    return json({ status: 'error', submission } as const, { status: 400 });
+  }
+
+  const currentBuildAttributes = (layer.buildAttributes ||
+    {}) as BuildAttributes;
+
+  // I hate this code, but it works for now and I need to move on
+  // need to find an easier way to get values from inputType and unitType
+  // from inputParameters without having typescript complain
+  if (attributeType === AttributeType.container) {
+    const parameters = inputParameters[0];
+    const { unitType, explicitValues } = parameters;
+    if (!explicitValues) {
+      return json({ status: 'error', submission } as const, { status: 400 });
+    }
+
+    const explicitUnits = explicitValues[unitType];
+    if (!explicitUnits) {
+      return json({ status: 'error', submission } as const, { status: 400 });
+    }
+    const newDimensions = {
+      dimensions: {
+        width: explicitUnits.width,
+        height: explicitUnits.height,
+        format: 'px',
+      },
+    };
+    const updatedBuildAttributes = {
+      ...currentBuildAttributes,
+      ...newDimensions,
+    };
+
+    const updatedLayer = await prisma.layer.update({
+      where: {
+        id: layerId,
+      },
+      data: {
+        buildAttributes: updatedBuildAttributes,
+      },
+    });
+
+    if (!updatedLayer) {
+      return json({ status: 'error', submission } as const, { status: 400 });
+    }
+  } else if (attributeType === AttributeType.palette) {
+    const parameters = inputParameters[0];
+    const { unitType, explicitValues } = parameters;
+    if (!explicitValues) {
+      return json({ status: 'error', submission } as const, { status: 400 });
+    }
+
+    const explicitUnits = explicitValues[unitType];
+    if (!explicitUnits) {
+      return json({ status: 'error', submission } as const, { status: 400 });
+    }
+    const newPalette = {
+      palette: {
+        colors: explicitUnits,
+        format: 'hex',
+      },
+    };
+    const updatedBuildAttributes = {
+      ...currentBuildAttributes,
+      ...newPalette,
+    };
+
+    const updatedLayer = await prisma.layer.update({
+      where: {
+        id: layerId,
+      },
+      data: {
+        buildAttributes: updatedBuildAttributes,
+      },
+    });
+
+    if (!updatedLayer) {
+      return json({ status: 'error', submission } as const, { status: 400 });
+    }
   }
 
   return redirect(

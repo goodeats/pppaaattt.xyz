@@ -1,23 +1,16 @@
-import {
-  CanvasHeight,
-  CanvasWidth,
-  DesignAttributeWithInputParameters,
-} from '~/utils/canvas-utils';
+import { BuildDimensions } from '~/lib/utils/build-structure/build-attributes';
 
 type CanvasDrawProps = {
   canvas: HTMLCanvasElement;
-  designAttributes: DesignAttributeWithInputParameters[];
+  dimensions: BuildDimensions;
 };
 
 export const CanvasDrawDimensions = ({
   canvas,
-  designAttributes,
-}: CanvasDrawProps): { width: number; height: number } => {
-  const width = CanvasWidth({ designAttributes });
-  const height = CanvasHeight({ designAttributes });
+  dimensions,
+}: CanvasDrawProps) => {
+  const { width, height } = dimensions;
 
   canvas.width = width;
   canvas.height = height;
-
-  return { width, height };
 };
