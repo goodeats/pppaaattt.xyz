@@ -3,7 +3,10 @@ import {
   InputParameterContainerAspectRatio,
   InputParameterContainerDefault,
 } from '~/utils/types/input-parameter/container';
-import { InputParameterPaletteDefault } from '~/utils/types/input-parameter/palette';
+import {
+  InputParameterPaletteColors,
+  InputParameterPaletteDefault,
+} from '~/utils/types/input-parameter/palette';
 const prisma = new PrismaClient();
 
 export const seedLayers = async () => {
@@ -48,25 +51,33 @@ export const seedDesignAttributes = async () => {
 
 export const seedContainerDesignAttributes = async () => {
   console.log('Seeding container design attributes...');
+  // Hack: stringify default first
+  // bug for subsequent palettes change the default values even after the const is defined
+  // fix later since this works
+  const containerDefault = JSON.parse(
+    JSON.stringify(InputParameterContainerDefault)
+  );
+  const containerRatio = InputParameterContainerAspectRatio({
+    aspectRatio: '9:16',
+    multiplier: 0.1,
+    values: 'explicit',
+  });
+
   const containersSeedJson = [
     {
       title: 'Default Container',
       description: 'A template of default settings for a container attribute',
-      inputParameters: InputParameterContainerDefault,
+      inputParameters: containerDefault,
     },
     {
       title: '9:16 Container',
       description: 'A template of a container with an aspect ratio of 9:16',
-      inputParameters: InputParameterContainerAspectRatio({
-        aspectRatio: '9:16',
-        multiplier: 0.1,
-        values: 'explicit',
-      }),
+      inputParameters: containerRatio,
     },
   ];
 
   const promises = containersSeedJson.map(async (designAttribute) => {
-    const { title, description } = designAttribute;
+    const { title, description, inputParameters } = designAttribute;
     const exists = await prisma.designAttribute.findFirst({
       where: { title },
     });
@@ -78,7 +89,7 @@ export const seedContainerDesignAttributes = async () => {
           description,
           attributeType: 'container',
           inputParameters: {
-            create: InputParameterContainerDefault,
+            create: inputParameters,
           },
         },
       });
@@ -91,15 +102,31 @@ export const seedContainerDesignAttributes = async () => {
 
 export const seedPaletteDesignAttributes = async () => {
   console.log('Seeding palette design attributes...');
+  // Hack: stringify default first
+  // bug for subsequent palettes change the default values even after the const is defined
+  // fix later since this works
+  const paletteDefault = JSON.parse(
+    JSON.stringify(InputParameterPaletteDefault)
+  );
+  const paletteRGB = InputParameterPaletteColors({
+    colors: ['#ff0000', '#00ff00', '#0000ff'],
+  });
+
   const palettesSeedJson = [
     {
       title: 'Default Palette',
       description: 'A template of default settings for a palette attribute',
+      inputParameters: paletteDefault,
+    },
+    {
+      title: 'RGB Palette',
+      description: 'A template of a palette with primary colors',
+      inputParameters: paletteRGB,
     },
   ];
 
   const promises = palettesSeedJson.map(async (designAttribute) => {
-    const { title, description } = designAttribute;
+    const { title, description, inputParameters } = designAttribute;
     const exists = await prisma.designAttribute.findFirst({
       where: { title },
     });
@@ -111,7 +138,7 @@ export const seedPaletteDesignAttributes = async () => {
           description,
           attributeType: 'palette',
           inputParameters: {
-            create: InputParameterPaletteDefault,
+            create: inputParameters,
           },
         },
       });
@@ -141,12 +168,33 @@ export const seedDesignAttributesOnLayers = async () => {
     throw new Error('Default container not found.');
   }
 
-  const newDesignAttribute = await prisma.designAttributesOnLayers.create({
-    data: {
-      layerId: layer.id,
-      designAttributeId: container.id,
-    },
+  const defaultContainerOnDefaultLayer =
+    await prisma.designAttributesOnLayers.create({
+      data: {
+        layerId: layer.id,
+        designAttributeId: container.id,
+      },
+    });
+
+  // TODO: build attributes for layer
+
+  const palette = await prisma.designAttribute.findFirst({
+    where: { title: 'Default Palette' },
   });
+
+  if (!palette) {
+    throw new Error('Default palette not found.');
+  }
+
+  const defaultPaletteOnDefaultLayer =
+    await prisma.designAttributesOnLayers.create({
+      data: {
+        layerId: layer.id,
+        designAttributeId: palette.id,
+      },
+    });
+
+  // TODO: build attributes for layer
 
   console.log('Design attributes on layers seeded.');
 };
