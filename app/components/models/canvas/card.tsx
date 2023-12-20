@@ -11,6 +11,7 @@ import {
   Stack,
   StackDivider,
   Text,
+  Button,
 } from '~/components';
 import { BuildAttributes } from '~/lib/utils/build-structure/build-attributes';
 import { CanvasDraw } from '~/utils/canvas/draw';
@@ -63,6 +64,15 @@ export const CanvasCard = ({
     );
   };
 
+  const downloadCanvasAsPNG = () => {
+    const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    const link = document.createElement('a');
+    const timestamp = new Date().getTime();
+    link.download = `canvas_${timestamp}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+  };
+
   return (
     <Card variant="outline">
       <CardHeader>
@@ -78,6 +88,7 @@ export const CanvasCard = ({
       <CardFooter>
         <Flex width="full">
           <Text>Coming: download</Text>
+          <Button onClick={downloadCanvasAsPNG}>Download PNG</Button>
         </Flex>
       </CardFooter>
     </Card>
