@@ -1,23 +1,23 @@
 import {
-  CanvasBackground,
-  DesignAttributeWithInputParameters,
-} from '~/utils/canvas-utils';
+  BuildDimensions,
+  BuildPalette,
+} from '~/lib/utils/build-structure/build-attributes';
 
 type CanvasDrawProps = {
   ctx: CanvasRenderingContext2D;
-  designAttributes: DesignAttributeWithInputParameters[];
-  dimensions: { width: number; height: number };
+  palette: BuildPalette;
+  dimensions: BuildDimensions;
 };
 
 export const CanvasDrawBackground = ({
   ctx,
-  designAttributes,
-  dimensions: { width, height },
-}: CanvasDrawProps): { background: string } => {
-  const background = CanvasBackground({ designAttributes });
+  palette,
+  dimensions,
+}: CanvasDrawProps) => {
+  const { width, height } = dimensions;
+  const { colors } = palette;
+  const color = colors[0];
 
-  ctx.fillStyle = background;
+  ctx.fillStyle = color;
   ctx.fillRect(0, 0, width, height);
-
-  return { background };
 };

@@ -21,9 +21,7 @@ export const CanvasDraw = ({
   if (!dimensions) throw new Error('Dimensions not found');
   CanvasDrawDimensions({ canvas, dimensions });
 
-  const { background } = CanvasDrawBackground({
-    ctx,
-    designAttributes,
-    dimensions,
-  });
+  const { palette } = buildAttributes;
+  if (!palette) throw new Error('Palette not found');
+  CanvasDrawBackground({ ctx, palette, dimensions });
 };

@@ -41,17 +41,24 @@ export type InputParameterPaletteType = {
   rangeValues: InputParameterPaletteRangeValuesType;
 };
 
+export const defaultPaletteColors = [
+  '#E8E8E8',
+  '#5588A3',
+  '#145374',
+  '#00334E',
+];
+
 export const InputParameterPaletteDefault: InputParameterPaletteType = {
   inputType: InputTypeEnum.explicit,
   unitType: UnitTypeEnum.hexcode,
   explicitValues: {
-    hexcode: ['#E8E8E8', '#5588A3', '#145374', '#00334E'],
+    hexcode: defaultPaletteColors,
   },
   randomValues: {
     hexcode: 4,
   },
   rangeValues: {
-    hexcode: ['#E8E8E8', '#5588A3', '#145374', '#00334E'],
+    hexcode: defaultPaletteColors,
   },
 };
 

@@ -11,6 +11,7 @@ import {
 import {
   InputParameterPaletteColors,
   InputParameterPaletteDefault,
+  defaultPaletteColors,
 } from '~/utils/types/input-parameter/palette';
 const prisma = new PrismaClient();
 
@@ -227,7 +228,7 @@ export const seedDesignAttributesOnLayers = async () => {
     format: 'px',
   };
   const buildPalette: BuildPalette = {
-    colors: ['#000000', '#ffffff'],
+    colors: defaultPaletteColors,
     format: 'hex',
   };
 

@@ -8,11 +8,9 @@ type CanvasDrawProps = {
 export const CanvasDrawDimensions = ({
   canvas,
   dimensions,
-}: CanvasDrawProps): { width: number; height: number } => {
+}: CanvasDrawProps) => {
   const { width, height } = dimensions;
 
   canvas.width = width;
   canvas.height = height;
-
-  return { width, height };
 };
