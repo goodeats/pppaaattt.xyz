@@ -62,6 +62,7 @@ model DesignAttribute {
 enum AttributeType {
   container
   palette
+  background
   position
   sideLength
   strokeStyle
@@ -108,7 +109,15 @@ enum InputType {
 enum UnitType {
   px
   percent
+  // for palette
   hexcode
+  // for palette oriented parameters (background, fillStyle, strokeStyle)
+  none
+  random
+  palette
+  paletteShuffle
+  paletteRandom
+  positionPixel
 }
 
 model DesignAttributesOnLayers {
