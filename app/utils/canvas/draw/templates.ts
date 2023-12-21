@@ -6,17 +6,14 @@ import { PixelCoordColorHex } from '~/utils/pixel-utils';
 import { CanvasDrawBackground } from './background';
 import { ContextBegin, ContextEnd } from './context';
 import { CanvasDrawTriangleAtCoords } from './triangle';
+import { randomInRange, randomIndex } from '~/utils/random-utils';
 
-const COUNT = 10000;
+const COUNT = 5000;
 
 type CanvasDrawProps = {
   ctx: CanvasRenderingContext2D;
   palette: BuildPalette;
   dimensions: BuildDimensions;
-};
-
-const randomInRange = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 export const CanvasDrawTemplates = async ({
@@ -27,13 +24,16 @@ export const CanvasDrawTemplates = async ({
   const { width, height } = dimensions;
 
   const templateBuilds = [];
+  const rotateOptions = [0, 45, 90, 135, 180, 225, 270, 315];
   for (let i = 0; i < COUNT; i++) {
     // the color will be black if the pixel is outside the canvas
     const x = randomInRange(1, width - 1);
     const y = randomInRange(1, height - 1);
     const pixelColor = PixelCoordColorHex({ ctx, x, y });
-    const size = 100;
-    const rotate = (45 / 360) * 2;
+    const size = 50;
+    const index = randomIndex(rotateOptions);
+    const rotation = rotateOptions[index];
+    const rotate = (rotation / 360) * 2;
 
     const templateBuild = {
       x,
@@ -57,7 +57,7 @@ export const CanvasDrawTemplates = async ({
     });
 
     // ctx.fillStyle = pixelColor;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 3;
     ctx.strokeStyle = pixelColor;
     ctx.stroke();
 
