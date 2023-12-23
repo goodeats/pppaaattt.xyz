@@ -30,7 +30,7 @@ export const ImageLoad = async ({
 type CanvasGetImageCoordsProps = {
   canvas: HTMLCanvasElement;
   img: HTMLImageElement;
-  style: 'centered' | 'stretched';
+  style: 'centered' | 'stretched' | 'stretch-height' | 'stretch-width';
 };
 
 type CanvasDrawImageCoordsMinimalProps = {
@@ -45,12 +45,16 @@ export type ImageCoords = {
   height: number;
 };
 
+const ImageSideCenteredInCanvas = (canvasSide: number, imgSide: number) =>
+  (canvasSide - imgSide) / 2;
+
+// place the image as-is in the middle of the canvas
 function CanvasDrawImageCoordsCentered({
   canvas,
   img,
 }: CanvasDrawImageCoordsMinimalProps): ImageCoords {
-  const xCentered = (canvas.width - img.width) / 2;
-  const yCentered = (canvas.height - img.height) / 2;
+  const xCentered = ImageSideCenteredInCanvas(canvas.width, img.width);
+  const yCentered = ImageSideCenteredInCanvas(canvas.height, img.height);
 
   return {
     x: xCentered,
@@ -60,6 +64,7 @@ function CanvasDrawImageCoordsCentered({
   };
 }
 
+// stretch the image width and height to fit the canvas
 function CanvasDrawImageCoordsStretched({
   canvas,
   img,
@@ -72,6 +77,48 @@ function CanvasDrawImageCoordsStretched({
   };
 }
 
+// stretch the image height to fit the canvas
+// keep the image aspect ratio, and center the image horizontally
+function CanvasDrawImageCoordsStretchImageToCanvasHeight({
+  canvas,
+  img,
+}: CanvasDrawImageCoordsMinimalProps): ImageCoords {
+  // Calculate the aspect ratio of the image.
+  const aspectRatio = img.width / img.height;
+
+  // Calculate the new width of the image based on the canvas height and image aspect ratio.
+  const newWidth = canvas.height * aspectRatio;
+
+  const xCentered = ImageSideCenteredInCanvas(canvas.width, newWidth);
+  return {
+    x: xCentered,
+    y: 0,
+    width: newWidth,
+    height: canvas.height,
+  };
+}
+
+// stretch the image width to fit the canvas
+// keep the image aspect ratio, and center the image vertically
+function CanvasDrawImageCoordsStretchImageToCanvasWidth({
+  canvas,
+  img,
+}: CanvasDrawImageCoordsMinimalProps): ImageCoords {
+  // Calculate the aspect ratio of the image.
+  const aspectRatio = img.width / img.height;
+
+  // Calculate the new height of the image based on the canvas width and image aspect ratio.
+  const newHeight = canvas.width / aspectRatio;
+
+  const yCentered = ImageSideCenteredInCanvas(canvas.height, newHeight);
+  return {
+    x: 0,
+    y: yCentered,
+    width: canvas.width,
+    height: newHeight,
+  };
+}
+
 export function CanvasGetImageCoords({
   canvas,
   img,
@@ -81,6 +128,11 @@ export function CanvasGetImageCoords({
     case 'centered':
       return CanvasDrawImageCoordsCentered({ canvas, img });
     case 'stretched':
+      return CanvasDrawImageCoordsStretched({ canvas, img });
+    case 'stretch-height':
+      return CanvasDrawImageCoordsStretchImageToCanvasHeight({ canvas, img });
+    case 'stretch-width':
+      return CanvasDrawImageCoordsStretchImageToCanvasWidth({ canvas, img });
     default:
       return CanvasDrawImageCoordsStretched({ canvas, img });
   }
@@ -115,14 +167,14 @@ export const CanvasDrawImage = async ({
   dimensions,
 }: CanvasDrawProps) => {
   const { width, height } = dimensions;
-  const imageSrc = 'http://localhost:5173/images/pepper.jpeg';
+  const imageSrc = 'http://localhost:5173/images/jack.png';
   const img = await ImageLoad({ imageSrc });
 
   // Get coordinates for image by layout style
   const coords = CanvasGetImageCoords({
     canvas,
     img,
-    style: 'stretched',
+    style: 'stretch-height',
   });
 
   CanvasDrawImageToContext({ ctx, img, coords });
