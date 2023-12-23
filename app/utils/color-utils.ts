@@ -23,3 +23,29 @@ export const colorRandomHex = (): string => {
   }
   return `#${random.toUpperCase()}`;
 };
+
+export const adjustColorBrightness = (
+  hex: string,
+  percentage: number
+): string => {
+  hex = hex.replace('#', '');
+
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  const rAdj = Math.min(Math.max(Math.round(r * (1 + percentage)), 0), 255)
+    .toString(16)
+    .padStart(2, '0')
+    .toUpperCase();
+  const gAdj = Math.min(Math.max(Math.round(g * (1 + percentage)), 0), 255)
+    .toString(16)
+    .padStart(2, '0')
+    .toUpperCase();
+  const bAdj = Math.min(Math.max(Math.round(b * (1 + percentage)), 0), 255)
+    .toString(16)
+    .padStart(2, '0')
+    .toUpperCase();
+
+  return `#${rAdj}${gAdj}${bAdj}`;
+};
