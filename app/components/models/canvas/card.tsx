@@ -87,7 +87,6 @@ export const CanvasCard = ({
       <Divider />
       <CardFooter>
         <Flex width="full">
-          <Text>Coming: download</Text>
           <Button onClick={downloadCanvasAsPNG}>Download PNG</Button>
         </Flex>
       </CardFooter>
