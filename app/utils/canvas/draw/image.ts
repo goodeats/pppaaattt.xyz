@@ -167,14 +167,14 @@ export const CanvasDrawImage = async ({
   dimensions,
 }: CanvasDrawProps) => {
   const { width, height } = dimensions;
-  const imageSrc = 'http://localhost:5173/images/jack.png';
+  const imageSrc = 'http://localhost:5173/images/pepper.jpeg';
   const img = await ImageLoad({ imageSrc });
 
   // Get coordinates for image by layout style
   const coords = CanvasGetImageCoords({
     canvas,
     img,
-    style: 'stretch-height',
+    style: 'stretch-width',
   });
 
   CanvasDrawImageToContext({ ctx, img, coords });

@@ -42,7 +42,7 @@ export type InputParameterPaletteType = {
 };
 
 export const defaultPaletteColors = [
-  '#835a3d',
+  '#fff',
   '#FF5959',
   '#FFAD5A',
   '#4F9DA6',
