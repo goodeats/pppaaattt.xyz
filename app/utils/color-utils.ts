@@ -49,3 +49,26 @@ export const adjustColorBrightness = (
 
   return `#${rAdj}${gAdj}${bAdj}`;
 };
+
+export const areColorsSimilar = (
+  hex1: string,
+  hex2: string,
+  sameness: number = 0.1
+): boolean => {
+  // Convert hex to RGB
+  const r1 = parseInt(hex1.substring(1, 3), 16);
+  const g1 = parseInt(hex1.substring(3, 5), 16);
+  const b1 = parseInt(hex1.substring(5, 7), 16);
+
+  const r2 = parseInt(hex2.substring(1, 3), 16);
+  const g2 = parseInt(hex2.substring(3, 5), 16);
+  const b2 = parseInt(hex2.substring(5, 7), 16);
+
+  // Calculate the difference
+  const diffR = Math.abs(r1 - r2) / 255;
+  const diffG = Math.abs(g1 - g2) / 255;
+  const diffB = Math.abs(b1 - b2) / 255;
+
+  // Check if the colors are similar
+  return diffR <= sameness && diffG <= sameness && diffB <= sameness;
+};
