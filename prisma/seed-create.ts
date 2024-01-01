@@ -322,12 +322,32 @@ export const seedDesignAttributesOnLayers = async () => {
   // update layer build attributes for palette
   const buildAttributes = (layer.buildAttributes || {}) as BuildAttributes;
 
-  // https://shotkit.com/how-big-is-a-4x6-photo/
+  // IG Story 9:16
+  // const buildDimensions: BuildDimensions = {
+  //   width: 1080,
+  //   height: 1920,
+  //   format: 'px',
+  // };
+  // 16:9
+  // const buildDimensions: BuildDimensions = {
+  //   width: 1920,
+  //   height: 1080,
+  //   format: 'px',
+  // };
+
+  // 4:3
   const buildDimensions: BuildDimensions = {
-    width: 1800,
-    height: 1200,
+    width: 2400,
+    height: 1800,
     format: 'px',
   };
+
+  // // https://shotkit.com/how-big-is-a-4x6-photo/
+  // const buildDimensions: BuildDimensions = {
+  //   width: 1800,
+  //   height: 1200,
+  //   format: 'px',
+  // };
   // // https://www.docucopies.com/image-resolution/#:~:text=How%20many%20pixels%20is%208.5,artwork%20at%203400px%20x%204400px.
   // const buildDimensions: BuildDimensions = {
   //   width: 255 * 10,

@@ -28,7 +28,7 @@ type CanvasDrawProps = {
 };
 
 export const CanvasDrawImage = async ({ ctx, dimensions }: CanvasDrawProps) => {
-  const imageSrc = 'http://localhost:5173/images/candy2.png';
+  const imageSrc = 'http://localhost:5173/images/golf5.jpeg';
   const img = await ImageLoad({ imageSrc });
 
   // Get coordinates for image by layout style
