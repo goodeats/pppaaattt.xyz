@@ -5,6 +5,23 @@ import { colorRandomHex } from '../../color-utils';
 import { PixelCoordColorHex } from '~/utils/pixel-utils';
 import { colorIsMatching } from '~/utils/color-match-utils';
 
+// templateBuilds.push(
+//   ...TemplateLayoutRandom({
+//     ctx,
+//     count: COUNT,
+//     dimensions,
+//     pixelToColor: true,
+//     backgroundOptions: {
+//       pixelColorMatch: '#FFFFFF',
+//       matchSimilarity: 0.3,
+//       matchBrightness: 0.3,
+//       skip: true,
+//       paletteBackup: ['#FF0000', '#00F000', '#0000F0'],
+//     },
+//   })
+// );
+
+// use this when you want to adjust the background of an image
 type BackgroundOptions = {
   pixelColorMatch: string;
   matchSimilarity?: number;
