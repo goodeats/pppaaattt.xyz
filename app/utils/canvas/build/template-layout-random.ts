@@ -110,7 +110,7 @@ export const TemplateLayoutRandom = ({
       }
     }
 
-    const sizeAdjusted = width * size.size;
+    const sizeAdjusted = (width * size.size) / 100;
 
     const index = randomIndex(rotateOptions);
     const rotate = rotateOptions[index];

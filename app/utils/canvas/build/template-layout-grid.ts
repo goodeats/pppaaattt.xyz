@@ -75,7 +75,7 @@ export const TemplateLayoutGrid = ({
       const x = col * xStep + xStep / 2; // center in cell
       const y = row * yStep + yStep / 2; // center in cell
 
-      const sizeAdjusted = width * size.size;
+      const sizeAdjusted = (width * size.size) / 100;
 
       const index = randomIndex(rotateOptions);
       const rotate = rotateOptions[index];

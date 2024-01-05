@@ -15,6 +15,10 @@ import {
   InputParameterPaletteDefault,
   defaultPaletteColors,
 } from '~/utils/types/input-parameter/palette';
+import {
+  InputParameterSizeDefault,
+  InputParameterSizeLengths,
+} from '~/utils/types/input-parameter/size';
 const prisma = new PrismaClient();
 
 export const seedLayers = async () => {
@@ -98,6 +102,7 @@ export const seedDesignAttributes = async () => {
   await seedContainerDesignAttributes();
   await seedPaletteDesignAttributes();
   await seedBackgroundDesignAttributes();
+  await seedSizeDesignAttributes();
   console.log('Design attributes seeded.');
 };
 
@@ -315,6 +320,94 @@ export const seedBackgroundDesignAttributes = async () => {
   console.log('Palette design attributes seeded.');
 };
 
+export const seedSizeDesignAttributes = async () => {
+  console.log('Seeding size design attributes...');
+  // Hack: stringify default first
+  // bug for subsequent sizes change the default values even after the const is defined
+  // fix later since this works
+  // due to all being completed after in Promise.all
+  const sizeDefault = JSON.parse(JSON.stringify(InputParameterSizeDefault));
+  const sizeXs = JSON.parse(
+    JSON.stringify(
+      InputParameterSizeLengths({
+        size: 1,
+      })
+    )
+  );
+  const sizeSm = JSON.parse(
+    JSON.stringify(
+      InputParameterSizeLengths({
+        size: 5,
+      })
+    )
+  );
+  const sizeLg = JSON.parse(
+    JSON.stringify(
+      InputParameterSizeLengths({
+        size: 20,
+      })
+    )
+  );
+  const sizeXl = JSON.parse(
+    JSON.stringify(
+      InputParameterSizeLengths({
+        size: 33.3,
+      })
+    )
+  );
+
+  const containersSeedJson = [
+    {
+      title: 'Default Size',
+      description: 'A template of default settings for a size attribute',
+      inputParameters: sizeDefault,
+    },
+    {
+      title: 'Size XS',
+      description: 'A template of a size with an aspect ratio of 9:16',
+      inputParameters: sizeXs,
+    },
+    {
+      title: 'Size SM',
+      description: 'A template of a size with an aspect ratio of 9:16',
+      inputParameters: sizeSm,
+    },
+    {
+      title: 'Size LG',
+      description: 'A template of a size with an aspect ratio of 9:16',
+      inputParameters: sizeLg,
+    },
+    {
+      title: 'Size XL',
+      description: 'A template of a size with an aspect ratio of 9:16',
+      inputParameters: sizeXl,
+    },
+  ];
+
+  const promises = containersSeedJson.map(async (designAttribute) => {
+    const { title, description, inputParameters } = designAttribute;
+    const exists = await prisma.designAttribute.findFirst({
+      where: { title },
+    });
+
+    if (!exists) {
+      await prisma.designAttribute.create({
+        data: {
+          title,
+          description,
+          attributeType: 'size',
+          inputParameters: {
+            create: inputParameters,
+          },
+        },
+      });
+    }
+  });
+
+  await Promise.all(promises);
+  console.log('Size design attributes seeded.');
+};
+
 export const seedDesignAttributesOnLayers = async () => {
   console.log('Seeding design attributes on layers...');
 
@@ -418,7 +511,7 @@ export const seedDesignAttributesOnLayers = async () => {
     display: true,
   };
   const buildSize = {
-    size: 0.1,
+    size: 10,
     format: 'percent',
   };
 

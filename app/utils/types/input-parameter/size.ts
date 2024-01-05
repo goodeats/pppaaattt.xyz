@@ -52,3 +52,23 @@ export const InputParameterSizeDefault: InputParameterSizeDefaultType = {
     percent: [10, 50],
   },
 };
+
+export const InputParameterSizeLengths = ({
+  size,
+}: {
+  size: number;
+}): InputParameterSizeDefaultType => {
+  const defaultSize = InputParameterSizeDefault;
+  const { explicitValues, ...currentSize } = defaultSize;
+
+  // set the size on explicitValues and rangeValues
+  explicitValues.px = size;
+  explicitValues.percent = size;
+
+  const newSize = {
+    ...currentSize,
+    explicitValues,
+  };
+
+  return newSize;
+};
