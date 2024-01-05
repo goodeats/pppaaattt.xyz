@@ -1,7 +1,35 @@
 import { BuildDimensions } from '~/lib/utils/build-structure/build-attributes';
-import { RotateCompass } from './rotate-utils';
-import { randomIndex } from './random-utils';
-import { colorRandomHex } from './color-utils';
+import { RotateCompass } from '../../rotate-utils';
+import { randomIndex } from '../../random-utils';
+import { colorRandomHex } from '../../color-utils';
+
+// TO ADD GRID
+// const ROWS = 33;
+// const COLS = 19;
+// const defaultLayerProps = {
+//   rows: ROWS,
+//   cols: COLS,
+//   dimensions,
+// };
+
+// templateBuilds.push(
+//   ...TemplateLayoutGrid({
+//     ...defaultLayerProps,
+//     pixelColor: '#FFAD5A',
+//   })
+// );
+// templateBuilds.push(
+//   ...TemplateLayoutGrid({
+//     ...defaultLayerProps,
+//     pixelColor: '#4F9DA6',
+//   })
+// );
+// templateBuilds.push(
+//   ...TemplateLayoutGrid({
+//     ...defaultLayerProps,
+//     pixelColor: '#1A0841',
+//   })
+// );
 
 type TemplateLayoutGridProps = {
   cols: number;

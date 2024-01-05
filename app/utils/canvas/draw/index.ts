@@ -27,7 +27,7 @@ export const CanvasDraw = async ({
   if (!palette) throw new Error('Palette not found');
   CanvasDrawBackground({ ctx, palette, dimensions });
 
-  // await CanvasDrawImage({ canvas, ctx, dimensions });
+  await CanvasDrawImage({ canvas, ctx, dimensions });
 
   await CanvasDrawTemplates({ ctx, palette, dimensions });
   console.log('🏁 done');
