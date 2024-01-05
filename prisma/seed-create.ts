@@ -456,6 +456,25 @@ export const seedDesignAttributesOnLayers = async () => {
   });
   console.log('default palette added to default layer.');
 
+  // find default container
+  const size = await prisma.designAttribute.findFirst({
+    where: { title: 'Default Size' },
+    include: { inputParameters: true },
+  });
+
+  if (!size) {
+    throw new Error('Default size not found.');
+  }
+
+  console.log('adding default size to default layer...');
+  await prisma.designAttributesOnLayers.create({
+    data: {
+      layerId: layer.id,
+      designAttributeId: size.id,
+    },
+  });
+  console.log('default size added to default layer.');
+
   // update layer build attributes for palette
   const buildAttributes = (layer.buildAttributes || {}) as BuildAttributes;
 
