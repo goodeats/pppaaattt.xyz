@@ -41,8 +41,8 @@ export type InputParameterPaletteType = {
   rangeValues: InputParameterPaletteRangeValuesType;
 };
 
+// first color is canvas background as of this commit
 export const defaultPaletteColors = [
-  '#0f181c',
   '#FF5959',
   '#FFAD5A',
   '#4F9DA6',
