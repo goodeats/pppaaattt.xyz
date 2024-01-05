@@ -1,3 +1,7 @@
+export const isValidHex = (hex: string): boolean => {
+  return /^#?[0-9A-Fa-f]{6}$/.test(hex);
+};
+
 export const colorHexInvert = (hex: string): string => {
   // Remove the hash at the start if it's there
   hex = hex.replace('#', '');

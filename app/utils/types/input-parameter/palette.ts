@@ -42,7 +42,9 @@ export type InputParameterPaletteType = {
 };
 
 // first color is canvas background as of this commit
+// use white for images that have white/transparent backgrounds
 export const defaultPaletteColors = [
+  '#FFFFFF',
   '#FF5959',
   '#FFAD5A',
   '#4F9DA6',

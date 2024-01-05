@@ -3,12 +3,22 @@ import { RotateCompass } from '../../rotate-utils';
 import { randomInRange, randomIndex } from '../../random-utils';
 import { colorRandomHex } from '../../color-utils';
 import { PixelCoordColorHex } from '~/utils/pixel-utils';
+import { colorIsMatching } from '~/utils/color-match-utils';
+
+type BackgroundOptions = {
+  pixelColorMatch: string;
+  matchSimilarity?: number;
+  matchBrightness?: number;
+  skip?: boolean;
+  paletteBackup?: string[];
+};
 
 type TemplateLayoutRandomProps = {
   ctx: CanvasRenderingContext2D;
   count: number;
   dimensions: BuildDimensions;
   pixelToColor?: boolean;
+  backgroundOptions?: BackgroundOptions;
 };
 
 type TemplateBuildProps = {
@@ -25,6 +35,7 @@ export const TemplateLayoutRandom = ({
   count,
   dimensions,
   pixelToColor,
+  backgroundOptions,
 }: TemplateLayoutRandomProps): TemplateBuildProps[] => {
   const { width, height } = dimensions;
 
@@ -39,9 +50,45 @@ export const TemplateLayoutRandom = ({
     const y = randomInRange(1, height - 1);
 
     const pixelColor = pixelToColor ? PixelCoordColorHex({ ctx, x, y }) : null;
+    let pixelColorBackup;
+    let isBackground = false;
+
+    // if background options are provided, check if the pixel color matches
+    // if it does, skip or set the pixel color to the backup color
+    // if no backup color is provided, set the pixel color to a random color
+    if (backgroundOptions && pixelColor) {
+      const {
+        pixelColorMatch,
+        matchSimilarity,
+        matchBrightness,
+        skip,
+        paletteBackup,
+      } = backgroundOptions;
+
+      const isMatch = colorIsMatching({
+        pixelColor,
+        pixelColorMatch,
+        matchSimilarity,
+        matchBrightness,
+      });
+
+      if (isMatch) {
+        if (skip) continue;
+        isBackground = true;
+
+        if (paletteBackup) {
+          const index =
+            paletteBackup.length > 1 ? randomIndex(paletteBackup) : 0;
+          const pixelColor = paletteBackup[index];
+          pixelColorBackup = pixelColor;
+        } else {
+          pixelColorBackup = colorRandomHex();
+        }
+      }
+    }
 
     const sizeMultiplier = 1;
-    const sizePercent = 0.1;
+    const sizePercent = 0.05;
     const canvasWidth = width;
     const size = canvasWidth * sizePercent * sizeMultiplier;
 
@@ -51,10 +98,10 @@ export const TemplateLayoutRandom = ({
     const templateBuild = {
       x,
       y,
-      pixelColor: pixelColor || colorRandomHex(),
+      pixelColor: pixelColorBackup || pixelColor || colorRandomHex(),
       size,
       rotate,
-      isBackground: false,
+      isBackground,
     };
 
     templateBuilds.push(templateBuild);

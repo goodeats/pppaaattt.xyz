@@ -2,13 +2,9 @@ import {
   BuildDimensions,
   BuildPalette,
 } from '~/lib/utils/build-structure/build-attributes';
-import { PixelCoordColorHex } from '~/utils/pixel-utils';
 import { CanvasDrawBackground } from './background';
 import { ContextBegin, ContextEnd } from './context';
 import { CanvasDrawTriangleAtCoords } from './triangle';
-import { randomInRange, randomIndex } from '~/utils/random-utils';
-import { adjustColorBrightness, areColorsSimilar } from '~/utils/color-utils';
-import { RotateCompass } from '~/utils/rotate-utils';
 import { TemplateLayoutGrid } from '../build/template-layout-grid';
 import { TemplateLayoutRandom } from '../build/template-layout-random';
 
@@ -25,18 +21,7 @@ export const CanvasDrawTemplates = async ({
   palette,
   dimensions,
 }: CanvasDrawProps) => {
-  const { width, height } = dimensions;
-
   const templateBuilds = [];
-
-  templateBuilds.push(
-    ...TemplateLayoutRandom({
-      ctx,
-      count: COUNT,
-      dimensions,
-      pixelToColor: true,
-    })
-  );
 
   const ROWS = 13;
   const COLS = 19;
@@ -65,61 +50,21 @@ export const CanvasDrawTemplates = async ({
     })
   );
 
-  const rotateOptions = RotateCompass();
-  for (let i = 0; i < COUNT; i++) {
-    // the color will be black if the pixel is outside the canvas
-    const x = randomInRange(1, width - 1);
-    const y = randomInRange(1, height - 1);
-    // faking image pixel color
-    // const pixelColor = '#1A0841';
-    const pixelColor = PixelCoordColorHex({ ctx, x, y });
-    const backgroundColor = '#2096f3';
-    // const isBackground =
-    //   pixelColor === backgroundColor ||
-    //   areColorsSimilar(pixelColor, backgroundColor, 0.3) ||
-    //   areColorsSimilar(pixelColor, '#114f7f', 0.13);
-
-    // const isBackground = false;
-    const isBackground =
-      pixelColor === '#FFFFFF' ||
-      adjustColorBrightness(pixelColor, 0.5) === '#FFFFFF';
-
-    let backupPixelColor;
-    if (isBackground) {
-      const backupColors = [
-        '#aa0000',
-        '#075600',
-        '#213c18',
-        '#668c6f',
-        '#378b29',
-        // '#f1e2d0',
-        // '#d8cbbb',
-        // '#f6ede2',
-      ];
-      // backupPixelColor = backupColors[randomIndex(backupColors)];
-      // backupPixelColor = '#FFFFFF';
-      backupPixelColor = '#000000'; // ghost white
-    }
-    // const size = 30;
-    const sizeMultiplier = 1;
-    const sizePercent = 0.1;
-    const canvasWidth = width;
-    const size = canvasWidth * sizePercent * sizeMultiplier;
-    // const size = isBackground ? 100 : size;
-    const index = randomIndex(rotateOptions);
-    const rotate = rotateOptions[index];
-
-    const templateBuild = {
-      x,
-      y,
-      pixelColor: backupPixelColor || pixelColor,
-      size,
-      rotate,
-      isBackground,
-    };
-
-    // templateBuilds.push(templateBuild);
-  }
+  templateBuilds.push(
+    ...TemplateLayoutRandom({
+      ctx,
+      count: COUNT,
+      dimensions,
+      pixelToColor: true,
+      backgroundOptions: {
+        pixelColorMatch: '#FFFFFF',
+        matchSimilarity: 0.3,
+        matchBrightness: 0.3,
+        skip: true,
+        paletteBackup: ['#FF0000', '#00F000', '#0000F0'],
+      },
+    })
+  );
 
   // redraw background to hide image
   CanvasDrawBackground({ ctx, palette, dimensions });
