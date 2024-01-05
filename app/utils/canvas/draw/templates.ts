@@ -28,7 +28,6 @@ export const CanvasDrawTemplates = async ({
   const { width, height } = dimensions;
 
   const templateBuilds = [];
-  const rotateOptions = [0, 45, 90, 135, 180, 225, 270, 315];
 
   const defaultLayerProps = {
     rows: ROWS,
