@@ -31,6 +31,8 @@ model Layer {
 
   designAttributes DesignAttributesOnLayers[]
 
+  image LayerImage?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -128,6 +130,20 @@ model DesignAttributesOnLayers {
 
   designAttributeId String
   designAttribute   DesignAttribute   @relation(fields: [designAttributeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LayerImage {
+  id String @id @default(uuid())
+  url String // look into blob type later
+  altText String?
+  layout String? // 'centered', 'stretched', 'stretch-height', 'stretch-width'
+  display Boolean @default(true)
+
+  layerId String @unique
+  layer   Layer  @relation(fields: [layerId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

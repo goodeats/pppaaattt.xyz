@@ -9,6 +9,11 @@ export type ColorStyle =
   | 'palette-shuffle' // any from palette
   | 'palette-random' // random from palette
   | 'position-pixel'; // color at position pixel
+export type LayoutStyle =
+  | 'centered'
+  | 'stretched'
+  | 'stretch-height'
+  | 'stretch-width';
 
 export type BuildDimensions = {
   width: Dimension;
@@ -25,8 +30,15 @@ export type BuildBackground = {
   colorStyle: ColorStyle;
 };
 
+export type BuildImage = {
+  url: string;
+  layout: LayoutStyle;
+  display: boolean;
+};
+
 export type BuildAttributes = {
   dimensions?: BuildDimensions;
   palette?: BuildPalette;
   background?: BuildBackground;
+  image?: BuildImage;
 };

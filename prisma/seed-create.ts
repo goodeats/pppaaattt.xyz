@@ -3,6 +3,7 @@ import {
   BuildAttributes,
   BuildBackground,
   BuildDimensions,
+  BuildImage,
   BuildPalette,
 } from '~/lib/utils/build-structure/build-attributes';
 import {
@@ -368,6 +369,11 @@ export const seedDesignAttributesOnLayers = async () => {
   const buildBackground: BuildBackground = {
     colorStyle: 'palette',
   };
+  const buildLayerImage: BuildImage = {
+    url: 'http://localhost:5173/images/pepper.jpeg',
+    layout: 'stretch-height',
+    display: true,
+  };
 
   console.log('updating layer build attributes...');
   await prisma.layer.update({
@@ -378,6 +384,7 @@ export const seedDesignAttributesOnLayers = async () => {
         dimensions: buildDimensions,
         palette: buildPalette,
         background: buildBackground,
+        image: buildLayerImage,
       },
     },
   });

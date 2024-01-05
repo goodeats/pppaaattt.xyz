@@ -15,32 +15,12 @@ import {
 } from '~/components';
 import { BuildAttributes } from '~/lib/utils/build-structure/build-attributes';
 import { CanvasDraw } from '~/utils/canvas/draw';
-import { IDesignAttribute, IInputParameter } from '~/utils/db.server';
-
-type DesignAttributeWithInputParameters = Pick<
-  IDesignAttribute,
-  'id' | 'title' | 'attributeType'
-> & {
-  inputParameters: Pick<
-    IInputParameter,
-    | 'id'
-    | 'inputType'
-    | 'unitType'
-    | 'explicitValues'
-    | 'randomValues'
-    | 'rangeValues'
-  >[];
-};
 
 type CanvasCardProps = {
   buildAttributes: BuildAttributes;
-  designAttributes: DesignAttributeWithInputParameters[];
 };
 
-export const CanvasCard = ({
-  buildAttributes,
-  designAttributes,
-}: CanvasCardProps) => {
+export const CanvasCard = ({ buildAttributes }: CanvasCardProps) => {
   const Description = () => {
     return (
       <Box>
@@ -54,7 +34,7 @@ export const CanvasCard = ({
 
     useEffect(() => {
       const canvas = canvasRef.current;
-      canvas && CanvasDraw({ canvas, buildAttributes, designAttributes });
+      canvas && CanvasDraw({ canvas, buildAttributes });
     }, []);
 
     return (

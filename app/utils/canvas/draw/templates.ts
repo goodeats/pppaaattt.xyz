@@ -32,6 +32,22 @@ export const CanvasDrawTemplates = async ({
   };
 
   templateBuilds.push(
+    ...TemplateLayoutRandom({
+      ctx,
+      count: COUNT,
+      dimensions,
+      pixelToColor: true,
+      // backgroundOptions: {
+      //   pixelColorMatch: '#FFFFFF',
+      //   matchSimilarity: 0.3,
+      //   matchBrightness: 0.3,
+      //   skip: true,
+      //   paletteBackup: ['#FF0000', '#00F000', '#0000F0'],
+      // },
+    })
+  );
+
+  templateBuilds.push(
     ...TemplateLayoutGrid({
       ...defaultLayerProps,
       pixelColor: '#FFAD5A',
@@ -47,22 +63,6 @@ export const CanvasDrawTemplates = async ({
     ...TemplateLayoutGrid({
       ...defaultLayerProps,
       pixelColor: '#1A0841',
-    })
-  );
-
-  templateBuilds.push(
-    ...TemplateLayoutRandom({
-      ctx,
-      count: COUNT,
-      dimensions,
-      pixelToColor: true,
-      backgroundOptions: {
-        pixelColorMatch: '#FFFFFF',
-        matchSimilarity: 0.3,
-        matchBrightness: 0.3,
-        skip: true,
-        paletteBackup: ['#FF0000', '#00F000', '#0000F0'],
-      },
     })
   );
 

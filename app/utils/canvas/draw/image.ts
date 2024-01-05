@@ -1,4 +1,7 @@
-import { BuildDimensions } from '~/lib/utils/build-structure/build-attributes';
+import {
+  BuildDimensions,
+  BuildImage,
+} from '~/lib/utils/build-structure/build-attributes';
 import {
   ImageToCanvasDimensions,
   ImageCoords,
@@ -22,20 +25,27 @@ export async function CanvasDrawImageToContext({
 }
 
 type CanvasDrawProps = {
-  canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
+  image: BuildImage;
   dimensions: BuildDimensions;
 };
 
-export const CanvasDrawImage = async ({ ctx, dimensions }: CanvasDrawProps) => {
-  const imageSrc = 'http://localhost:5173/images/lob.jpg';
+export const CanvasDrawImage = async ({
+  ctx,
+  image,
+  dimensions,
+}: CanvasDrawProps) => {
+  const { url, layout, display } = image;
+  if (!display) return;
+
+  const imageSrc = url;
   const img = await ImageLoad({ imageSrc });
 
   // Get coordinates for image by layout style
   const imageDimensions = ImageToCanvasDimensions({
     dimensions,
     img,
-    layout: 'stretch-height',
+    layout,
   });
 
   CanvasDrawImageToContext({ ctx, img, imageDimensions });
