@@ -1,4 +1,9 @@
-import { CanvasCard, Column, ColumnContainer, LayerCard } from '~/components';
+import {
+  CanvasCard,
+  Column,
+  ColumnContainer,
+  LayerCardGenerate,
+} from '~/components';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
@@ -41,15 +46,16 @@ export default function LayerDetailsPage() {
 
   return (
     <ColumnContainer>
-      {/* <Column>
-        <LayerCard
+      <Column>
+        <LayerCardGenerate
           layer={{
             ...layer,
             createdAt: new Date(layer.createdAt),
             updatedAt: new Date(layer.updatedAt),
+            designAttributes: [],
           }}
         />
-      </Column> */}
+      </Column>
       <Column>
         <CanvasCard buildAttributes={buildAttributes as BuildAttributes} />
       </Column>

@@ -14,10 +14,9 @@ import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { IInputParameter, prisma } from '~/utils/db.server';
-import { InputParameterPaletteExplicitValuesType } from '~/utils/types/input-parameter/palette';
-import { StringsToHexSchma } from '~/utils/zod-schema';
+import { InputParameterSizeExplicitValuesType } from '~/utils/types/input-parameter/size';
 
-const urlResourcePath = '/dashboard/builder/design-attributes/palette';
+const urlResourcePath = '/dashboard/builder/design-attributes/size';
 
 enum InputTypeEnum {
   explicit = 'explicit',
@@ -26,32 +25,38 @@ const InputTypeEnumNative = z.nativeEnum(InputTypeEnum);
 type InputTypeEnumType = z.infer<typeof InputTypeEnumNative>;
 
 enum UnitTypeEnum {
-  hexcode = 'hexcode',
+  px = 'px',
+  percent = 'percent',
 }
 const UnitTypeEnumNative = z.nativeEnum(UnitTypeEnum);
 type UnitTypeEnumType = z.infer<typeof UnitTypeEnumNative>;
 
-interface PaletteValuesExplicitEditorSchemaTypes {
-  paletteId: string;
+enum UnitTypeDisplayEnum {
+  px = 'px',
+  percent = '%',
+}
+
+interface SizeValuesExplicitEditorSchemaTypes {
+  sizeId: string;
   id: string;
   inputType: InputTypeEnumType;
   unitType: UnitTypeEnumType;
-  hexcode: string | string[];
+  size: number;
 }
 
-const PaletteValuesExplicitEditorSchema: z.Schema<PaletteValuesExplicitEditorSchemaTypes> =
+const SizeValuesExplicitEditorSchema: z.Schema<SizeValuesExplicitEditorSchemaTypes> =
   z.object({
-    paletteId: z.string(),
+    sizeId: z.string(),
     id: z.string(),
     inputType: InputTypeEnumNative,
     unitType: UnitTypeEnumNative,
-    hexcode: StringsToHexSchma('hexcode'),
+    size: z.number(),
   });
 
 export async function action({ request }: DataFunctionArgs) {
   const formData = await request.formData();
   const submission = await parse(formData, {
-    schema: PaletteValuesExplicitEditorSchema.superRefine(async (data, ctx) => {
+    schema: SizeValuesExplicitEditorSchema.superRefine(async (data, ctx) => {
       if (!data.id) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -82,12 +87,7 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  const {
-    id: inputParameterId,
-    unitType,
-    paletteId,
-    hexcode,
-  } = submission.value;
+  const { id: inputParameterId, unitType, sizeId, size } = submission.value;
 
   const currentInputParameter = await prisma.inputParameter.findUnique({
     where: {
@@ -102,25 +102,22 @@ export async function action({ request }: DataFunctionArgs) {
   }
 
   // Ensure explicitValues is treated as an object
-  const currentValues = currentInputParameter.explicitValues || [];
-  if (Array.isArray(currentValues)) {
-    // Handle the case where explicitValues is not an array
+  const currentValues = currentInputParameter.explicitValues || {};
+  if (typeof currentValues !== 'object' || Array.isArray(currentValues)) {
+    // Handle the case where explicitValues is not an object
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  const hexcodeArray =
-    typeof hexcode === 'string' ? hexcode.split(',') : hexcode;
-
-  const newValues = {
-    [unitType]: hexcodeArray,
+  const newData = {
+    [unitType]: size,
   };
 
-  const updatedValues = newValues;
+  const updatedExplicitValues = { ...currentValues, ...newData };
 
   const updatedInputParameter = await prisma.inputParameter.update({
     where: { id: inputParameterId },
     data: {
-      explicitValues: updatedValues,
+      explicitValues: updatedExplicitValues,
     },
   });
 
@@ -128,10 +125,10 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  return redirect(`${urlResourcePath}/${paletteId}`);
+  return redirect(`${urlResourcePath}/${sizeId}`);
 }
 
-type PaletteValuesExplicitEditorProps = {
+type SizeValuesExplicitEditorProps = {
   id: string;
   inputParameter: Pick<
     IInputParameter,
@@ -139,15 +136,15 @@ type PaletteValuesExplicitEditorProps = {
   >;
 };
 
-export function PaletteValuesExplicitEditor({
+export function SizeValuesExplicitEditor({
   id,
   inputParameter,
-}: PaletteValuesExplicitEditorProps) {
+}: SizeValuesExplicitEditorProps) {
   const { unitType } = inputParameter;
-  const unitTypeDisplay = UnitTypeEnum[unitType as 'hexcode'];
+  const unitTypeDisplay = UnitTypeDisplayEnum[unitType];
   const unitKey = unitType as keyof typeof UnitTypeEnum;
   const values =
-    inputParameter.explicitValues as InputParameterPaletteExplicitValuesType;
+    inputParameter.explicitValues as InputParameterSizeExplicitValuesType;
   const currentValues = values[unitKey];
 
   // BUG: when navigating to /new this causes an infinite loop
@@ -156,27 +153,28 @@ export function PaletteValuesExplicitEditor({
   // const inputTypeFetcher = useFetcher<typeof action>();
   // const isPending = inputTypeFetcher.state !== 'idle';
 
-  const [form, fields] = useForm<PaletteValuesExplicitEditorSchemaTypes>({
-    id: 'palette-values-explicit-editor',
-    constraint: getFieldsetConstraint(PaletteValuesExplicitEditorSchema),
+  const [form, fields] = useForm<SizeValuesExplicitEditorSchemaTypes>({
+    id: 'size-values-explicit-editor',
+    constraint: getFieldsetConstraint(SizeValuesExplicitEditorSchema),
     // lastSubmission: inputTypeFetcher.data?.submission,
     onValidate({ formData }) {
-      return parse(formData, { schema: PaletteValuesExplicitEditorSchema });
+      return parse(formData, { schema: SizeValuesExplicitEditorSchema });
     },
     defaultValue: {
-      hexcode: currentValues ?? '',
+      size: currentValues ?? '',
     },
   });
 
-  const FormHexCode = () => {
+  const FormSize = () => {
     return (
-      <FormControl isInvalid={!!fields.hexcode.error}>
+      <FormControl isInvalid={!!fields.size.error}>
         <FormLabel>Colors ({unitTypeDisplay})</FormLabel>
         <Input
-          name={fields.hexcode.name}
-          defaultValue={fields.hexcode.defaultValue}
+          type="number"
+          name={fields.size.name}
+          defaultValue={fields.size.defaultValue}
         />
-        <FormErrorMessage>{fields.hexcode.error}</FormErrorMessage>
+        <FormErrorMessage>{fields.size.error}</FormErrorMessage>
       </FormControl>
     );
   };
@@ -203,7 +201,7 @@ export function PaletteValuesExplicitEditor({
   return (
     <Stack width="full" paddingX={8} paddingY={5}>
       <Form method="post" {...form.props}>
-        <input type="hidden" name="paletteId" value={id} />
+        <input type="hidden" name="sizeId" value={id} />
         <input type="hidden" name="id" value={inputParameter.id} />
         <input
           type="hidden"
@@ -213,7 +211,7 @@ export function PaletteValuesExplicitEditor({
         <input type="hidden" name="unitType" value={inputParameter.unitType} />
 
         <Stack divider={<StackDivider borderColor="gray.200" />} spacing={5}>
-          <FormHexCode />
+          <FormSize />
           <FormActions />
         </Stack>
       </Form>

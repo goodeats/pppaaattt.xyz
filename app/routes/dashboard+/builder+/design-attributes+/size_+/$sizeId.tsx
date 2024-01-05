@@ -5,12 +5,10 @@ import { prisma } from '~/utils/db.server';
 export const handle = {
   breadcrumb: (match) => {
     const { data, params } = match;
-    const sidelengthId = params.sidelengthId;
-    const title = data.sideLength?.title ?? 'Side Length';
+    const sizeId = params.sizeId;
+    const title = data.size?.title ?? 'Side Length';
     return (
-      <NavLink
-        to={`/dashboard/builder/design-attributes/sidelength/${sidelengthId}`}
-      >
+      <NavLink to={`/dashboard/builder/design-attributes/size/${sizeId}`}>
         {title}
       </NavLink>
     );
@@ -18,14 +16,14 @@ export const handle = {
 };
 
 export async function loader({ params }: DataFunctionArgs) {
-  const { sidelengthId } = params;
-  if (!sidelengthId) {
-    return redirect('/dashboard/builder/design-attributes/side-length');
+  const { sizeId } = params;
+  if (!sizeId) {
+    return redirect('/dashboard/builder/design-attributes/size');
   }
 
-  const sideLength = await prisma.designAttribute.findUnique({
+  const size = await prisma.designAttribute.findUnique({
     where: {
-      id: sidelengthId,
+      id: sizeId,
     },
     select: {
       id: true,
@@ -48,18 +46,16 @@ export async function loader({ params }: DataFunctionArgs) {
     },
   });
 
-  if (!sideLength) {
+  if (!size) {
     // TODO: redirect to 404 page
     // create toast notification
-    return redirect(
-      '/dashboard/builder/design-attributes/side-length?notFound=true'
-    );
+    return redirect('/dashboard/builder/design-attributes/size?notFound=true');
   }
 
-  return json({ sideLength });
+  return json({ size });
 }
 
-export default function SideLengthDetailsPage() {
-  // TODO: add sideLength content on top of content
+export default function SizeDetailsPage() {
+  // TODO: add size content on top of content
   return <Outlet />;
 }

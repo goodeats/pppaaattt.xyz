@@ -1,4 +1,5 @@
 import {
+  BuildAttributes,
   BuildDimensions,
   BuildPalette,
 } from '~/lib/utils/build-structure/build-attributes';
@@ -7,20 +8,19 @@ import { ContextBegin, ContextEnd } from './context';
 import { CanvasDrawTriangleAtCoords } from './triangle';
 import { TemplateLayoutGrid } from '../build/template-layout-grid';
 import { TemplateLayoutRandom } from '../build/template-layout-random';
+import { DrawAttributes } from '.';
 
-const COUNT = 10000;
+const COUNT = 1000;
 
 type CanvasDrawProps = {
-  ctx: CanvasRenderingContext2D;
-  palette: BuildPalette;
-  dimensions: BuildDimensions;
+  drawAttributes: DrawAttributes;
 };
 
 export const CanvasDrawTemplates = async ({
-  ctx,
-  palette,
-  dimensions,
+  drawAttributes,
 }: CanvasDrawProps) => {
+  const { ctx, palette, dimensions, size } = drawAttributes;
+
   const templateBuilds = [];
 
   const ROWS = 13;
@@ -29,40 +29,36 @@ export const CanvasDrawTemplates = async ({
     rows: ROWS,
     cols: COLS,
     dimensions,
+    size,
   };
 
+  // grid
+  const paletteColors = palette.colors;
+  for (let i = 0; i < paletteColors.length; i++) {
+    const pixelColor = paletteColors[i];
+    templateBuilds.push(
+      ...TemplateLayoutGrid({
+        ...defaultLayerProps,
+        pixelColor,
+      })
+    );
+  }
+
+  // random
   templateBuilds.push(
     ...TemplateLayoutRandom({
       ctx,
       count: COUNT,
       dimensions,
+      size,
       pixelToColor: true,
-      // backgroundOptions: {
-      //   pixelColorMatch: '#FFFFFF',
-      //   matchSimilarity: 0.3,
-      //   matchBrightness: 0.3,
-      //   skip: true,
-      //   paletteBackup: ['#FF0000', '#00F000', '#0000F0'],
-      // },
-    })
-  );
-
-  templateBuilds.push(
-    ...TemplateLayoutGrid({
-      ...defaultLayerProps,
-      pixelColor: '#FFAD5A',
-    })
-  );
-  templateBuilds.push(
-    ...TemplateLayoutGrid({
-      ...defaultLayerProps,
-      pixelColor: '#4F9DA6',
-    })
-  );
-  templateBuilds.push(
-    ...TemplateLayoutGrid({
-      ...defaultLayerProps,
-      pixelColor: '#1A0841',
+      backgroundOptions: {
+        pixelColorMatch: '#FFFFFF',
+        matchSimilarity: 0.3,
+        matchBrightness: 0.3,
+        skip: true,
+        paletteBackup: ['#FF0000', '#00F000', '#0000F0'],
+      },
     })
   );
 

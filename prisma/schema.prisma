@@ -39,7 +39,7 @@ model Layer {
   @@index([parentId])
 }
 
-// DesignAttribute model represents a single specific design property, like sideLength, color, etc.
+// DesignAttribute model represents a single specific design property, like size, color, etc.
 // Each attribute is of a specific type, defined by the AttributeType enum.
 // Filter attributes have an additional sub-type defined by the FilterType enum.
 model DesignAttribute {
@@ -66,7 +66,7 @@ enum AttributeType {
   palette
   background
   position
-  sideLength
+  size
   strokeStyle
   fillStyle
   lineWidth

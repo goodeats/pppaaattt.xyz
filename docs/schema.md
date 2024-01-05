@@ -18,7 +18,7 @@ This document provides an overview of the database schema used in our project. T
 
 #### DesignAttribute
 
-- Represents a specific design property (e.g., color, sideLength).
+- Represents a specific design property (e.g., color, size).
 - Linked to layers; each layer can have multiple design attributes.
 - Attributes are categorized by AttributeType.
 - Filter attributes have an additional sub-type defined by FilterType.

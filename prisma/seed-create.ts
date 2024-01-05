@@ -50,6 +50,49 @@ export const seedLayers = async () => {
   console.log('Layers seeded.');
 };
 
+export const seedLayerImages = async () => {
+  console.log('Seeding layer images...');
+
+  const layerImagesSeedJson = [
+    {
+      url: 'http://localhost:5173/images/pepper.jpeg',
+      altText: 'pepper!',
+      layout: 'stretch-height',
+      display: true,
+    },
+  ];
+
+  const layer = await prisma.layer.findFirst({
+    where: { title: 'Default Layer' },
+  });
+
+  if (!layer) {
+    throw new Error('Default layer not found.');
+  }
+
+  const promises = layerImagesSeedJson.map(async (layerImage) => {
+    const { url, altText, layout, display } = layerImage;
+    const exists = await prisma.layerImage.findFirst({
+      where: { url },
+    });
+
+    if (!exists) {
+      await prisma.layerImage.create({
+        data: {
+          url,
+          altText,
+          layout,
+          display,
+          layerId: layer.id,
+        },
+      });
+    }
+  });
+
+  await Promise.all(promises);
+  console.log('Layer images seeded.');
+};
+
 export const seedDesignAttributes = async () => {
   console.log('Seeding design attributes...');
   await seedContainerDesignAttributes();
@@ -374,6 +417,10 @@ export const seedDesignAttributesOnLayers = async () => {
     layout: 'stretch-height',
     display: true,
   };
+  const buildSize = {
+    size: 0.1,
+    format: 'percent',
+  };
 
   console.log('updating layer build attributes...');
   await prisma.layer.update({
@@ -385,6 +432,7 @@ export const seedDesignAttributesOnLayers = async () => {
         palette: buildPalette,
         background: buildBackground,
         image: buildLayerImage,
+        size: buildSize,
       },
     },
   });

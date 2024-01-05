@@ -1,4 +1,7 @@
-import { BuildDimensions } from '~/lib/utils/build-structure/build-attributes';
+import {
+  BuildDimensions,
+  BuildSize,
+} from '~/lib/utils/build-structure/build-attributes';
 import { RotateCompass } from '../../rotate-utils';
 import { randomIndex } from '../../random-utils';
 import { colorRandomHex } from '../../color-utils';
@@ -10,6 +13,7 @@ import { colorRandomHex } from '../../color-utils';
 //   rows: ROWS,
 //   cols: COLS,
 //   dimensions,
+//   size,
 // };
 
 // templateBuilds.push(
@@ -35,6 +39,7 @@ type TemplateLayoutGridProps = {
   cols: number;
   rows: number;
   dimensions: BuildDimensions;
+  size: BuildSize;
   pixelColor?: string;
 };
 
@@ -51,6 +56,7 @@ export const TemplateLayoutGrid = ({
   rows,
   cols,
   dimensions,
+  size,
   pixelColor,
 }: TemplateLayoutGridProps): TemplateBuildProps[] => {
   const { width, height } = dimensions;
@@ -59,7 +65,8 @@ export const TemplateLayoutGrid = ({
   const xStep = width / cols;
   const yStep = height / rows;
 
-  const rotateOptions = RotateCompass();
+  // const rotateOptions = RotateCompass();
+  const rotateOptions = [0.25];
   const templateBuilds: TemplateBuildProps[] = [];
 
   for (let row = 0; row < rows; row++) {
@@ -68,10 +75,7 @@ export const TemplateLayoutGrid = ({
       const x = col * xStep + xStep / 2; // center in cell
       const y = row * yStep + yStep / 2; // center in cell
 
-      const sizeMultiplier = 1;
-      const sizePercent = 0.1;
-      const canvasWidth = width;
-      const size = canvasWidth * sizePercent * sizeMultiplier;
+      const sizeAdjusted = width * size.size;
 
       const index = randomIndex(rotateOptions);
       const rotate = rotateOptions[index];
@@ -80,9 +84,8 @@ export const TemplateLayoutGrid = ({
         x,
         y,
         pixelColor: pixelColor || colorRandomHex(),
-        size,
-        rotate: 0.25,
-        // rotate,
+        size: sizeAdjusted,
+        rotate,
         isBackground: false,
       };
 

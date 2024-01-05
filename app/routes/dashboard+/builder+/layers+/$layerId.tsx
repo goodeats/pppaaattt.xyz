@@ -1,4 +1,4 @@
-import { ContentContainer, LayerCard } from '~/components';
+import { ContentContainer, LayerCardBuild } from '~/components';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
@@ -33,6 +33,7 @@ export async function loader({ params }: DataFunctionArgs) {
           designAttribute: true,
         },
       },
+      image: true,
     },
   });
 
@@ -59,7 +60,7 @@ export default function LayerDetailsPage() {
 
   return (
     <ContentContainer>
-      <LayerCard
+      <LayerCardBuild
         layer={{
           ...layer,
           createdAt: new Date(layer.createdAt),

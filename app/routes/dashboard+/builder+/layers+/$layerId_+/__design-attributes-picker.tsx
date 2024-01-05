@@ -28,7 +28,7 @@ enum AttributeType {
   palette = 'palette',
   background = 'background',
   position = 'position',
-  sideLength = 'sideLength',
+  size = 'size',
   strokeStyle = 'strokeStyle',
   fillStyle = 'fillStyle',
   lineWidth = 'lineWidth',

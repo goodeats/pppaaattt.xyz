@@ -19,21 +19,21 @@ import {
 import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { DesignAttribute, prisma } from '~/utils/db.server';
-import { InputParameterSideLengthDefault } from '~/utils/types/input-parameter/side-length';
+import { InputParameterSizeDefault } from '~/utils/types/input-parameter/size';
 
 const titleMinLength = 1;
 const titleMaxLength = 100;
 const descriptionMinLength = 1;
 const descriptionMaxLength = 10000;
-const urlResourcePath = '/dashboard/builder/design-attributes/side-length';
+const urlResourcePath = '/dashboard/builder/design-attributes/size';
 
-interface SideLengthEditorSchemaTypes {
+interface SizeEditorSchemaTypes {
   id?: string;
   title: string;
   description?: string;
 }
 
-const SideLengthEditorSchema: z.Schema<SideLengthEditorSchemaTypes> = z.object({
+const SizeEditorSchema: z.Schema<SizeEditorSchemaTypes> = z.object({
   id: z.string().optional(),
   title: z.string().min(titleMinLength).max(titleMaxLength),
   description: z
@@ -46,18 +46,18 @@ const SideLengthEditorSchema: z.Schema<SideLengthEditorSchemaTypes> = z.object({
 export async function action({ request }: DataFunctionArgs) {
   const formData = await request.formData();
   const submission = await parse(formData, {
-    schema: SideLengthEditorSchema.superRefine(async (data, ctx) => {
+    schema: SizeEditorSchema.superRefine(async (data, ctx) => {
       if (!data.id) return;
 
-      const sideLength = await prisma.designAttribute.findUnique({
+      const size = await prisma.designAttribute.findUnique({
         where: {
           id: data.id,
         },
       });
-      if (!sideLength) {
+      if (!size) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Side Length not found',
+          message: 'Size not found',
         });
       }
     }),
@@ -72,16 +72,16 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  const { id: sideLengthId, title, description } = submission.value;
+  const { id: SizeId, title, description } = submission.value;
   const designAttribute = await prisma.designAttribute.upsert({
-    where: { id: sideLengthId ?? '__new_side_length__' },
+    where: { id: SizeId ?? '__new_size__' },
     create: {
       title,
       description,
-      attributeType: 'sideLength', // quick and dirty, no editing attribute type
+      attributeType: 'size', // quick and dirty, no editing attribute type
       inputParameters: {
         // initialize with default input parameters
-        create: InputParameterSideLengthDefault,
+        create: InputParameterSizeDefault,
       },
     },
     update: {
@@ -94,34 +94,30 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  console.log('designAttribute', designAttribute, urlResourcePath);
-
   return redirect(`${urlResourcePath}/${designAttribute.id}`);
 }
 
-type SideLengthEditorProps = {
-  sideLength?: SerializeFrom<
-    Pick<DesignAttribute, 'id' | 'title' | 'description'>
-  >;
+type SizeEditorProps = {
+  size?: SerializeFrom<Pick<DesignAttribute, 'id' | 'title' | 'description'>>;
 };
 
-export function SideLengthEditor({ sideLength }: SideLengthEditorProps) {
+export function SizeEditor({ size }: SizeEditorProps) {
   // BUG: when navigating to /new this causes an infinite loop
   // Warning: Maximum update depth exceeded.
   // don't really need this right now, but will want to fix it later for other forms
   // const layerFetcher = useFetcher<typeof action>();
   // const isPending = layerFetcher.state !== 'idle';
 
-  const [form, fields] = useForm<SideLengthEditorSchemaTypes>({
-    id: 'side-length-editor',
-    constraint: getFieldsetConstraint(SideLengthEditorSchema),
+  const [form, fields] = useForm<SizeEditorSchemaTypes>({
+    id: 'size-editor',
+    constraint: getFieldsetConstraint(SizeEditorSchema),
     // lastSubmission: layerFetcher.data?.submission,
     onValidate({ formData }) {
-      return parse(formData, { schema: SideLengthEditorSchema });
+      return parse(formData, { schema: SizeEditorSchema });
     },
     defaultValue: {
-      title: sideLength?.title ?? '',
-      description: sideLength?.description ?? '',
+      title: size?.title ?? '',
+      description: size?.description ?? '',
     },
   });
 
@@ -159,13 +155,13 @@ export function SideLengthEditor({ sideLength }: SideLengthEditorProps) {
             {/* <Button type="submit" disabled={isPending}> */}
             Submit
           </Button>
-          {sideLength ? (
+          {size ? (
             <Button form={form.id} variant="outline" type="reset">
               Reset
             </Button>
           ) : null}
-          {sideLength ? (
-            <NavLink to={`${urlResourcePath}/${sideLength.id}`}>
+          {size ? (
+            <NavLink to={`${urlResourcePath}/${size.id}`}>
               <Button variant="ghost">Cancel</Button>
             </NavLink>
           ) : null}
@@ -178,9 +174,7 @@ export function SideLengthEditor({ sideLength }: SideLengthEditorProps) {
     <Stack width="full" paddingX={8} paddingY={5}>
       <Form method="post" {...form.props}>
         {/* if editing, include id in hidden field */}
-        {sideLength ? (
-          <input type="hidden" name="id" value={sideLength.id} />
-        ) : null}
+        {size ? <input type="hidden" name="id" value={size.id} /> : null}
 
         <Stack spacing={5}>
           <FormTitle />

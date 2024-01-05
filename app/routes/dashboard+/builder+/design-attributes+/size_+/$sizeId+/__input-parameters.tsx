@@ -7,12 +7,7 @@ import {
   Text,
 } from '~/components';
 import { InputParameter } from '~/utils/db.server';
-import {
-  InputParameterSideLengthExplicitValuesType,
-  InputParameterSideLengthRandomValuesType,
-  InputParameterSideLengthRangeValuesType,
-} from '~/utils/types/input-parameter/side-length';
-import { colorRandomHex } from '~/utils/color-utils';
+import { InputParameterSizeExplicitValuesType } from '~/utils/types/input-parameter/size';
 
 enum UnitTypeEnum {
   px = 'px',
@@ -24,7 +19,7 @@ enum UnitTypeDisplayEnum {
   percent = '%',
 }
 
-type SideLengthInputParameterEditorProps = {
+type SizeInputParameterEditorProps = {
   inputParameter: Pick<
     InputParameter,
     | 'id'
@@ -36,9 +31,9 @@ type SideLengthInputParameterEditorProps = {
   >;
 };
 
-export function SideLengthInputParameters({
+export function SizeInputParameters({
   inputParameter,
-}: SideLengthInputParameterEditorProps) {
+}: SizeInputParameterEditorProps) {
   const { inputType, unitType } = inputParameter;
   const unitTypeDisplay =
     UnitTypeDisplayEnum[unitType as keyof typeof UnitTypeEnum];
@@ -58,7 +53,7 @@ export function SideLengthInputParameters({
 
   const InputParameterExplicitValues = () => {
     const values =
-      inputParameter.explicitValues as InputParameterSideLengthExplicitValuesType;
+      inputParameter.explicitValues as InputParameterSizeExplicitValuesType;
     const currentValues = values[unitKey];
     const valuesDisplay = [
       `Length: ${currentValues.toString()}${unitTypeDisplay}`,
@@ -76,33 +71,33 @@ export function SideLengthInputParameters({
     );
   };
 
-  const InputParameterRandomValues = () => {
-    const values =
-      inputParameter.randomValues as InputParameterSideLengthRandomValuesType;
-    const currentValues = values[unitKey];
-    const randomColors = [];
-    for (let i = 0; i < currentValues; i++) {
-      randomColors.push(colorRandomHex());
-    }
+  // const InputParameterRandomValues = () => {
+  //   const values =
+  //     inputParameter.randomValues as InputParameterSizeRandomValuesType;
+  //   const currentValues = values[unitKey];
+  //   const randomColors = [];
+  //   for (let i = 0; i < currentValues; i++) {
+  //     randomColors.push(colorRandomHex());
+  //   }
 
-    return (
-      <InputParametersStack>
-        <InputParametersTitle title="Random Values" />
-        <InputParametersBody values={randomColors} attributeType="palette" />
-        <InputParametersActions
-          linkTo={'edit-values-random'}
-          linkText={'Edit Random Values'}
-        />
-      </InputParametersStack>
-    );
-  };
+  //   return (
+  //     <InputParametersStack>
+  //       <InputParametersTitle title="Random Values" />
+  //       <InputParametersBody values={randomColors} attributeType="palette" />
+  //       <InputParametersActions
+  //         linkTo={'edit-values-random'}
+  //         linkText={'Edit Random Values'}
+  //       />
+  //     </InputParametersStack>
+  //   );
+  // };
 
   const InputParameterValuesByType = () => {
     switch (inputType) {
       case 'explicit':
         return <InputParameterExplicitValues />;
-      case 'random':
-        return <InputParameterRandomValues />;
+      // case 'random':
+      //   return <InputParameterRandomValues />;
       default:
         return null;
     }

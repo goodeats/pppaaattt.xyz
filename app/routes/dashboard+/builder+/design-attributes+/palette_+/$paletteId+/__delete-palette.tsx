@@ -12,7 +12,7 @@ interface DeleteFormSchemaTypes {
 }
 
 const DeleteFormSchema: z.Schema<DeleteFormSchemaTypes> = z.object({
-  intent: z.literal('delete-layer'),
+  intent: z.literal('delete-palette'),
   paletteId: z.string(),
 });
 
@@ -63,7 +63,7 @@ export function DeletePalette({ id }: { id: string }) {
       <Button
         type="submit"
         name="intent"
-        value="delete-layer"
+        value="delete-palette"
         colorScheme="red"
       >
         Delete...

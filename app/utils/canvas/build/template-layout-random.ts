@@ -1,4 +1,7 @@
-import { BuildDimensions } from '~/lib/utils/build-structure/build-attributes';
+import {
+  BuildDimensions,
+  BuildSize,
+} from '~/lib/utils/build-structure/build-attributes';
 import { RotateCompass } from '../../rotate-utils';
 import { randomInRange, randomIndex } from '../../random-utils';
 import { colorRandomHex } from '../../color-utils';
@@ -10,6 +13,7 @@ import { colorIsMatching } from '~/utils/color-match-utils';
 //     ctx,
 //     count: COUNT,
 //     dimensions,
+//     size,
 //     pixelToColor: true,
 //     backgroundOptions: {
 //       pixelColorMatch: '#FFFFFF',
@@ -34,6 +38,7 @@ type TemplateLayoutRandomProps = {
   ctx: CanvasRenderingContext2D;
   count: number;
   dimensions: BuildDimensions;
+  size: BuildSize;
   pixelToColor?: boolean;
   backgroundOptions?: BackgroundOptions;
 };
@@ -51,6 +56,7 @@ export const TemplateLayoutRandom = ({
   ctx,
   count,
   dimensions,
+  size,
   pixelToColor,
   backgroundOptions,
 }: TemplateLayoutRandomProps): TemplateBuildProps[] => {
@@ -104,10 +110,7 @@ export const TemplateLayoutRandom = ({
       }
     }
 
-    const sizeMultiplier = 1;
-    const sizePercent = 0.05;
-    const canvasWidth = width;
-    const size = canvasWidth * sizePercent * sizeMultiplier;
+    const sizeAdjusted = width * size.size;
 
     const index = randomIndex(rotateOptions);
     const rotate = rotateOptions[index];
@@ -116,7 +119,7 @@ export const TemplateLayoutRandom = ({
       x,
       y,
       pixelColor: pixelColorBackup || pixelColor || colorRandomHex(),
-      size,
+      size: sizeAdjusted,
       rotate,
       isBackground,
     };

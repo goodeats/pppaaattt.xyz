@@ -36,9 +36,15 @@ export type BuildImage = {
   display: boolean;
 };
 
+export type BuildSize = {
+  size: number;
+  format: DistanceFormat;
+};
+
 export type BuildAttributes = {
   dimensions?: BuildDimensions;
   palette?: BuildPalette;
   background?: BuildBackground;
   image?: BuildImage;
+  size?: BuildSize;
 };
