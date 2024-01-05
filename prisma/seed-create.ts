@@ -323,11 +323,11 @@ export const seedDesignAttributesOnLayers = async () => {
   const buildAttributes = (layer.buildAttributes || {}) as BuildAttributes;
 
   // IG Story 9:16
-  // const buildDimensions: BuildDimensions = {
-  //   width: 1080,
-  //   height: 1920,
-  //   format: 'px',
-  // };
+  const buildDimensions: BuildDimensions = {
+    width: 1080,
+    height: 1920,
+    format: 'px',
+  };
   // 16:9
   // const buildDimensions: BuildDimensions = {
   //   width: 1920,
@@ -336,11 +336,18 @@ export const seedDesignAttributesOnLayers = async () => {
   // };
 
   // 4:3
-  const buildDimensions: BuildDimensions = {
-    width: 2400,
-    height: 1800,
-    format: 'px',
-  };
+  // const buildDimensions: BuildDimensions = {
+  //   width: 2400,
+  //   height: 1800,
+  //   format: 'px',
+  // };
+
+  // 8.5 x 11
+  // const buildDimensions: BuildDimensions = {
+  //   width: 2550,
+  //   height: 3300,
+  //   format: 'px',
+  // };
 
   // // https://shotkit.com/how-big-is-a-4x6-photo/
   // const buildDimensions: BuildDimensions = {
