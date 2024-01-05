@@ -61,7 +61,7 @@ export default function LayerDetailsPage() {
 
   return (
     <ColumnContainer>
-      <Column>
+      {/* <Column>
         <LayerCard
           layer={{
             ...layer,
@@ -69,7 +69,7 @@ export default function LayerDetailsPage() {
             updatedAt: new Date(layer.updatedAt),
           }}
         />
-      </Column>
+      </Column> */}
       <Column>
         <CanvasCard
           buildAttributes={buildAttributes ?? {}}
