@@ -13,6 +13,7 @@ import { AuthenticityTokenProvider } from 'remix-utils/csrf/react';
 import { ChakraProvider } from '~/components';
 import { theme } from './lib/styles/theme';
 import { combineHeaders } from './utils/misc';
+import Fonts from './lib/styles/theme/fonts';
 
 export async function loader({ request }: DataFunctionArgs) {
   const [csrfToken, csrfCookieHeader] = await csrf.commitToken();
@@ -42,6 +43,7 @@ export default function App() {
       <body>
         <AuthenticityTokenProvider token={data.csrfToken}>
           <ChakraProvider resetCSS theme={theme}>
+            <Fonts />
             <Outlet />
           </ChakraProvider>
         </AuthenticityTokenProvider>

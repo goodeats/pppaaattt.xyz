@@ -38,6 +38,7 @@ export {
   ModalCloseButton,
   Radio,
   RadioGroup,
+  SimpleGrid,
   Spacer,
   Stack,
   StackDivider,

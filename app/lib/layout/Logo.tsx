@@ -7,7 +7,7 @@ const Character = ({ char }: { char: string }) => {
     <Flex direction="column">
       {/* It maps over an array of length 2 and for each element, it creates a Box component */}
       {[...Array(2)].map((_, i) => (
-        <Box key={i} margin="0 auto" lineHeight="normal">
+        <Box key={i} margin="0 auto" mb={-3} lineHeight="normal">
           {/* The Box component contains the character repeated (i + 1) times */}
           {char.repeat(i + 1)}
         </Box>
@@ -19,7 +19,7 @@ const Character = ({ char }: { char: string }) => {
 const Logo = () => {
   const str = 'PAT';
   return (
-    <Flex direction="column">
+    <Flex direction="column" mt={-3}>
       {/* It first renders the Character component for the first character of the string */}
       <Character char={str[0]} />
       <Flex>
