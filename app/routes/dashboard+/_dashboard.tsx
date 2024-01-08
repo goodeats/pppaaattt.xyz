@@ -1,7 +1,6 @@
-import { ChakraProvider, CustomBreadcrumb } from '~/components';
+import { CustomBreadcrumb } from '~/components';
 import Layout from '~/lib/layout';
 import Column from '~/lib/layout/Column.tsx';
-import { theme } from '~/lib/styles/theme';
 import { Outlet, useMatches } from '@remix-run/react';
 
 export default function DashboardPath() {
@@ -11,13 +10,11 @@ export default function DashboardPath() {
     .map((match) => match.handle.breadcrumb(match));
 
   return (
-    <ChakraProvider resetCSS theme={theme}>
-      <Layout>
-        <Column>
-          <CustomBreadcrumb breadcrumbs={breadcrumbs} />
-          <Outlet />
-        </Column>
-      </Layout>
-    </ChakraProvider>
+    <Layout>
+      <Column>
+        <CustomBreadcrumb breadcrumbs={breadcrumbs} />
+        <Outlet />
+      </Column>
+    </Layout>
   );
 }

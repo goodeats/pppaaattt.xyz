@@ -1,24 +1,23 @@
-import { ChakraProvider } from '~/components';
-import { theme } from '../lib/styles/theme/index.ts';
-import Layout from '~/lib/layout';
-import { DataFunctionArgs, json } from '@remix-run/node';
+import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import Column from '~/lib/layout/Column.tsx';
 import { ColumnHeading } from '~/lib/layout/columns/_shared.tsx';
+import { getUserId } from '~/modules/auth.server';
+import GuestLayout from '~/lib/layout/GuestLayout';
 
 export async function loader({ request }: DataFunctionArgs) {
-  const url = new URL(request.url);
-  console.log(url);
-  return json({ home: true });
+  const userId = await getUserId(request);
+  if (userId) {
+    return redirect('/dashboard');
+  }
+  return json({});
 }
 
 export default function Index() {
   return (
-    <ChakraProvider resetCSS theme={theme}>
-      <Layout>
-        <Column>
-          <ColumnHeading>Welcome!</ColumnHeading>
-        </Column>
-      </Layout>
-    </ChakraProvider>
+    <GuestLayout>
+      <Column>
+        <ColumnHeading>Welcome!</ColumnHeading>
+      </Column>
+    </GuestLayout>
   );
 }

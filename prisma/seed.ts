@@ -4,11 +4,13 @@ import {
   seedDesignAttributesOnLayers,
   seedLayerImages,
   seedLayers,
+  seedUsers,
 } from './seed-create';
 const prisma = new PrismaClient();
 
 const resetDb = async () => {
   console.log('Resetting database...');
+  await prisma.user.deleteMany();
   await prisma.layer.deleteMany();
   await prisma.designAttribute.deleteMany();
   await prisma.inputParameter.deleteMany();
@@ -17,6 +19,7 @@ const resetDb = async () => {
 
 const seedTables = async () => {
   console.log('Seeding tables...');
+  await seedUsers();
   await seedLayers();
   await seedLayerImages();
   await seedDesignAttributes();
