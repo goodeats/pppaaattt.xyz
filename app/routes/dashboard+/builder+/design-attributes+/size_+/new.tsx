@@ -1,11 +1,11 @@
 import { DataFunctionArgs, json } from '@remix-run/node';
 import { NavLink } from '@remix-run/react';
-import { SideLengthEditor, action } from './__side-length-editor';
+import { SizeEditor, action } from './__size-editor';
 
 export const handle = {
   breadcrumb: () => {
     return (
-      <NavLink to={'/dashboard/builder/design-attributes/side-length/new'}>
+      <NavLink to={'/dashboard/builder/design-attributes/size/new'}>
         New
       </NavLink>
     );
@@ -17,6 +17,6 @@ export async function loader({ params }: DataFunctionArgs) {
 }
 
 export { action };
-export default function NewSideLengthPage() {
-  return <SideLengthEditor />;
+export default function NewSizePage() {
+  return <SizeEditor />;
 }

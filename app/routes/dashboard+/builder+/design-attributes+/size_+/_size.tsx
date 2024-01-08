@@ -14,19 +14,16 @@ import { prisma } from '~/utils/db.server';
 export const handle = {
   breadcrumb: () => {
     return (
-      <NavLink to={`/dashboard/builder/design-attributes/side-length`}>
-        Side Length
-      </NavLink>
+      <NavLink to={`/dashboard/builder/design-attributes/size`}>Size</NavLink>
     );
   },
 };
 
 export async function loader({ request }: DataFunctionArgs) {
-  const sideLengths = await prisma.designAttribute.findMany({
+  const sizes = await prisma.designAttribute.findMany({
     where: {
-      layerId: null,
       attributeType: {
-        equals: 'sideLength',
+        equals: 'size',
       },
     },
     select: {
@@ -37,19 +34,19 @@ export async function loader({ request }: DataFunctionArgs) {
       updatedAt: true,
     },
   });
-  return json({ sideLengths });
+  return json({ sizes });
 }
 
-export default function SideLengthPage() {
+export default function SizePage() {
   const data = useLoaderData<typeof loader>();
-  const { sideLengths } = data;
+  const { sizes } = data;
 
   const Overview = () => {
     return (
-      <PageOverview title="Side Length">
-        <Text fontSize="sm">Side Length count: {sideLengths.length}</Text>
+      <PageOverview title="Size">
+        <Text fontSize="sm">Size count: {sizes.length}</Text>
         <Text fontSize="sm">
-          Side Length sets the width of the shapes on the canvas
+          Size sets the width of the shapes on the canvas
         </Text>
       </PageOverview>
     );
@@ -59,10 +56,10 @@ export default function SideLengthPage() {
     <Flex flexDirection="column" minHeight="30vh">
       <Overview />
       <PageContentContainer>
-        <CustomSidebar items={sideLengths} itemType="sideLengths" />
+        <CustomSidebar items={sizes} itemType="sizes" />
         <PageContent />
       </PageContentContainer>
-      <PageActions itemName="Side Length" />
+      <PageActions itemName="Size" />
     </Flex>
   );
 }

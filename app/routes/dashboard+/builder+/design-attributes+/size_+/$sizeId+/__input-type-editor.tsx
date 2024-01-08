@@ -16,7 +16,7 @@ import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { InputParameter, prisma } from '~/utils/db.server';
 
-const urlResourcePath = '/dashboard/builder/design-attributes/side-length';
+const urlResourcePath = '/dashboard/builder/design-attributes/size';
 
 enum InputTypeEnum {
   explicit = 'explicit',
@@ -33,16 +33,16 @@ enum UnitTypeEnum {
 const UnitTypeEnumNative = z.nativeEnum(UnitTypeEnum);
 type UnitTypeEnumType = z.infer<typeof UnitTypeEnumNative>;
 
-interface SideLengthInputTypeEditorSchemaTypes {
-  sideLengthId: string;
+interface SizeInputTypeEditorSchemaTypes {
+  size: string;
   id: string;
   inputType: InputTypeEnumType;
   unitType: UnitTypeEnumType;
 }
 
-const SideLengthInputTypeEditorSchema: z.Schema<SideLengthInputTypeEditorSchemaTypes> =
+const SizeInputTypeEditorSchema: z.Schema<SizeInputTypeEditorSchemaTypes> =
   z.object({
-    sideLengthId: z.string(),
+    size: z.string(),
     id: z.string(),
     inputType: InputTypeEnumNative,
     unitType: UnitTypeEnumNative,
@@ -51,7 +51,7 @@ const SideLengthInputTypeEditorSchema: z.Schema<SideLengthInputTypeEditorSchemaT
 export async function action({ request }: DataFunctionArgs) {
   const formData = await request.formData();
   const submission = await parse(formData, {
-    schema: SideLengthInputTypeEditorSchema.superRefine(async (data, ctx) => {
+    schema: SizeInputTypeEditorSchema.superRefine(async (data, ctx) => {
       if (!data.id) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -82,12 +82,7 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  const {
-    id: inputParameterId,
-    inputType,
-    unitType,
-    sideLengthId,
-  } = submission.value;
+  const { id: inputParameterId, inputType, unitType, size } = submission.value;
   const inputParameter = await prisma.inputParameter.update({
     where: { id: inputParameterId },
     data: {
@@ -100,18 +95,18 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  return redirect(`${urlResourcePath}/${sideLengthId}`);
+  return redirect(`${urlResourcePath}/${size}`);
 }
 
-type SideLengthInputTypeEditorProps = {
+type SizeInputTypeEditorProps = {
   id: string;
   inputParameter: Pick<InputParameter, 'id' | 'inputType' | 'unitType'>;
 };
 
-export function SideLengthInputTypeEditor({
+export function SizeInputTypeEditor({
   id,
   inputParameter,
-}: SideLengthInputTypeEditorProps) {
+}: SizeInputTypeEditorProps) {
   const { inputType, unitType } = inputParameter;
   // BUG: when navigating to /new this causes an infinite loop
   // Warning: Maximum update depth exceeded.
@@ -119,12 +114,12 @@ export function SideLengthInputTypeEditor({
   // const inputTypeFetcher = useFetcher<typeof action>();
   // const isPending = inputTypeFetcher.state !== 'idle';
 
-  const [form, fields] = useForm<SideLengthInputTypeEditorSchemaTypes>({
-    id: 'side-length-input-type-editor',
-    constraint: getFieldsetConstraint(SideLengthInputTypeEditorSchema),
+  const [form, fields] = useForm<SizeInputTypeEditorSchemaTypes>({
+    id: 'size-input-type-editor',
+    constraint: getFieldsetConstraint(SizeInputTypeEditorSchema),
     // lastSubmission: inputTypeFetcher.data?.submission,
     onValidate({ formData }) {
-      return parse(formData, { schema: SideLengthInputTypeEditorSchema });
+      return parse(formData, { schema: SizeInputTypeEditorSchema });
     },
     defaultValue: {
       inputType: inputType ?? '',
@@ -133,10 +128,11 @@ export function SideLengthInputTypeEditor({
   });
 
   const FormInputType = () => {
-    const options: { value: string; label: string }[] = [
+    const options: { value: string; label: string; disabled?: boolean }[] = [
       { value: 'explicit', label: 'Explicit' },
-      { value: 'random', label: 'Random' },
-      { value: 'range', label: 'Range' },
+      // TODO: implement these
+      { value: 'random', label: 'Random', disabled: true },
+      { value: 'range', label: 'Range', disabled: true },
     ];
 
     return (
@@ -148,7 +144,12 @@ export function SideLengthInputTypeEditor({
             defaultValue={fields.inputType.defaultValue}
           >
             {options.map((option) => (
-              <Radio key={option.value} value={option.value} marginRight={3}>
+              <Radio
+                key={option.value}
+                value={option.value}
+                isDisabled={option.disabled}
+                marginRight={3}
+              >
                 {option.label}
               </Radio>
             ))}
@@ -208,7 +209,7 @@ export function SideLengthInputTypeEditor({
   return (
     <Stack width="full" paddingX={8} paddingY={5}>
       <Form method="post" {...form.props}>
-        <input type="hidden" name="sideLengthId" value={id} />
+        <input type="hidden" name="size" value={id} />
         <input type="hidden" name="id" value={inputParameter.id} />
 
         <Stack divider={<StackDivider borderColor="gray.200" />} spacing={5}>

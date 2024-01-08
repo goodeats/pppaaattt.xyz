@@ -8,12 +8,12 @@ import { prisma } from '~/utils/db.server';
 
 interface DeleteFormSchemaTypes {
   intent: string;
-  sideLengthId: string;
+  sizeId: string;
 }
 
 const DeleteFormSchema: z.Schema<DeleteFormSchemaTypes> = z.object({
   intent: z.literal('delete-layer'),
-  sideLengthId: z.string(),
+  sizeId: z.string(),
 });
 
 export async function action({ request }: DataFunctionArgs) {
@@ -30,34 +30,34 @@ export async function action({ request }: DataFunctionArgs) {
     return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  const { sideLengthId } = submission.value;
+  const { sizeId } = submission.value;
 
-  const sideLength = await prisma.designAttribute.findFirst({
+  const size = await prisma.designAttribute.findFirst({
     select: { id: true },
-    where: { id: sideLengthId },
+    where: { id: sizeId },
   });
-  if (!sideLength) {
+  if (!size) {
     return json({ status: 'error', submission } as const, { status: 404 });
   }
 
   await prisma.designAttribute.delete({
-    where: { id: sideLength.id },
+    where: { id: size.id },
   });
 
-  return redirect(`/dashboard/builder/design-attributes/side-length`);
+  return redirect(`/dashboard/builder/design-attributes/size`);
 }
 
-export function DeleteSideLength({ id }: { id: string }) {
+export function DeleteSize({ id }: { id: string }) {
   // const actionData = useActionData<typeof action>();
   // const isPending = useIsPending();
   const [form] = useForm({
-    id: 'delete-side-length',
+    id: 'delete-size',
     // lastSubmission: actionData?.submission,
   });
 
   return (
     <Form method="post" {...form.props}>
-      <input type="hidden" name="sideLengthId" value={id} />
+      <input type="hidden" name="sizeId" value={id} />
       {/* TODO: make this an alert dialog
           https://chakra-ui.com/docs/components/alert-dialog */}
       <Button

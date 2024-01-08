@@ -1,7 +1,13 @@
-import { CanvasCard, Column, ColumnContainer, LayerCard } from '~/components';
+import {
+  CanvasCard,
+  Column,
+  ColumnContainer,
+  LayerCardGenerate,
+} from '~/components';
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
+import { BuildAttributes } from '~/lib/utils/build-structure/build-attributes';
 
 export const handle = {
   breadcrumb: (match) => {
@@ -20,36 +26,15 @@ export async function loader({ params }: DataFunctionArgs) {
     return redirect('/layers');
   }
 
-  const query = await prisma.layer.findUnique({
-    where: {
-      id: layerId,
-    },
-    include: {
-      designAttributes: {
-        include: {
-          designAttribute: {
-            include: {
-              inputParameters: true,
-            },
-          },
-        },
-      },
-    },
+  const layer = await prisma.layer.findUnique({
+    where: { id: layerId },
   });
 
-  if (!query) {
+  if (!layer) {
     // TODO: redirect to 404 page
     // create toast notification
     return redirect('/dashboard/generator/layers?notFound=true');
   }
-
-  const layer = {
-    ...query,
-    // https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/working-with-many-to-many-relations#explicit-relations
-    designAttributes: query.designAttributes.map(
-      (attr) => attr.designAttribute
-    ),
-  };
 
   return json({ layer });
 }
@@ -57,24 +42,22 @@ export async function loader({ params }: DataFunctionArgs) {
 export default function LayerDetailsPage() {
   const data = useLoaderData<typeof loader>();
   const { layer } = data;
-  const { buildAttributes, designAttributes } = layer;
+  const { buildAttributes } = layer;
 
   return (
     <ColumnContainer>
-      {/* <Column>
-        <LayerCard
+      <Column>
+        <LayerCardGenerate
           layer={{
             ...layer,
             createdAt: new Date(layer.createdAt),
             updatedAt: new Date(layer.updatedAt),
+            designAttributes: [],
           }}
         />
-      </Column> */}
+      </Column>
       <Column>
-        <CanvasCard
-          buildAttributes={buildAttributes ?? {}}
-          designAttributes={designAttributes}
-        />
+        <CanvasCard buildAttributes={buildAttributes as BuildAttributes} />
       </Column>
     </ColumnContainer>
   );

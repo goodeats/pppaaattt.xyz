@@ -10,13 +10,15 @@ import {
   Divider,
   Flex,
   Heading,
+  Image,
+  Link,
   Spacer,
   Stack,
   StackDivider,
   Text,
 } from '~/components';
 import { DeleteLayer } from '~/routes/dashboard+/builder+/layers+/__delete-layer';
-import { IDesignAttribute, ILayer } from '~/utils/db.server';
+import { IDesignAttribute, ILayer, ILayerImage } from '~/utils/db.server';
 import { formatTimeStampsReadable } from '~/utils/string-formatting';
 
 type LayerCardProps = {
@@ -28,12 +30,23 @@ type LayerCardProps = {
       IDesignAttribute,
       'id' | 'title' | 'attributeType'
     >[];
+    image: Pick<
+      ILayerImage,
+      'id' | 'url' | 'altText' | 'layout' | 'display'
+    > | null;
   };
 };
 
-export const LayerCard = ({ layer }: LayerCardProps) => {
-  const { id, title, description, createdAt, updatedAt, designAttributes } =
-    layer;
+export const LayerCardBuild = ({ layer }: LayerCardProps) => {
+  const {
+    id,
+    title,
+    description,
+    createdAt,
+    updatedAt,
+    designAttributes,
+    image,
+  } = layer;
 
   const Description = () => {
     if (!description) {
@@ -88,6 +101,48 @@ export const LayerCard = ({ layer }: LayerCardProps) => {
     );
   };
 
+  const LayerImage = () => {
+    const NoImage = () => (
+      <Text fontSize="sm" pt={2}>
+        No image for this layer
+      </Text>
+    );
+
+    const WithImage = () => {
+      if (!image) return null;
+
+      return (
+        <Box p="2">
+          <Box pb="2">
+            <Image
+              src={image.url}
+              alt={image.altText || 'No alt text'}
+              boxSize="300px"
+              objectFit="cover"
+            />
+          </Box>
+          <Text fontSize="sm">Alt Text: {image.altText}</Text>
+          <Text fontSize="sm">Layout: {image.layout}</Text>
+          <Text fontSize="sm">Display: {image.display.toString()}</Text>
+        </Box>
+      );
+    };
+
+    return (
+      <Box>
+        <Heading size="xs" textTransform="uppercase">
+          Image
+        </Heading>
+        {image ? <WithImage /> : <NoImage />}
+        <Box pt={4}>
+          <NavLink to="edit-image">
+            <Button variant="outline">Edit Image</Button>
+          </NavLink>
+        </Box>
+      </Box>
+    );
+  };
+
   const TimeStamps = () => {
     if (!createdAt || !updatedAt) {
       return null;
@@ -114,6 +169,7 @@ export const LayerCard = ({ layer }: LayerCardProps) => {
         <Stack divider={<StackDivider />} spacing={4}>
           <Description />
           <DesignAttributes />
+          <LayerImage />
         </Stack>
       </CardBody>
       <Divider />
@@ -122,6 +178,9 @@ export const LayerCard = ({ layer }: LayerCardProps) => {
           <TimeStamps />
           <Spacer />
           <ButtonGroup>
+            <Link href={`/dashboard/generator/layers/${id}`}>
+              <Button>Generate</Button>
+            </Link>
             <NavLink to="edit">
               <Button variant="outline">Edit</Button>
             </NavLink>

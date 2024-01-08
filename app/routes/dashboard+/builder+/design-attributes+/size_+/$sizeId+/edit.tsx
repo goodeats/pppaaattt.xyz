@@ -1,15 +1,13 @@
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { NavLink, useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-import { SideLengthEditor, action } from '../__side-length-editor';
+import { SizeEditor, action } from '../__size-editor';
 
 export const handle = {
   breadcrumb: (match) => {
-    const sidelengthId = match.params.sidelengthId;
+    const sizeId = match.params.sizeId;
     return (
-      <NavLink
-        to={`/dashboard/builder/design-attributes/side-length/${sidelengthId}`}
-      >
+      <NavLink to={`/dashboard/builder/design-attributes/size/${sizeId}`}>
         Edit
       </NavLink>
     );
@@ -18,14 +16,14 @@ export const handle = {
 export { action };
 
 export async function loader({ params }: DataFunctionArgs) {
-  const { sidelengthId } = params;
-  if (!sidelengthId) {
-    return redirect('/dashboard/builder/design-attributes/side-length');
+  const { sizeId } = params;
+  if (!sizeId) {
+    return redirect('/dashboard/builder/design-attributes/size');
   }
 
-  const sideLength = await prisma.designAttribute.findUnique({
+  const size = await prisma.designAttribute.findUnique({
     where: {
-      id: sidelengthId,
+      id: sizeId,
     },
     select: {
       id: true,
@@ -36,20 +34,18 @@ export async function loader({ params }: DataFunctionArgs) {
     },
   });
 
-  if (!sideLength) {
+  if (!size) {
     // TODO: redirect to 404 page
     // create toast notification
     // https://www.youtube.com/watch?v=N2yMZR6B31U
-    return redirect(
-      '/dashboard/builder/design-attributes/side-length?notFound=true'
-    );
+    return redirect('/dashboard/builder/design-attributes/size?notFound=true');
   }
 
-  return json({ sideLength });
+  return json({ size });
 }
 
 export default function PaletteEditPage() {
   const data = useLoaderData<typeof loader>();
 
-  return <SideLengthEditor sideLength={data.sideLength} />;
+  return <SizeEditor size={data.size} />;
 }

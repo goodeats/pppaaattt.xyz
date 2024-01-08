@@ -9,22 +9,22 @@ import {
 import { DataFunctionArgs, json, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { prisma } from '~/utils/db.server';
-import { DeleteSideLength, action } from './__delete-side-length';
-import { SideLengthInputParameters } from './__input-parameters';
+import { DeleteSize, action } from './__delete-size';
+import { SizeInputParameters } from './__input-parameters';
 
-const urlResourcePath = '/dashboard/builder/design-attributes/side-length';
+const urlResourcePath = '/dashboard/builder/design-attributes/size';
 
 export { action };
 
 export async function loader({ params }: DataFunctionArgs) {
-  const { sidelengthId } = params;
-  if (!sidelengthId) {
+  const { sizeId } = params;
+  if (!sizeId) {
     return redirect(urlResourcePath);
   }
 
-  const sideLength = await prisma.designAttribute.findUnique({
+  const size = await prisma.designAttribute.findUnique({
     where: {
-      id: sidelengthId,
+      id: sizeId,
     },
     select: {
       id: true,
@@ -47,26 +47,26 @@ export async function loader({ params }: DataFunctionArgs) {
     },
   });
 
-  if (!sideLength) {
+  if (!size) {
     // TODO: redirect to 404 page
     // create toast notification
     return redirect(`${urlResourcePath}?notFound=true`);
   }
 
-  return json({ sideLength });
+  return json({ size });
 }
 
-export default function SidelengthDetailsPage() {
+export default function SizeDetailsPage() {
   const data = useLoaderData<typeof loader>();
-  const { sideLength } = data;
-  const { inputParameters } = sideLength;
+  const { size } = data;
+  const { inputParameters } = size;
 
   const InputParameters = () => {
     if (!inputParameters || inputParameters.length === 0)
       return (
         <Stack>
           <List>
-            <ListItem>No SideLength Parameters</ListItem>
+            <ListItem>No Size Parameters</ListItem>
           </List>
         </Stack>
       );
@@ -75,20 +75,20 @@ export default function SidelengthDetailsPage() {
     // later we will add heirarchy of input parameters
     const inputParameter = inputParameters[0];
 
-    return <SideLengthInputParameters inputParameter={inputParameter} />;
+    return <SizeInputParameters inputParameter={inputParameter} />;
   };
 
   const PaletteActions = () => {
     return (
       <ContentActions>
-        <DeleteSideLength id={sideLength.id} />
+        <DeleteSize id={size.id} />
       </ContentActions>
     );
   };
 
   return (
     <ContentContainer>
-      <ContentOverview item={sideLength} />
+      <ContentOverview item={size} />
       <InputParameters />
       <PaletteActions />
     </ContentContainer>

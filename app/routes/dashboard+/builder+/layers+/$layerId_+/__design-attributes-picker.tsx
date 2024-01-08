@@ -28,7 +28,7 @@ enum AttributeType {
   palette = 'palette',
   background = 'background',
   position = 'position',
-  sideLength = 'sideLength',
+  size = 'size',
   strokeStyle = 'strokeStyle',
   fillStyle = 'fillStyle',
   lineWidth = 'lineWidth',
@@ -237,6 +237,40 @@ export async function action({ request }: DataFunctionArgs) {
     }
   } else if (attributeType === AttributeType.background) {
     console.log('oh no not ready');
+  } else if (attributeType === AttributeType.size) {
+    const parameters = inputParameters[0];
+    const { unitType, explicitValues } = parameters;
+    if (!explicitValues) {
+      return json({ status: 'error', submission } as const, { status: 400 });
+    }
+
+    const explicitUnits = explicitValues[unitType];
+    if (!explicitUnits) {
+      return json({ status: 'error', submission } as const, { status: 400 });
+    }
+    const newSize = {
+      size: {
+        size: explicitUnits,
+        format: 'percent',
+      },
+    };
+    const updatedBuildAttributes = {
+      ...currentBuildAttributes,
+      ...newSize,
+    };
+
+    const updatedLayer = await prisma.layer.update({
+      where: {
+        id: layerId,
+      },
+      data: {
+        buildAttributes: updatedBuildAttributes,
+      },
+    });
+
+    if (!updatedLayer) {
+      return json({ status: 'error', submission } as const, { status: 400 });
+    }
   }
 
   return redirect(

@@ -3,6 +3,7 @@ import {
   DesignAttribute,
   InputParameter,
   Layer,
+  LayerImage,
 } from '@prisma/client';
 
 // look to expand on this later
@@ -11,7 +12,7 @@ import {
 export const prisma = new PrismaClient();
 
 // models
-export type { DesignAttribute, InputParameter };
+export type { DesignAttribute, InputParameter, LayerImage };
 
 // enums from /prisma/schema.prisma
 // edit: copy for type checking with zod forms
@@ -24,6 +25,7 @@ export enum InputTypeEnum { // do not use, read comment
 
 export interface ILayer extends Layer {
   designAttributes?: DesignAttribute[];
+  image?: LayerImage;
 }
 
 export interface IDesignAttribute extends DesignAttribute {
@@ -32,4 +34,8 @@ export interface IDesignAttribute extends DesignAttribute {
 
 export interface IInputParameter extends InputParameter {
   designAttribute?: DesignAttribute;
+}
+
+export interface ILayerImage extends LayerImage {
+  layer?: Layer;
 }

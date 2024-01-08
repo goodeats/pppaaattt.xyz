@@ -15,7 +15,6 @@ import { Form, NavLink } from '@remix-run/react';
 import { z } from 'zod';
 import { IInputParameter, prisma } from '~/utils/db.server';
 import { InputParameterPaletteRandomValuesType } from '~/utils/types/input-parameter/palette';
-import { StringsToHexSchma } from '~/utils/zod-schema';
 
 const urlResourcePath = '/dashboard/builder/design-attributes/palette';
 

@@ -3,6 +3,7 @@ import {
   BuildAttributes,
   BuildBackground,
   BuildDimensions,
+  BuildImage,
   BuildPalette,
 } from '~/lib/utils/build-structure/build-attributes';
 import {
@@ -14,6 +15,10 @@ import {
   InputParameterPaletteDefault,
   defaultPaletteColors,
 } from '~/utils/types/input-parameter/palette';
+import {
+  InputParameterSizeDefault,
+  InputParameterSizeLengths,
+} from '~/utils/types/input-parameter/size';
 const prisma = new PrismaClient();
 
 export const seedLayers = async () => {
@@ -49,11 +54,55 @@ export const seedLayers = async () => {
   console.log('Layers seeded.');
 };
 
+export const seedLayerImages = async () => {
+  console.log('Seeding layer images...');
+
+  const layerImagesSeedJson = [
+    {
+      url: 'http://localhost:5173/images/pepper.jpeg',
+      altText: 'pepper!',
+      layout: 'stretch-height',
+      display: true,
+    },
+  ];
+
+  const layer = await prisma.layer.findFirst({
+    where: { title: 'Default Layer' },
+  });
+
+  if (!layer) {
+    throw new Error('Default layer not found.');
+  }
+
+  const promises = layerImagesSeedJson.map(async (layerImage) => {
+    const { url, altText, layout, display } = layerImage;
+    const exists = await prisma.layerImage.findFirst({
+      where: { url },
+    });
+
+    if (!exists) {
+      await prisma.layerImage.create({
+        data: {
+          url,
+          altText,
+          layout,
+          display,
+          layerId: layer.id,
+        },
+      });
+    }
+  });
+
+  await Promise.all(promises);
+  console.log('Layer images seeded.');
+};
+
 export const seedDesignAttributes = async () => {
   console.log('Seeding design attributes...');
   await seedContainerDesignAttributes();
   await seedPaletteDesignAttributes();
   await seedBackgroundDesignAttributes();
+  await seedSizeDesignAttributes();
   console.log('Design attributes seeded.');
 };
 
@@ -271,6 +320,94 @@ export const seedBackgroundDesignAttributes = async () => {
   console.log('Palette design attributes seeded.');
 };
 
+export const seedSizeDesignAttributes = async () => {
+  console.log('Seeding size design attributes...');
+  // Hack: stringify default first
+  // bug for subsequent sizes change the default values even after the const is defined
+  // fix later since this works
+  // due to all being completed after in Promise.all
+  const sizeDefault = JSON.parse(JSON.stringify(InputParameterSizeDefault));
+  const sizeXs = JSON.parse(
+    JSON.stringify(
+      InputParameterSizeLengths({
+        size: 1,
+      })
+    )
+  );
+  const sizeSm = JSON.parse(
+    JSON.stringify(
+      InputParameterSizeLengths({
+        size: 5,
+      })
+    )
+  );
+  const sizeLg = JSON.parse(
+    JSON.stringify(
+      InputParameterSizeLengths({
+        size: 20,
+      })
+    )
+  );
+  const sizeXl = JSON.parse(
+    JSON.stringify(
+      InputParameterSizeLengths({
+        size: 33.3,
+      })
+    )
+  );
+
+  const containersSeedJson = [
+    {
+      title: 'Default Size',
+      description: 'A template of default settings for a size attribute',
+      inputParameters: sizeDefault,
+    },
+    {
+      title: 'Size XS',
+      description: 'A template of a size with an aspect ratio of 9:16',
+      inputParameters: sizeXs,
+    },
+    {
+      title: 'Size SM',
+      description: 'A template of a size with an aspect ratio of 9:16',
+      inputParameters: sizeSm,
+    },
+    {
+      title: 'Size LG',
+      description: 'A template of a size with an aspect ratio of 9:16',
+      inputParameters: sizeLg,
+    },
+    {
+      title: 'Size XL',
+      description: 'A template of a size with an aspect ratio of 9:16',
+      inputParameters: sizeXl,
+    },
+  ];
+
+  const promises = containersSeedJson.map(async (designAttribute) => {
+    const { title, description, inputParameters } = designAttribute;
+    const exists = await prisma.designAttribute.findFirst({
+      where: { title },
+    });
+
+    if (!exists) {
+      await prisma.designAttribute.create({
+        data: {
+          title,
+          description,
+          attributeType: 'size',
+          inputParameters: {
+            create: inputParameters,
+          },
+        },
+      });
+    }
+  });
+
+  await Promise.all(promises);
+  console.log('Size design attributes seeded.');
+};
+
 export const seedDesignAttributesOnLayers = async () => {
   console.log('Seeding design attributes on layers...');
 
@@ -318,6 +455,25 @@ export const seedDesignAttributesOnLayers = async () => {
     },
   });
   console.log('default palette added to default layer.');
+
+  // find default container
+  const size = await prisma.designAttribute.findFirst({
+    where: { title: 'Default Size' },
+    include: { inputParameters: true },
+  });
+
+  if (!size) {
+    throw new Error('Default size not found.');
+  }
+
+  console.log('adding default size to default layer...');
+  await prisma.designAttributesOnLayers.create({
+    data: {
+      layerId: layer.id,
+      designAttributeId: size.id,
+    },
+  });
+  console.log('default size added to default layer.');
 
   // update layer build attributes for palette
   const buildAttributes = (layer.buildAttributes || {}) as BuildAttributes;
@@ -368,6 +524,15 @@ export const seedDesignAttributesOnLayers = async () => {
   const buildBackground: BuildBackground = {
     colorStyle: 'palette',
   };
+  const buildLayerImage: BuildImage = {
+    url: 'http://localhost:5173/images/pepper.jpeg',
+    layout: 'stretch-height',
+    display: true,
+  };
+  const buildSize = {
+    size: 10,
+    format: 'percent',
+  };
 
   console.log('updating layer build attributes...');
   await prisma.layer.update({
@@ -378,6 +543,8 @@ export const seedDesignAttributesOnLayers = async () => {
         dimensions: buildDimensions,
         palette: buildPalette,
         background: buildBackground,
+        image: buildLayerImage,
+        size: buildSize,
       },
     },
   });
