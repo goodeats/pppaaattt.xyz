@@ -5,7 +5,7 @@ export const ImagesGrid = () => {
     return (
       <Box>
         <Image
-          src={`/images/landing/${id}.png`}
+          src={`/landing-images/${id}.png`}
           alt={'Too many triangles'}
           objectFit="cover"
         />
