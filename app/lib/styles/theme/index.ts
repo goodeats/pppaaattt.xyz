@@ -22,4 +22,9 @@ const styles = {
   },
 };
 
-export const theme = extendTheme({ colors, styles, config });
+const fonts = {
+  heading: "'Source Sans 3', sans-serif",
+  body: "'Source Sans 3', sans-serif",
+};
+
+export const theme = extendTheme({ colors, styles, fonts, config });
