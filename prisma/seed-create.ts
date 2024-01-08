@@ -6,6 +6,8 @@ import {
   BuildImage,
   BuildPalette,
 } from '~/lib/utils/build-structure/build-attributes';
+import { createPassword } from '~/utils/db-utils';
+import { prisma } from '~/utils/db.server';
 import {
   InputParameterContainerAspectRatio,
   InputParameterContainerDefault,
@@ -19,7 +21,39 @@ import {
   InputParameterSizeDefault,
   InputParameterSizeLengths,
 } from '~/utils/types/input-parameter/size';
-const prisma = new PrismaClient();
+
+export const seedUsers = async () => {
+  console.log('Seeding users...');
+  const usersSeedJson = [
+    {
+      email: 'pat@pppaaattt.xyz',
+      username: 'pat',
+      name: 'Pat',
+      password: 'password',
+    },
+  ];
+
+  const promises = usersSeedJson.map(async (user) => {
+    const { email, username, name, password } = user;
+    const exists = await prisma.user.findFirst({
+      where: { email },
+    });
+
+    if (!exists) {
+      await prisma.user.create({
+        data: {
+          email,
+          username,
+          name,
+          password: { create: createPassword(password) },
+        },
+      });
+    }
+  });
+
+  await Promise.all(promises);
+  console.log('Users seeded.');
+};
 
 export const seedLayers = async () => {
   console.log('Seeding layers...');

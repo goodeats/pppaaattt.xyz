@@ -4,6 +4,8 @@ import {
   InputParameter,
   Layer,
   LayerImage,
+  User,
+  Password,
 } from '@prisma/client';
 
 // look to expand on this later
@@ -12,7 +14,7 @@ import {
 export const prisma = new PrismaClient();
 
 // models
-export type { DesignAttribute, InputParameter, LayerImage };
+export type { DesignAttribute, InputParameter, LayerImage, User, Password };
 
 // enums from /prisma/schema.prisma
 // edit: copy for type checking with zod forms
